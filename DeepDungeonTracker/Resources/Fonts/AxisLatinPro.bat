@@ -1,0 +1,1 @@
+msdf-atlas-gen -type softmask -font AxisLatinPro.ttf -charset AxisLatinPro.txt -format png -imageout AxisLatinProFont.png -json AxisLatinProLayout.json -size 14
