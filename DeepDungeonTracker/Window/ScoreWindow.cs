@@ -20,7 +20,7 @@ namespace DeepDungeonTracker
             this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon);
             this.Flags = config.Lock ? WindowEx.StaticNoBackground : WindowEx.StaticNoBackgroundMoveInputs;
 
-            this.Data.Common.Score = Score.Calculate(this.Data.Common.CurrentSaveSlot ?? ScoreSampleData.T1(), false, this.Data.Common.DeepDungeon);
+            this.Data.Common.Score = Score.Calculate(this.Data.Common.CurrentSaveSlot ?? new(), true, this.Data.Common.DeepDungeon);
 
             var scoreDifference = this.Data.Common.Score - this.PreviousScore;
             if (config.IsFlyTextScoreVisible && this.Data.Common.EnableFlyTextScore && scoreDifference != 0)
@@ -34,9 +34,8 @@ namespace DeepDungeonTracker
             var config = this.Configuration.Score;
             var ui = this.Data.UI;
             ui.Scale = config.Scale;
-            var lineHeight = 30.0f;
             var width = 224.0f;
-            var height = 84.0f + (lineHeight * 1);
+            var height = 84.0f;
 
             ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
             ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Score", Color.White, Align.Center);
