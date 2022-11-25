@@ -1,0 +1,32 @@
+﻿namespace DeepDungeonTracker
+{
+    public enum Coffer
+    {
+        PomanderOfSafety,
+        PomanderOfSight,
+        PomanderOfStrength,
+        PomanderOfSteel,
+        PomanderOfAffluence,
+        PomanderOfFlight,
+        PomanderOfAlteration,
+        PomanderOfPurity,
+        PomanderOfFortune,
+        PomanderOfWitching,
+        PomanderOfSerenity,
+        PomanderOfRage,
+        PomanderOfLust,
+        PomanderOfIntuition,
+        PomanderOfRaising,
+        PomanderOfResolution,
+        PomanderOfFrailty,
+        PomanderOfConcealment,
+        PomanderOfPetrification,
+        InfernoMagicite,
+        CragMagicite,
+        VortexMagicite,
+        ElderMagicite,
+        Aetherpool,
+        Potsherd,
+        Medicine
+    }
+}
