@@ -30,6 +30,7 @@ namespace DeepDungeonTracker
         {
             ushort actorControl = 0;
             ushort actorControlSelf = 0;
+            ushort effect = 0;
             ushort eventStart = 0;
             ushort systemLogMessage = 0;
 
@@ -44,6 +45,8 @@ namespace DeepDungeonTracker
                     actorControl = item.OpCode;
                 else if (item.Name == "ActorControlSelf")
                     actorControlSelf = item.OpCode;
+                else if (item.Name == "Effect")
+                    effect = item.OpCode;
                 else if (item.Name == "EventStart")
                     eventStart = item.OpCode;
                 else if (item.Name == "SystemLogMessage")
@@ -52,15 +55,17 @@ namespace DeepDungeonTracker
                 this.KnownOpCodes.Add(item.OpCode);
             }
 
-            if (actorControl != 0 && actorControlSelf != 0 && eventStart != 0 && systemLogMessage != 0)
+            if (actorControl != 0 && actorControlSelf != 0 && effect != 0 && eventStart != 0 && systemLogMessage != 0)
             {
                 if (configuration.OpCodes.ActorControl != actorControl ||
                     configuration.OpCodes.ActorControlSelf != actorControlSelf ||
+                    configuration.OpCodes.Effect != effect ||
                     configuration.OpCodes.EventStart != eventStart ||
                     configuration.OpCodes.SystemLogMessage != systemLogMessage)
                 {
                     configuration.OpCodes.ActorControl = actorControl;
                     configuration.OpCodes.ActorControlSelf = actorControlSelf;
+                    configuration.OpCodes.Effect = effect;
                     configuration.OpCodes.EventStart = eventStart;
                     configuration.OpCodes.SystemLogMessage = systemLogMessage;
                     configuration.Save();

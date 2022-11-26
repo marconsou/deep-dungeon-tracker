@@ -1,6 +1,5 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using System;
 using System.Threading.Tasks;
 
@@ -17,8 +16,6 @@ namespace DeepDungeonTracker
         private bool IsBronzeCofferOpened { get; set; }
 
         public bool IsSoloSaveSlot { get; private set; }
-
-        private bool IsRegenPotionUsed { get; set; }
 
         public bool EnableFlyTextScore { get; private set; }
 
@@ -57,7 +54,6 @@ namespace DeepDungeonTracker
             this.IsTransferenceInitiated = false;
             this.IsBronzeCofferOpened = false;
             this.IsSoloSaveSlot = true;
-            this.IsRegenPotionUsed = false;
             this.EnableFlyTextScore = false;
             this.DutyStatus = DutyStatus.None;
             this.CurrentSaveSlot?.ContentIdUpdate(0);
@@ -155,28 +151,6 @@ namespace DeepDungeonTracker
                 return;
 
             this.CurrentSaveSlot?.CurrentFloorSet()?.CheckForTimeBonus(this.FloorSetTime.TotalTime);
-        }
-
-        public void CheckForRegenPotionUsage()
-        {
-            var isRegenPotionUsed = false;
-            var regenPotionIds = new uint[] { 20309, 23163 };
-            foreach (var item in regenPotionIds)
-            {
-                unsafe
-                {
-                    if (ActionManager.Instance()->IsRecastTimerActive(ActionType.Item, item))
-                    {
-                        isRegenPotionUsed = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!this.IsRegenPotionUsed && isRegenPotionUsed)
-                this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
-
-            this.IsRegenPotionUsed = isRegenPotionUsed;
         }
 
         public void DeepDungeonUpdate(DataText dataText, ushort territoryType)
@@ -365,6 +339,8 @@ namespace DeepDungeonTracker
                 this.SaveCurrentDeepDungeonData();
             }
         }
+
+        public void RegenPotionConsumed() => this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
 
         public void GoldCofferPomander(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.Coffers.Add((Coffer)(itemId - 1));
 

@@ -34,6 +34,8 @@ namespace DeepDungeonTracker
 
         private Event<(IntPtr, uint)> ActorControlSelf { get; } = new();
 
+        private Event<(IntPtr, uint)> Effect { get; } = new();
+
         private Event<(IntPtr, uint)> EventStart { get; } = new();
 
         private Event<(IntPtr, uint)> SystemLogMessage { get; } = new();
@@ -58,6 +60,7 @@ namespace DeepDungeonTracker
             this.TrapMessage.Add(this.TrapMessageReceived);
             this.ActorControl.Add(this.ActorControlAction);
             this.ActorControlSelf.Add(this.ActorControlSelfAction);
+            this.Effect.Add(this.EffectAction);
             this.EventStart.Add(this.EventStartAction);
             this.SystemLogMessage.Add(this.SystemLogMessageAction);
             this.UnknownDeepDungeonSaveData.Add(this.UnknownDeepDungeonSaveDataAction);
@@ -83,6 +86,7 @@ namespace DeepDungeonTracker
             this.TrapMessage.Remove(this.TrapMessageReceived);
             this.ActorControl.Remove(this.ActorControlAction);
             this.ActorControlSelf.Remove(this.ActorControlSelfAction);
+            this.Effect.Remove(this.EffectAction);
             this.EventStart.Remove(this.EventStartAction);
             this.SystemLogMessage.Remove(this.SystemLogMessageAction);
             this.UnknownDeepDungeonSaveData.Remove(this.UnknownDeepDungeonSaveDataAction);
@@ -102,7 +106,6 @@ namespace DeepDungeonTracker
                 this.CheckForCharacterStats();
                 this.CheckForMapReveal();
                 this.CheckForTimeBonus();
-                this.CheckForRegenPotionUsage();
             }
             else
             {
@@ -147,14 +150,6 @@ namespace DeepDungeonTracker
                 return;
 
             this.Common.CheckForTimeBonus();
-        }
-
-        private void CheckForRegenPotionUsage()
-        {
-            if (this.IsCharacterBusy)
-                return;
-
-            this.Common.CheckForRegenPotionUsage();
         }
 
         public void Login() => this.Common.ResetCharacterData();
@@ -206,6 +201,8 @@ namespace DeepDungeonTracker
                     this.ActorControl.Execute((dataPtr, targetActorId));
                 else if (opCode == opCodes.ActorControlSelf)
                     this.ActorControlSelf.Execute((dataPtr, targetActorId));
+                else if (opCode == opCodes.Effect)
+                    this.Effect.Execute((dataPtr, targetActorId));
                 else if (opCode == opCodes.EventStart)
                     this.EventStart.Execute((dataPtr, targetActorId));
                 else if (opCode == opCodes.SystemLogMessage)
@@ -273,6 +270,15 @@ namespace DeepDungeonTracker
                 else if (type == dutyRecommence)
                     this.Common.StartNextFloor();
             }
+        }
+
+        private void EffectAction((IntPtr, uint) data)
+        {
+            var dataPtr = data.Item1;
+            var id = NetworkData.ExtractNumber(dataPtr, 8, 2);
+            var regenPotionIds = new int[] { 20309, 23163 };
+            if (regenPotionIds.Contains(id))
+                this.Common.RegenPotionConsumed();
         }
 
         private void EventStartAction((IntPtr, uint) data) => this.Common.DutyFailed(NetworkData.ExtractNumber(data.Item1, 8, 2), NetworkData.ExtractNumber(data.Item1, 16, 1));
