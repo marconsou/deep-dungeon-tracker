@@ -9,8 +9,8 @@ namespace DeepDungeonTracker
 
         private static int BaseScore(ScoreData scoreData)
         {
-            var result = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.Duty == 101 ? scoreData.Duty * 250 : 0;
-            if (scoreData.SaveSlot.Maps() >= 2 || (Math.Truncate((scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber) / 10.0) * scoreData.Duty * 250 + result) / scoreData.Duty * 250 != 0)
+            var result = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete ? scoreData.Duty * 250 : 0;
+            if (scoreData.SaveSlot.Maps() >= 2 || (Math.Truncate(scoreData.DistanceFromStartingFloor / 10.0) * scoreData.Duty * 250 + result) / scoreData.Duty * 250 != 0)
                 return 0;
             else
                 return -10;
@@ -21,8 +21,8 @@ namespace DeepDungeonTracker
         private static int FloorScore(ScoreData scoreData)
         {
             var result = 0;
-            result += (430 - ((198 - scoreData.SaveSlot.AetherpoolArm - scoreData.SaveSlot.AetherpoolArmor) * 10)) * (scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber);
-            result += (int)(scoreData.CurrentFloorNumber - (scoreData.StartingFloorNumber + Math.Truncate((scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber) / 10.0))) * 50 * 91;
+            result += (430 - ((198 - scoreData.SaveSlot.AetherpoolArm - scoreData.SaveSlot.AetherpoolArmor) * 10)) * scoreData.DistanceFromStartingFloor;
+            result += (int)(scoreData.CurrentFloorNumber - (scoreData.StartingFloorNumber + Math.Truncate(scoreData.DistanceFromStartingFloor / 10.0))) * 50 * 91;
 
             if (scoreData.SaveSlot.CurrentLevel > 61)
             {
@@ -35,23 +35,23 @@ namespace DeepDungeonTracker
                     result += 50 * scoreData.Duty;
             }
 
-            result += (int)Math.Truncate((scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber) / 10.0) * scoreData.Duty * 300;
-            result += Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.Duty == 101 && (scoreData.SaveSlot.CurrentLevel > 61 ? scoreData.CurrentFloorNumber != 100 : scoreData.CurrentFloorNumber != 200) ? scoreData.Duty * 300 : 0;
+            result += (int)Math.Truncate(scoreData.DistanceFromStartingFloor / 10.0) * scoreData.Duty * 300;
+            result += Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete && (scoreData.SaveSlot.CurrentLevel > 61 ? scoreData.CurrentFloorNumber != 100 : scoreData.CurrentFloorNumber != 200) ? scoreData.Duty * 300 : 0;
 
             if (scoreData.SaveSlot.CurrentLevel > 61)
             {
-                var res1 = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.Duty == 101 ? scoreData.Duty * 300 : 0;
-                if (((Math.Truncate((scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber) / 10.0) * scoreData.Duty * 300 + res1) / (scoreData.Duty * 300)) >= 3 - Math.Truncate(scoreData.StartingFloorNumber / 10.0))
+                var temp1 = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete ? scoreData.Duty * 300 : 0;
+                if (((Math.Truncate((scoreData.DistanceFromStartingFloor) / 10.0) * scoreData.Duty * 300 + temp1) / (scoreData.Duty * 300)) >= 3 - Math.Truncate(scoreData.StartingFloorNumber / 10.0))
                     result += 450 * scoreData.Duty;
 
-                var res2 = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.Duty == 101 ? scoreData.Duty * 300 : 0;
-                if (((Math.Truncate((scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber) / 10.0) * scoreData.Duty * 300 + res2) / scoreData.Duty * 300) >= 1)
+                var temp2 = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete ? scoreData.Duty * 300 : 0;
+                if (((Math.Truncate((scoreData.DistanceFromStartingFloor) / 10.0) * scoreData.Duty * 300 + temp2) / scoreData.Duty * 300) >= 1)
                     result += -50 * scoreData.Duty;
 
-                if (scoreData.CurrentFloorNumber > 60 || (scoreData.CurrentFloorNumber == 60 && scoreData.Duty == 101))
+                if (scoreData.CurrentFloorNumber > 60 || (scoreData.CurrentFloorNumber == 60 && scoreData.IsDutyComplete))
                     result += 50 * scoreData.Duty;
 
-                if (scoreData.CurrentFloorNumber > 70 || (scoreData.CurrentFloorNumber == 70 && scoreData.Duty == 101))
+                if (scoreData.CurrentFloorNumber > 70 || (scoreData.CurrentFloorNumber == 70 && scoreData.IsDutyComplete))
                     result += -50 * scoreData.Duty;
             }
             else
@@ -61,32 +61,32 @@ namespace DeepDungeonTracker
 
                 if (scoreData.StartingFloorNumber == 1)
                 {
-                    if (scoreData.CurrentFloorNumber > 50 || (scoreData.CurrentFloorNumber == 50 && scoreData.Duty == 101))
+                    if (scoreData.CurrentFloorNumber > 50 || (scoreData.CurrentFloorNumber == 50 && scoreData.IsDutyComplete))
                         result += scoreData.Duty * 450;
                 }
 
-                if (scoreData.CurrentFloorNumber > 100 || (scoreData.CurrentFloorNumber == 100 && scoreData.Duty == 101))
+                if (scoreData.CurrentFloorNumber > 100 || (scoreData.CurrentFloorNumber == 100 && scoreData.IsDutyComplete))
                     result += scoreData.Duty * 450;
 
-                if (scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber + 1 == 50 && scoreData.Duty == 101)
+                if (scoreData.TotalReachedFloors == 50 && scoreData.IsDutyComplete)
                     result += -2000;
 
-                if (scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber + 1 == 200 && scoreData.Duty == 101)
+                if (scoreData.TotalReachedFloors == 200 && scoreData.IsDutyComplete)
                     result += -9500 + 3200 * scoreData.Duty;
 
-                if (scoreData.CurrentFloorNumber == 200 && scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber + 1 == 150 && scoreData.Duty == 101)
+                if (scoreData.CurrentFloorNumber == 200 && scoreData.TotalReachedFloors == 150 && scoreData.IsDutyComplete)
                     result += -7000 + 3200 * scoreData.Duty;
             }
 
             if (scoreData.SaveSlot.CurrentLevel > 61)
             {
-                if (scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber + 1 == 30 && scoreData.Duty == 101)
+                if (scoreData.TotalReachedFloors == 30 && scoreData.IsDutyComplete)
                     result += -1000;
             }
 
             if (scoreData.SaveSlot.CurrentLevel < 61)
             {
-                if (scoreData.CurrentFloorNumber > 60 || (scoreData.Duty == 101 && scoreData.CurrentFloorNumber == 60))
+                if (scoreData.CurrentFloorNumber > 60 || (scoreData.IsDutyComplete && scoreData.CurrentFloorNumber == 60))
                 {
                     if (scoreData.StartingFloorNumber == 51)
                     {
@@ -100,7 +100,7 @@ namespace DeepDungeonTracker
                 }
             }
 
-            if (scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber + 1 == 100 && scoreData.Duty == 101)
+            if (scoreData.TotalReachedFloors == 100 && scoreData.IsDutyComplete)
             {
                 result += -4500;
                 if (scoreData.SaveSlot.CurrentLevel > 61)
@@ -117,11 +117,11 @@ namespace DeepDungeonTracker
             if (baseScore == 0)
             {
                 var maps = scoreData.SaveSlot.Maps();
-                if ((scoreData.CurrentFloorNumber - scoreData.StartingFloorNumber + 1) > 10)
+                if (scoreData.TotalReachedFloors > 10)
                     result += scoreData.Duty * maps * 25;
                 else
                 {
-                    if (scoreData.Duty == 101)
+                    if (scoreData.IsDutyComplete)
                         result += scoreData.Duty * maps * 25;
                     else
                         result += scoreData.Duty * (maps - 2) * 25;
