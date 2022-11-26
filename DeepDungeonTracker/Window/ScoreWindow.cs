@@ -10,9 +10,41 @@ namespace DeepDungeonTracker
 
         private int PreviousScore { get; set; }
 
+        private int GradualScore { get; set; }
+
+        private DateTime GradualScoreTime { get; set; }
+
         public ScoreWindow(string id, Configuration configuration, Data data) : base(id, configuration) => this.Data = data;
 
         public void Dispose() { }
+
+        private void GradualScoreUpdate()
+        {
+            if (DateTime.Now > this.GradualScoreTime)
+            {
+                var score = this.Data.Common.Score;
+
+                this.GradualScoreTime = DateTime.Now + new TimeSpan(0, 0, 0, 0, 25);
+
+                var gradualValue = (int)(Math.Abs(score - this.GradualScore) * 0.20);
+
+                if (this.GradualScore < score)
+                {
+                    this.GradualScore += gradualValue;
+                    if (this.GradualScore > score)
+                        this.GradualScore = score;
+                }
+                else if (this.GradualScore > score)
+                {
+                    this.GradualScore -= gradualValue;
+                    if (this.GradualScore < score)
+                        this.GradualScore = score;
+                }
+
+                if (gradualValue == 0)
+                    this.GradualScore = score;
+            }
+        }
 
         public override void PreOpenCheck()
         {
@@ -27,6 +59,8 @@ namespace DeepDungeonTracker
                 Service.FlyTextGui.AddFlyText(FlyTextKind.Named, 0, 0, 0, $"{(scoreDifference > 0 ? "+" : string.Empty)}{scoreDifference}pts", string.Empty, ImGui.ColorConvertFloat4ToU32(scoreDifference > 0 ? config.FlyTextScoreColor : Color.Red), 0);
 
             this.PreviousScore = this.Data.Common.Score;
+
+            this.GradualScoreUpdate();
         }
 
         public override void Draw()
@@ -44,7 +78,7 @@ namespace DeepDungeonTracker
             var x = width - 14.0f;
             var y = 70.0f;
 
-            ui.DrawNumber(x, y, this.Data.Common.Score, true, Color.White, Align.Right);
+            ui.DrawNumber(x, y, this.GradualScore, true, Color.White, Align.Right);
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }
     }
