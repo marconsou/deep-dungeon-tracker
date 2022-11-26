@@ -22,12 +22,9 @@ namespace DeepDungeonTracker
         {
             if (DateTime.Now > this.GradualScoreTime)
             {
-                var score = this.Data.Common.Score;
-
                 this.GradualScoreTime = DateTime.Now + new TimeSpan(0, 0, 0, 0, 25);
-
+                var score = this.Data.Common.Score;
                 var gradualValue = (int)(Math.Abs(score - this.GradualScore) * 0.20);
-
                 if (this.GradualScore < score)
                 {
                     this.GradualScore += gradualValue;
@@ -40,7 +37,6 @@ namespace DeepDungeonTracker
                     if (this.GradualScore < score)
                         this.GradualScore = score;
                 }
-
                 if (gradualValue == 0)
                     this.GradualScore = score;
             }

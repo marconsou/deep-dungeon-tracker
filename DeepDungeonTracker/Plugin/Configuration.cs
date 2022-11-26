@@ -116,6 +116,8 @@ namespace DeepDungeonTracker
 
             public ushort ActorControlSelf { get; set; }
 
+            public ushort Effect { get; set; }
+
             public ushort EventStart { get; set; }
 
             public ushort SystemLogMessage { get; set; }

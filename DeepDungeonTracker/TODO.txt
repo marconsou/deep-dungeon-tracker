@@ -12,7 +12,8 @@ Test other languages.
 [Fixed?] HoH boss Map = true.
 [Fixed?] Disable some features for party (Windows is hidden but calculations is still done).
 [Fixed?] Time bonus bug like Map when entering DD.
-[Fixed?] Starting a non-fresh save slot with no save.json.
+[Fixed?] Starting a non-fresh save slot with no save .json.
 [wait for next .net?] Map = false clear MapData.
 Reduce Draw Commands.
 Windows default pos.?
+Windows simplified?
