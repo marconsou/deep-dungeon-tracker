@@ -16,4 +16,4 @@ Test other languages.
 [wait for next .net?] Map = false clear MapData.
 Reduce Draw Commands.
 Windows default pos.?
-Windows simplified?
+Windows simplified mode?

@@ -70,8 +70,9 @@ namespace DeepDungeonTracker
             {
                 this.FloorSetTime.Pause();
                 this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(this.FloorSetTime.CurrentFloorTime);
-                this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.Score - this.CurrentSaveSlot.Score());
             }
+            else
+                this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate((this.CurrentSaveSlot?.CurrentFloor()?.Score ?? 0) + this.Score - (this.CurrentSaveSlot?.Score() ?? 0));
 
             this.SaveCurrentDeepDungeonData();
         }
@@ -92,9 +93,15 @@ namespace DeepDungeonTracker
 
         private void LoadLastDeepDungeonData()
         {
-            var data = this.SaveSlotSelection.GetSelection(this.CharacterKey);
+            var characterKey = this.CharacterKey;
+            if (characterKey.Length <= 3)
+                return;
+
+            var data = this.SaveSlotSelection.GetSelection(characterKey);
             if (data.DeepDungeon == this.DeepDungeon)
                 this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName());
+            else
+                this.CurrentSaveSlot = new();
         }
 
         public void CheckForSaveSlotSelection()
@@ -155,6 +162,7 @@ namespace DeepDungeonTracker
 
         public void DeepDungeonUpdate(DataText dataText, ushort territoryType)
         {
+            var deepDungeon = this.DeepDungeon;
             if (dataText.IsThePalaceOfTheDeadRegion(territoryType))
                 this.DeepDungeon = DeepDungeon.ThePalaceOfTheDead;
             else if (dataText.IsHeavenOnHighRegion(territoryType))
@@ -163,6 +171,9 @@ namespace DeepDungeonTracker
                 this.DeepDungeon = DeepDungeon.EurekaOrthos;
             else
                 this.DeepDungeon = DeepDungeon.None;
+
+            if (this.DeepDungeon != DeepDungeon.None && this.DeepDungeon != deepDungeon)
+                this.LoadLastDeepDungeonData();
         }
 
         public TimeSpan GetRespawnTime()
