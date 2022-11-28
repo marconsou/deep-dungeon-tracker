@@ -1,19 +1,13 @@
-﻿Configuration size constraints, Statistics needs scroll.
-Reset button config.
-Dalamud global scale test (for Config menu).
-Move window only on title bar.
-Autosize Statistics window.
+﻿Reset button config.
+Other languages test.
+Windows default position test.
+Windows simplified mode.
 Additional commands to show/hide specific windows.
 Save backup/Option to load a file from path.
 NodeUtility.CreateTextNode.Malloc.
-Load current Save Slot: Coffer/Enchantment/Trap reference, everything else copy.
-Tooltip/Info about kill/map/aetherpool/potsherds (from coffer)/Score is Duty Complete.
-Test other languages.
-[Fixed?] HoH boss Map = true.
-[Fixed?] Disable some features for party (Windows is hidden but calculations is still done).
-[Fixed?] Time bonus bug like Map when entering DD.
-[Fixed?] Starting a non-fresh save slot with no save .json.
-[wait for next .net?] Map = false clear MapData.
 Reduce Draw Commands.
-Windows default pos.?
-Windows simplified mode?
+[wait for next .net?] Map = false clear MapData.
+[Fixed?] Disable some features for party (Windows is hidden but calculations is still done).
+[Fixed?] Time bonus icon bug (blinking) when entering DD.
+Tooltip/Info about kill/map/aetherpool/potsherds (from coffer)/Score is Duty Complete (Information Tab).
+Show calculated values when All Floors selected.
