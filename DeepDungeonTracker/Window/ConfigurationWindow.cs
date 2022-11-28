@@ -164,27 +164,34 @@ namespace DeepDungeonTracker
                 if (this.Combo(statistics.FloorSetStatistics, x => statistics.FloorSetStatistics = x, "Floors to Load").Item1)
                     statistics.DataUpdate();
 
-                ImGui.NewLine();
-                this.Button(() => statistics.Load(this.Data.Common.CurrentSaveSlot), "Load current Save Slot", false);
-
                 foreach (var key in saveSlotSelection.Keys)
                 {
                     ImGui.NewLine();
                     ImGui.Text($"{key.Replace("-", "@")}");
+                    saveSlotSelection.TryGetValue(key, out var SaveSlotSelectionData);
                     foreach (var deepDungeon in Enum.GetValues<DeepDungeon>())
                     {
                         if (deepDungeon == DeepDungeon.None)
                             continue;
 
                         ImGui.Text($"{deepDungeon.GetDescription()}:");
-                        for (var slotNumber = 1; slotNumber <= 2; slotNumber++)
+                        for (var saveSlotNumber = 1; saveSlotNumber <= 2; saveSlotNumber++)
                         {
-                            var fileName = DataCommon.GetSaveSlotFileName(key, new(deepDungeon, slotNumber));
                             ImGui.SameLine();
-                            if (LocalStream.Exists(ServiceUtility.ConfigDirectory, fileName))
-                                this.SmallButton(() => statistics.Load(fileName), $"Save Slot {slotNumber}##{fileName}", false);
+                            var fileName = DataCommon.GetSaveSlotFileName(key, new(deepDungeon, saveSlotNumber));
+                            var saveSlotFileExists = LocalStream.Exists(ServiceUtility.ConfigDirectory, fileName);
+                            if ((!this.Data.IsInsideDeepDungeon && saveSlotFileExists) || (this.Data.IsInsideDeepDungeon && this.Data.Common.GetSaveSlotFileName(SaveSlotSelectionData ?? new()) == fileName))
+                            {
+                                this.SmallButton(() =>
+                                {
+                                    if (!this.Data.IsInsideDeepDungeon)
+                                        this.Data.Common.LoadDeepDungeonData(key, new(deepDungeon, saveSlotNumber));
+
+                                    statistics.Load(this.Data.Common.CurrentSaveSlot);
+                                }, $"Save Slot {saveSlotNumber}##{fileName}", false);
+                            }
                             else
-                                ImGui.Text($"Save Slot {slotNumber}");
+                                ImGui.TextColored((this.Data.IsInsideDeepDungeon && saveSlotFileExists) ? Color.Red : Color.Gray, $"Save Slot {saveSlotNumber}");
                         }
                     }
                 }
@@ -192,7 +199,7 @@ namespace DeepDungeonTracker
             else
             {
                 ImGui.NewLine();
-                ImGui.Text($"No save slots!");
+                ImGui.TextColored(Color.Gray, "No save slots!");
             }
         }
     }
