@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -27,6 +28,11 @@ namespace DeepDungeonTracker
 
         public void Update(int x, int y, int? id, FloorType floorType)
         {
+            var min = 0;
+            var max = MapData.GetLength() - 1;
+            x = Math.Clamp(x, min, max);
+            y = Math.Clamp(y, min, max);
+
             this.RoomIds[MapData.GetIndex(x, y)] = id;
             this.FloorType = floorType;
         }
