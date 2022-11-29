@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -14,7 +15,14 @@ namespace DeepDungeonTracker
 
         public static int GetLength() => 5;
 
-        private static int GetIndex(int x, int y) => x + (y * MapData.GetLength());
+        private static int GetIndex(int x, int y)
+        {
+            var min = 0;
+            var max = MapData.GetLength() - 1;
+            x = Math.Clamp(x, min, max);
+            y = Math.Clamp(y, min, max);
+            return x + (y * MapData.GetLength());
+        }
 
         public int? GetId(int x, int y) => this.RoomIds[MapData.GetIndex(x, y)];
 
