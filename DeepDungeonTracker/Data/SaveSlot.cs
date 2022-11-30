@@ -59,6 +59,8 @@ namespace DeepDungeonTracker
 
         public int TimeBonuses() => this.FloorSets.Sum(x => x.TimeBonus ? 1 : 0);
 
+        public TimeSpan Time() => new(this.FloorSets.Sum(x => x.Time().Ticks));
+
         public int Score() => this.FloorSets.Sum(x => x.Score());
 
         [JsonInclude]

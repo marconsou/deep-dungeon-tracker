@@ -100,8 +100,8 @@ namespace DeepDungeonTracker
                 this.EnchantmentsTotal = this.FloorSet?.Floors.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
                 this.TrapsTotal = this.FloorSet?.Floors.SelectMany(x => x.Traps).GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count()));
 
-                this.LastFloorTime = new TimeSpan(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
-                this.TotalTime = new TimeSpan(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);
+                this.LastFloorTime = new(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
+                this.TotalTime = new(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);
 
                 this.LastFloorScore = this.FloorSet?.LastFloor()?.Score ?? 0;
                 this.TotalScore = this.FloorSet?.Score() ?? 0;
@@ -118,8 +118,8 @@ namespace DeepDungeonTracker
                 this.EnchantmentsTotal = floors?.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
                 this.TrapsTotal = floors?.SelectMany(x => x.Traps).GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count()));
 
-                this.LastFloorTime = new TimeSpan(lastFloors?.Sum(x => x.Time.Ticks) ?? default);
-                this.TotalTime = new TimeSpan(floors?.Sum(x => x.Time.Ticks) ?? default);
+                this.LastFloorTime = new(lastFloors?.Sum(x => x.Time.Ticks) ?? default);
+                this.TotalTime = this.SaveSlot?.Time() ?? default;
 
                 this.LastFloorScore = lastFloors?.Sum(x => x.Score) ?? 0;
                 this.TotalScore = this.SaveSlot?.Score() ?? 0;

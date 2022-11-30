@@ -61,13 +61,13 @@ namespace DeepDungeonTracker
 
                     DrawTextLine(x, y, $"{(number.HasValue ? $"{number:D3}" : " ??? ")}:", showValue ? floorTime : null, Color.White, !isCurrentFloor ? config.PreviousFloorTimeColor : config.CurrentFloorTimeColor);
 
-                    if (i % 2 != 0)
+                    if (i == 4)
                     {
-                        y += lineHeight;
-                        x = left;
+                        x = (width / 2.0f);
+                        y = top;
                     }
                     else
-                        x = (width / 2.0f);
+                        y += lineHeight;
 
                     if (number.HasValue)
                         number++;
