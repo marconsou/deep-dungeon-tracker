@@ -61,13 +61,13 @@ namespace DeepDungeonTracker
 
                     DrawTextLine(x, y, $"{(number.HasValue ? $"{number:D3}" : " ??? ")}:", showValue ? floorTime : null, Color.White, !isCurrentFloor ? config.PreviousFloorTimeColor : config.CurrentFloorTimeColor);
 
-                    if (i % 2 != 0)
+                    if (i == 4)
                     {
-                        y += lineHeight;
-                        x = left;
+                        x = (width / 2.0f);
+                        y = top;
                     }
                     else
-                        x = (width / 2.0f);
+                        y += lineHeight;
 
                     if (number.HasValue)
                         number++;
@@ -90,7 +90,7 @@ namespace DeepDungeonTracker
 
             var respawnTime = dataCommon.GetRespawnTime();
             var value = respawnTime - TimeSpan.FromTicks((currentFloorTime.Ticks) % (respawnTime.Ticks + 1));
-            DrawTextLine(x, y, "Respawn:", (!currentFloor?.IsLastFloor() ?? false) && showValue ? value : null, Color.White, config.RespawnTimeColor);
+            DrawTextLine(x, y, "Respawn:", (!currentFloor?.IsLastFloor() ?? false) && this.Data.IsInsideDeepDungeon ? value : null, Color.White, config.RespawnTimeColor);
 
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }

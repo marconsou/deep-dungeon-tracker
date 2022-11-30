@@ -76,7 +76,7 @@ namespace DeepDungeonTracker
                 if (glyph == null)
                     continue;
 
-                advance += ((!char.IsWhiteSpace(item) ? glyph.PlaneBounds!.Left : 0.0f) + glyph.Advance) * atlasSize;
+                advance += glyph.Advance * atlasSize;
             }
             return new((float)advance, (float)maxHeight);
         }
