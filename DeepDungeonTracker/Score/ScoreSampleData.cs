@@ -8,7 +8,7 @@ namespace DeepDungeonTracker
 
         public static SaveSlot T1()
         {
-            ScoreSampleData.SaveSlot = new SaveSlot(currentLevel: 60);
+            ScoreSampleData.SaveSlot = new(currentLevel: 60);
             ScoreSampleData.SaveSlot.AetherpoolUpdate(99, 99);
 
             ScoreSampleData.Floors(100, 0, 10);

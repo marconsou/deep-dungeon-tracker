@@ -108,6 +108,10 @@ namespace DeepDungeonTracker
         public class StatisticsTab
         {
             public float Scale { get; set; } = 1.0f;
+
+            public Vector4 TimeColor { get; set; } = Color.Gold;
+
+            public Vector4 ScoreColor { get; set; } = Color.Green;
         }
 
         public class OpCodeValues

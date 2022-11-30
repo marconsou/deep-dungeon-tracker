@@ -6,13 +6,15 @@ namespace DeepDungeonTracker
 {
     public class FloorSetTime
     {
+        private static TimeSpan InstanceTime => new(0, 59, 59);
+
         private DateTime? StartTime { get; set; }
 
         private DateTime? PauseTime { get; set; }
 
         public ICollection<TimeSpan> PreviousFloorsTime { get; } = new List<TimeSpan>();
 
-        public TimeSpan TotalTime => (this.PauseTime ?? DateTime.Now) - (this.StartTime ?? DateTime.Now);
+        public TimeSpan TotalTime => new(Math.Min(((this.PauseTime ?? DateTime.Now) - (this.StartTime ?? DateTime.Now)).Ticks, FloorSetTime.InstanceTime.Ticks));
 
         public TimeSpan CurrentFloorTime => new((this.TotalTime - new TimeSpan(this.PreviousFloorsTime.Sum(x => x.Ticks))).Ticks / 10000000 * 10000000);
 
