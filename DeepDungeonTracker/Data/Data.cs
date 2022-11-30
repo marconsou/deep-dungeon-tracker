@@ -149,7 +149,7 @@ namespace DeepDungeonTracker
             if (this.IsCharacterBusy)
                 return;
 
-            this.Common.CheckForTimeBonus();
+            this.Common.CheckForTimeBonus(this.Text);
         }
 
         public void Login() => this.Common.ResetCharacterData();
