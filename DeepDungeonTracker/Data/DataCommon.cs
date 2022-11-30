@@ -1,6 +1,9 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+﻿using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility;
 using System;
+using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeepDungeonTracker
@@ -18,6 +21,8 @@ namespace DeepDungeonTracker
         public bool IsSoloSaveSlot { get; private set; }
 
         public bool EnableFlyTextScore { get; private set; }
+
+        private bool SkipTimeBonusCheck { get; set; }
 
         public int Score { get; set; }
 
@@ -55,6 +60,7 @@ namespace DeepDungeonTracker
             this.IsBronzeCofferOpened = false;
             this.IsSoloSaveSlot = true;
             this.EnableFlyTextScore = false;
+            this.SkipTimeBonusCheck = false;
             this.DutyStatus = DutyStatus.None;
             this.CurrentSaveSlot?.ContentIdUpdate(0);
         }
@@ -155,11 +161,24 @@ namespace DeepDungeonTracker
                 currentFloor?.MapFullyRevealed();
         }
 
-        public void CheckForTimeBonus()
+        public void CheckForTimeBonus(DataText dataText)
         {
-            if (this.DutyStatus != DutyStatus.None)
+            if (this.DutyStatus != DutyStatus.None || this.SkipTimeBonusCheck)
                 return;
 
+            if (this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false)
+            {
+                var enemies = Service.ObjectTable.Where(x => x.ObjectKind == ObjectKind.BattleNpc && ((x as Character)?.IsDead ?? false) && ((x as Character)?.StatusFlags.HasFlag(StatusFlags.Hostile) ?? false));
+                foreach (var enemy in enemies)
+                {
+                    var character = enemy as Character;
+                    if (dataText.IsBoss(character?.Name.ToString() ?? string.Empty).Item1)
+                    {
+                        this.SkipTimeBonusCheck = true;
+                        return;
+                    }
+                }
+            }
             this.CurrentSaveSlot?.CurrentFloorSet()?.CheckForTimeBonus(this.FloorSetTime.TotalTime);
         }
 
