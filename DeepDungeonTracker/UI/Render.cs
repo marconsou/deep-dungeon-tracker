@@ -20,9 +20,6 @@ namespace DeepDungeonTracker
 
         public void DrawText(Font font, float x, float y, string text, Vector4 color, Align align, bool drawShadow)
         {
-            if (drawShadow)
-                this.DrawText(font, x + 1.0f, y + 1.0f, text, Color.Black, align, false);
-
             var fontLayout = font.FontLayout;
             var textSize = (align != Align.Left) ? Render.GetTextSize(fontLayout, text) : Vector2.Zero;
 
