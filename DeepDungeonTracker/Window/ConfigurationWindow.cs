@@ -143,13 +143,17 @@ namespace DeepDungeonTracker
             this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
             WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");
             ImGui.SameLine();
-            this.ColorEdit4(config.FlyTextScoreColor, x => config.FlyTextScoreColor = x, "Fly Text Score (experimental)");
+            this.ColorEdit4(config.FlyTextScoreColor, x => config.FlyTextScoreColor = x, "Fly Text Score");
         }
 
         private void Statistics()
         {
             var config = this.Configuration.Statistics;
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
+            this.ColorEdit4(config.TimeColor, x => config.TimeColor = x, "Floor Time");
+            ImGui.SameLine();
+            this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
+            ImGui.NewLine();
 
             var saveSlotSelection = this.Data.Common.SaveSlotSelection.Data;
             if (saveSlotSelection?.Count > 0)
@@ -197,10 +201,7 @@ namespace DeepDungeonTracker
                 }
             }
             else
-            {
-                ImGui.NewLine();
                 ImGui.TextColored(Color.Gray, "No save slots!");
-            }
         }
     }
 }

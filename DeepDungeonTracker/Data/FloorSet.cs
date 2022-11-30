@@ -38,6 +38,8 @@ namespace DeepDungeonTracker
 
         public int Maps() => this.Floors.Sum(x => x.Map ? 1 : 0);
 
+        public TimeSpan Time() => new(this.Floors.Sum(x => x.Time.Ticks));
+
         public int Score() => this.Floors.Sum(x => x.Score);
 
         public Floor? FirstFloor() => this.Floors.FirstOrDefault();
