@@ -165,7 +165,7 @@ namespace DeepDungeonTracker
                 this.ArrowButton(statistics.FloorSetStatisticsNext, "##Down", ImGuiDir.Down, false);
                 ImGui.SameLine();
 
-                if (this.Combo(statistics.FloorSetStatistics, x => statistics.FloorSetStatistics = x, "Floors to Load").Item1)
+                if (this.Combo(statistics.FloorSetStatistics, x => statistics.FloorSetStatistics = x, "##FloorSetStatistics").Item1)
                     statistics.DataUpdate();
 
                 foreach (var key in saveSlotSelection.Keys)

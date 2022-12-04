@@ -24,8 +24,6 @@ namespace DeepDungeonTracker
 
         private bool SkipTimeBonusCheck { get; set; }
 
-        public int Score { get; set; }
-
         public DeepDungeon DeepDungeon { get; private set; }
 
         private DutyStatus DutyStatus { get; set; }
@@ -38,6 +36,8 @@ namespace DeepDungeonTracker
 
         public FloorEffect FloorEffect { get; private set; } = new();
 
+        public Score? Score { get; private set; }
+
         private string CharacterKey => $"{this.CharacterName}-{this.ServerName}";
 
         public bool IsInDeepDungeonRegion => this.DeepDungeon != DeepDungeon.None;
@@ -45,6 +45,8 @@ namespace DeepDungeonTracker
         public int ContentId => this.CurrentSaveSlot?.ContentId ?? 0;
 
         public bool IsLastFloor => this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false;
+
+        public int TotalScore => this.Score?.TotalScore ?? 0;
 
         public void ResetCharacterData()
         {
@@ -76,10 +78,10 @@ namespace DeepDungeonTracker
             {
                 this.FloorSetTime.Pause();
                 this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(this.FloorSetTime.CurrentFloorTime);
-                this.ScoreUpdate();
+                this.FloorScoreUpdate();
             }
             else
-                this.ScoreUpdate(this.CurrentSaveSlot?.CurrentFloor()?.Score);
+                this.FloorScoreUpdate(this.CurrentSaveSlot?.CurrentFloor()?.Score);
 
             this.SaveCurrentDeepDungeonData();
         }
@@ -293,13 +295,19 @@ namespace DeepDungeonTracker
             }
         }
 
-        private void ScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.Score - this.CurrentSaveSlot.Score() + (additional ?? 0));
+        private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
+
+        public void CalculateScore()
+        {
+            this.Score = ScoreCreator.Create(this.CurrentSaveSlot ?? new(), true);
+            this.Score?.TotalScoreCalculation(ServiceUtility.IsSolo);
+        }
 
         public void StartFirstFloor(int contentId)
         {
             void CreateSaveSlot(int floorNumber)
             {
-                this.CurrentSaveSlot = new(contentId);
+                this.CurrentSaveSlot = new(this.DeepDungeon, contentId);
                 this.CurrentSaveSlot.AddFloorSet(floorNumber);
             }
 
@@ -339,7 +347,7 @@ namespace DeepDungeonTracker
                 this.IsTransferenceInitiated = false;
                 var time = this.FloorSetTime.AddFloor();
                 this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(time);
-                this.ScoreUpdate();
+                this.FloorScoreUpdate();
                 this.CurrentSaveSlot?.AddFloor();
 
                 var floorEffect = new FloorEffect
@@ -357,7 +365,7 @@ namespace DeepDungeonTracker
             this.DutyStatus = DutyStatus.Complete;
             this.FloorSetTime.Pause();
             this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(this.FloorSetTime.CurrentFloorTime);
-            this.ScoreUpdate();
+            this.FloorScoreUpdate();
             this.SaveCurrentDeepDungeonData();
         }
 
@@ -369,7 +377,7 @@ namespace DeepDungeonTracker
                 this.DutyStatus = DutyStatus.Failed;
                 this.FloorSetTime.Pause();
                 this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(this.FloorSetTime.CurrentFloorTime);
-                this.ScoreUpdate();
+                this.FloorScoreUpdate();
                 this.CurrentSaveSlot?.CurrentFloorSet()?.NoTimeBonus();
                 this.SaveCurrentDeepDungeonData();
             }

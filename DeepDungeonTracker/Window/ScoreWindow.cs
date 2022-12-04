@@ -18,12 +18,30 @@ namespace DeepDungeonTracker
 
         public void Dispose() { }
 
+        private void OptionsUpdate()
+        {
+            var config = this.Configuration.Score;
+            this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon);
+            this.Flags = config.Lock ? WindowEx.StaticNoBackground : WindowEx.StaticNoBackgroundMoveInputs;
+        }
+
+        private void ScoreFlyText()
+        {
+            var config = this.Configuration.Score;
+
+            var scoreDifference = this.Data.Common.TotalScore - this.PreviousScore;
+            if (config.IsFlyTextScoreVisible && this.Data.Common.EnableFlyTextScore && scoreDifference != 0)
+                Service.FlyTextGui.AddFlyText(FlyTextKind.Named, 0, 0, 0, $"{(scoreDifference > 0 ? "+" : string.Empty)}{scoreDifference}pts", string.Empty, ImGui.ColorConvertFloat4ToU32(scoreDifference > 0 ? config.FlyTextScoreColor : Color.Red), 0);
+
+            this.PreviousScore = this.Data.Common.TotalScore;
+        }
+
         private void GradualScoreUpdate()
         {
             if (DateTime.Now > this.GradualScoreTime)
             {
                 this.GradualScoreTime = DateTime.Now + new TimeSpan(0, 0, 0, 0, 25);
-                var score = this.Data.Common.Score;
+                var score = this.Data.Common.TotalScore;
                 var gradualValue = (int)(Math.Abs(score - this.GradualScore) * 0.20);
                 if (this.GradualScore < score)
                 {
@@ -44,18 +62,9 @@ namespace DeepDungeonTracker
 
         public override void PreOpenCheck()
         {
-            var config = this.Configuration.Score;
-            this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon);
-            this.Flags = config.Lock ? WindowEx.StaticNoBackground : WindowEx.StaticNoBackgroundMoveInputs;
-
-            this.Data.Common.Score = Score.Calculate(this.Data.Common.CurrentSaveSlot ?? new(), true, this.Data.Common.DeepDungeon);
-
-            var scoreDifference = this.Data.Common.Score - this.PreviousScore;
-            if (config.IsFlyTextScoreVisible && this.Data.Common.EnableFlyTextScore && scoreDifference != 0)
-                Service.FlyTextGui.AddFlyText(FlyTextKind.Named, 0, 0, 0, $"{(scoreDifference > 0 ? "+" : string.Empty)}{scoreDifference}pts", string.Empty, ImGui.ColorConvertFloat4ToU32(scoreDifference > 0 ? config.FlyTextScoreColor : Color.Red), 0);
-
-            this.PreviousScore = this.Data.Common.Score;
-
+            this.OptionsUpdate();
+            this.Data.Common.CalculateScore();
+            this.ScoreFlyText();
             this.GradualScoreUpdate();
         }
 

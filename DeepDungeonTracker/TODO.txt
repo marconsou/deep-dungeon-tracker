@@ -5,9 +5,10 @@ Windows simplified mode.
 Additional commands to show/hide specific windows.
 Save backup/Option to load a file from path.
 NodeUtility.CreateTextNode.Malloc.
-Reduce Draw Commands.
 [wait for next .net?] Map = false clear MapData.
 [Fixed?] Disable some features for party (Windows is hidden but calculations is still done).
 [Fixed?] Time bonus icon bug (blinking) when entering DD.
 Tooltip/Info about kill/map/aetherpool/potsherds (from coffer)/Score is Duty Complete (Information Tab).
-Show calculated values when All Floors selected.
+Reduce Draw Commands.
+Score Refactor.
+Include completion bonus to the score (Option)
