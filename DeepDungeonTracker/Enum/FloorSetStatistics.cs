@@ -4,8 +4,8 @@ namespace DeepDungeonTracker
 {
     public enum FloorSetStatistics
     {
-        [Description("All Floors")]
-        AllFloors,
+        [Description("Summary")]
+        Summary,
         [Description("1-10")]
         From001To010,
         [Description("11-20")]
