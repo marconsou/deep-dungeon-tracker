@@ -11,4 +11,4 @@ NodeUtility.CreateTextNode.Malloc.
 Tooltip/Info about kill/map/aetherpool/potsherds (from coffer)/Score is Duty Complete (Information Tab).
 Reduce Draw Commands.
 Score Refactor.
-Include completion bonus to the score (Option)
+Include floor completion (Option)
