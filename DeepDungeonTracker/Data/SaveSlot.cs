@@ -8,6 +8,9 @@ namespace DeepDungeonTracker
     public class SaveSlot
     {
         [JsonInclude]
+        public DeepDungeon DeepDungeon { get; private set; }
+
+        [JsonInclude]
         public int ContentId { get; private set; }
 
         [JsonInclude]
@@ -25,8 +28,9 @@ namespace DeepDungeonTracker
         [JsonInclude]
         public int KOs { get { return this._KOs; } private set { this._KOs = Math.Min(value, 99); } }
 
-        public SaveSlot(int contentId = 0, int currentLevel = 0)
+        public SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, int currentLevel = 0)
         {
+            this.DeepDungeon = deepDungeon;
             this.ContentId = contentId;
             this.CurrentLevel = currentLevel;
         }

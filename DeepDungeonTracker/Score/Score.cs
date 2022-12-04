@@ -3,226 +3,176 @@ using System.Linq;
 
 namespace DeepDungeonTracker
 {
-    public static class Score
+    public abstract class Score
     {
-        private static bool ShowLogOnce { get; set; }
+        public SaveSlot SaveSlot { get; }
 
-        private static int BaseScore(ScoreData scoreData)
+        protected int Duty { get; }
+
+        public int StartingFloorNumber { get; }
+
+        public int CurrentFloorNumber { get; }
+
+        protected int DistanceFromStartingFloor { get; }
+
+        public int TotalReachedFloors { get; }
+
+        public int BaseScore { get; private set; }
+
+        public int CharacterScore { get; private set; }
+
+        public int FloorScore { get; private set; }
+
+        public int MapScore { get; private set; }
+
+        public int CofferScore { get; private set; }
+
+        public int NPCScore { get; private set; }
+
+        public int MimicgoraScore { get; private set; }
+
+        public int EnchantmentScore { get; private set; }
+
+        public int TrapScore { get; private set; }
+
+        public int TimeBonusScore { get; private set; }
+
+        public int DeathScore { get; private set; }
+
+        public int NonKillScore { get; private set; }
+
+        public int KillScore { get; private set; }
+
+        public int TotalScore { get; private set; }
+
+        private int DutyFailed { get; }
+
+        private static int DutyComplete => 101;
+
+        public bool IsDutyComplete => this.Duty == DutyComplete;
+
+        public Score(SaveSlot saveSlot, bool isDutyComplete)
         {
-            var result = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete ? scoreData.Duty * 250 : 0;
-            if (scoreData.SaveSlot.Maps() >= 2 || (Math.Truncate(scoreData.DistanceFromStartingFloor / 10.0) * scoreData.Duty * 250 + result) / scoreData.Duty * 250 != 0)
-                return 0;
-            else
-                return -10;
+            this.SaveSlot = saveSlot;
+            this.DutyFailed = Score.DutyComplete - ((saveSlot.KOs + 1) * 10);
+            this.Duty = isDutyComplete ? Score.DutyComplete : this.DutyFailed;
+            this.StartingFloorNumber = saveSlot.StartingFloorNumber();
+            this.CurrentFloorNumber = saveSlot.CurrentFloorNumber();
+            this.DistanceFromStartingFloor = this.CurrentFloorNumber - this.StartingFloorNumber;
+            this.TotalReachedFloors = this.DistanceFromStartingFloor + 1;
         }
 
-        private static int CharacterScore(ScoreData scoreData) => (scoreData.SaveSlot.AetherpoolArm + scoreData.SaveSlot.AetherpoolArmor) * 10 + scoreData.SaveSlot.CurrentLevel * 500;
-
-        private static int FloorScore(ScoreData scoreData)
+        private void BaseScoreCalculation()
         {
-            var result = 0;
-            result += (430 - ((198 - scoreData.SaveSlot.AetherpoolArm - scoreData.SaveSlot.AetherpoolArmor) * 10)) * scoreData.DistanceFromStartingFloor;
-            result += (int)(scoreData.CurrentFloorNumber - (scoreData.StartingFloorNumber + Math.Truncate(scoreData.DistanceFromStartingFloor / 10.0))) * 50 * 91;
-
-            if (scoreData.SaveSlot.CurrentLevel > 61)
-            {
-                if (scoreData.CurrentFloorNumber == 100)
-                    result += 50 * scoreData.Duty;
-            }
+            var result = Math.Truncate(this.CurrentFloorNumber / 10.0) == (this.CurrentFloorNumber / 10.0) && this.IsDutyComplete ? this.Duty * 250 : 0;
+            if (this.SaveSlot.Maps() >= 2 || (Math.Truncate(this.DistanceFromStartingFloor / 10.0) * this.Duty * 250 + result) / this.Duty * 250 != 0)
+                this.BaseScore = 0;
             else
-            {
-                if (scoreData.CurrentFloorNumber == 200)
-                    result += 50 * scoreData.Duty;
-            }
-
-            result += (int)Math.Truncate(scoreData.DistanceFromStartingFloor / 10.0) * scoreData.Duty * 300;
-            result += Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete && (scoreData.SaveSlot.CurrentLevel > 61 ? scoreData.CurrentFloorNumber != 100 : scoreData.CurrentFloorNumber != 200) ? scoreData.Duty * 300 : 0;
-
-            if (scoreData.SaveSlot.CurrentLevel > 61)
-            {
-                var temp1 = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete ? scoreData.Duty * 300 : 0;
-                if (((Math.Truncate((scoreData.DistanceFromStartingFloor) / 10.0) * scoreData.Duty * 300 + temp1) / (scoreData.Duty * 300)) >= 3 - Math.Truncate(scoreData.StartingFloorNumber / 10.0))
-                    result += 450 * scoreData.Duty;
-
-                var temp2 = Math.Truncate(scoreData.CurrentFloorNumber / 10.0) == (scoreData.CurrentFloorNumber / 10.0) && scoreData.IsDutyComplete ? scoreData.Duty * 300 : 0;
-                if (((Math.Truncate((scoreData.DistanceFromStartingFloor) / 10.0) * scoreData.Duty * 300 + temp2) / scoreData.Duty * 300) >= 1)
-                    result += -50 * scoreData.Duty;
-
-                if (scoreData.CurrentFloorNumber > 60 || (scoreData.CurrentFloorNumber == 60 && scoreData.IsDutyComplete))
-                    result += 50 * scoreData.Duty;
-
-                if (scoreData.CurrentFloorNumber > 70 || (scoreData.CurrentFloorNumber == 70 && scoreData.IsDutyComplete))
-                    result += -50 * scoreData.Duty;
-            }
-            else
-            {
-                if (scoreData.StartingFloorNumber == 1)
-                    result += -scoreData.Duty * 50 * (int)Math.Min(Math.Truncate(scoreData.CurrentFloorNumber / 10.0), 1.0);
-
-                if (scoreData.StartingFloorNumber == 1)
-                {
-                    if (scoreData.CurrentFloorNumber > 50 || (scoreData.CurrentFloorNumber == 50 && scoreData.IsDutyComplete))
-                        result += scoreData.Duty * 450;
-                }
-
-                if (scoreData.CurrentFloorNumber > 100 || (scoreData.CurrentFloorNumber == 100 && scoreData.IsDutyComplete))
-                    result += scoreData.Duty * 450;
-
-                if (scoreData.TotalReachedFloors == 50 && scoreData.IsDutyComplete)
-                    result += -2000;
-
-                if (scoreData.TotalReachedFloors == 200 && scoreData.IsDutyComplete)
-                    result += -9500 + 3200 * scoreData.Duty;
-
-                if (scoreData.CurrentFloorNumber == 200 && scoreData.TotalReachedFloors == 150 && scoreData.IsDutyComplete)
-                    result += -7000 + 3200 * scoreData.Duty;
-            }
-
-            if (scoreData.SaveSlot.CurrentLevel > 61)
-            {
-                if (scoreData.TotalReachedFloors == 30 && scoreData.IsDutyComplete)
-                    result += -1000;
-            }
-
-            if (scoreData.SaveSlot.CurrentLevel < 61)
-            {
-                if (scoreData.CurrentFloorNumber > 60 || (scoreData.IsDutyComplete && scoreData.CurrentFloorNumber == 60))
-                {
-                    if (scoreData.StartingFloorNumber == 51)
-                    {
-                        result += -50 * scoreData.Duty;
-                    }
-                    else
-                    {
-                        if (scoreData.CurrentFloorNumber < 100)
-                            result += -50 * scoreData.Duty;
-                    }
-                }
-            }
-
-            if (scoreData.TotalReachedFloors == 100 && scoreData.IsDutyComplete)
-            {
-                result += -4500;
-                if (scoreData.SaveSlot.CurrentLevel > 61)
-                {
-                    result += 3200 * scoreData.Duty;
-                }
-            }
-            return result;
+                this.BaseScore = -10;
         }
 
-        private static int MapScore(ScoreData scoreData, int baseScore)
+        private void CharacterScoreCalculation() => this.CharacterScore = (this.SaveSlot.AetherpoolArm + this.SaveSlot.AetherpoolArmor) * 10 + this.SaveSlot.CurrentLevel * 500;
+
+        private void FloorScoreCalculation()
         {
-            var result = 0;
-            if (baseScore == 0)
+            var total = 0;
+            total += (430 - ((198 - this.SaveSlot.AetherpoolArm - this.SaveSlot.AetherpoolArmor) * 10)) * this.DistanceFromStartingFloor;
+            total += (int)(this.CurrentFloorNumber - (this.StartingFloorNumber + Math.Truncate(this.DistanceFromStartingFloor / 10.0))) * 50 * 91;
+            total += (int)Math.Truncate(this.DistanceFromStartingFloor / 10.0) * this.Duty * 300;
+            total += this.FloorScoreCalculation(false);
+            this.FloorScore = total;
+        }
+
+        private void MapScoreCalculation()
+        {
+            var total = 0;
+            if (this.BaseScore == 0)
             {
-                var maps = scoreData.SaveSlot.Maps();
-                if (scoreData.TotalReachedFloors > 10)
-                    result += scoreData.Duty * maps * 25;
+                var maps = this.SaveSlot.Maps();
+                if (this.TotalReachedFloors > 10)
+                    total += this.Duty * maps * 25;
                 else
                 {
-                    if (scoreData.IsDutyComplete)
-                        result += scoreData.Duty * maps * 25;
+                    if (this.IsDutyComplete)
+                        total += this.Duty * maps * 25;
                     else
-                        result += scoreData.Duty * (maps - 2) * 25;
+                        total += this.Duty * (maps - 2) * 25;
                 }
             }
-            return result;
+            this.MapScore = total;
         }
 
-        private static int CofferScore(ScoreData scoreData, int baseScore) => baseScore == 0 ? scoreData.SaveSlot.Coffers() * scoreData.Duty : 0;
+        private void CofferScoreCalculation() => this.CofferScore = this.BaseScore == 0 ? this.SaveSlot.Coffers() * this.Duty : 0;
 
-        private static int NPCScore(ScoreData scoreData, int baseScore) => baseScore == 0 ? scoreData.SaveSlot.NPCs() * scoreData.Duty * 20 : 0;
+        private void NPCScoreCalculation() => this.NPCScore = this.BaseScore == 0 ? this.SaveSlot.NPCs() * this.Duty * 20 : 0;
 
-        private static int MimicMandragoraScore(ScoreData scoreData, int baseScore) => baseScore == 0 ? (scoreData.SaveSlot.Mimics() + scoreData.SaveSlot.Mandragoras()) * scoreData.Duty * 5 : 0;
+        private void MimicgoraScoreCalculation() => this.MimicgoraScore = this.BaseScore == 0 ? (this.SaveSlot.Mimics() + this.SaveSlot.Mandragoras()) * this.Duty * 5 : 0;
 
-        private static int EnchantmentScore(ScoreData scoreData, int baseScore) => baseScore == 0 ? scoreData.SaveSlot.Enchantments() * scoreData.Duty * 5 : 0;
+        private void EnchantmentScoreCalculation() => this.EnchantmentScore = this.BaseScore == 0 ? this.SaveSlot.Enchantments() * this.Duty * 5 : 0;
 
-        private static int TrapScore(ScoreData scoreData, int baseScore) => baseScore == 0 ? -scoreData.SaveSlot.Traps() * scoreData.Duty * 2 : 0;
+        private void TrapScoreCalculation() => this.TrapScore = this.BaseScore == 0 ? -this.SaveSlot.Traps() * this.Duty * 2 : 0;
 
-        private static int TimeBonusScore(ScoreData scoreData) => scoreData.SaveSlot.TimeBonuses() * scoreData.Duty * 150;
+        private void TimeBonusScoreCalculation() => this.TimeBonusScore = this.SaveSlot.TimeBonuses() * this.Duty * 150;
 
-        private static int DeathScore(ScoreData scoreData, int baseScore) => baseScore == 0 ? -scoreData.SaveSlot.Deaths() * scoreData.Duty * 50 : 0;
+        private void DeathScoreCalculation() => this.DeathScore = this.BaseScore == 0 ? -this.SaveSlot.Deaths() * this.Duty * 50 : 0;
 
-        private static int KillScore(ScoreData scoreData)
+        private void NonKillScoreCalculation()
         {
-            var floors = scoreData.SaveSlot.FloorSets.SelectMany(x => x.Floors);
-            var normalFloors = floors.Where(scoreData.IsNormalFloor);
-            var bonusFloors = floors.Where(scoreData.IsBonusFloor);
+            this.NonKillScore = (this.MapScore + this.CofferScore + this.NPCScore + this.MimicgoraScore + this.EnchantmentScore + this.TrapScore + this.TimeBonusScore + this.DeathScore) / this.Duty;
+
+            if (this.NonKillScore > 0)
+                this.NonKillScore = this.CharacterScore + this.FloorScore + this.MapScore + this.CofferScore + this.NPCScore + this.MimicgoraScore + this.EnchantmentScore + this.TrapScore + this.TimeBonusScore + this.DeathScore;
+            else
+                this.NonKillScore = this.CharacterScore + this.FloorScore + this.BaseScore;
+        }
+
+        private void KillScoreCalculation()
+        {
+            var floors = this.SaveSlot.FloorSets.SelectMany(x => x.Floors);
+            var normalFloors = floors.Where(this.IsNormalFloor);
+            var bonusFloors = floors.Where(this.IsBonusFloor);
 
             var killsBonusException = bonusFloors.Sum(x => x.Mimics + x.Mandragoras) + bonusFloors.Sum(x => x.NPCs) + bonusFloors.Where(x => x.IsLastFloor()).Sum(x => x.Kills);
             var kills = normalFloors.Sum(x => x.Kills) + killsBonusException;
             var killsBonus = bonusFloors.Sum(x => x.Kills) - killsBonusException;
 
-            var floorBonus = (int)(Math.Truncate(scoreData.TotalReachedFloors / 2.0) * scoreData.KillScoreMultiplier()) + 100;
-            return (floorBonus * kills) + ((floorBonus + scoreData.Duty) * killsBonus);
+            var floorBonus = (int)(Math.Truncate(this.TotalReachedFloors / 2.0) * this.KillScoreMultiplier()) + 100;
+
+            this.KillScore = (floorBonus * kills) + ((floorBonus + this.Duty) * killsBonus);
         }
 
-        private static ScoreData? CreateScoreData(SaveSlot saveSlot, bool isDutyComplete, DeepDungeon deepDungeon)
+        public void TotalScoreCalculation(bool calculateScore)
         {
-            if (deepDungeon == DeepDungeon.ThePalaceOfTheDead)
-                return new ScoreDataThePalaceOfTheDead(saveSlot, isDutyComplete);
-            else if (deepDungeon == DeepDungeon.HeavenOnHigh)
-                return new ScoreDataHeavenOnHigh(saveSlot, isDutyComplete);
-            else if (deepDungeon == DeepDungeon.EurekaOrthos)
-                return new ScoreDataEurekaOrthos(saveSlot, isDutyComplete);
-            return null;
-        }
-
-        public static int Calculate(SaveSlot saveSlot, bool isDutyComplete, DeepDungeon deepDungeon, bool showLog = false)
-        {
-            var scoreData = Score.CreateScoreData(saveSlot, isDutyComplete, deepDungeon);
-
-            if (scoreData == null || !scoreData.IsValidStartingFloor() || !ServiceUtility.IsSolo)
-                return 0;
-
-            var baseScore = Score.BaseScore(scoreData);
-            var characterScore = Score.CharacterScore(scoreData);
-            var floorScore = Score.FloorScore(scoreData);
-            var mapScore = Score.MapScore(scoreData, baseScore);
-            var cofferScore = Score.CofferScore(scoreData, baseScore);
-            var npcScore = Score.NPCScore(scoreData, baseScore);
-            var mimicMandragoraScore = Score.MimicMandragoraScore(scoreData, baseScore);
-            var enchantmentScore = Score.EnchantmentScore(scoreData, baseScore);
-            var trapScore = Score.TrapScore(scoreData, baseScore);
-            var timeBonusScore = Score.TimeBonusScore(scoreData);
-            var deathScore = Score.DeathScore(scoreData, baseScore);
-            var nonKillScore = (mapScore + cofferScore + npcScore + mimicMandragoraScore + enchantmentScore + trapScore + timeBonusScore + deathScore) / scoreData.Duty;
-
-            if (nonKillScore > 0)
-                nonKillScore = characterScore + floorScore + mapScore + cofferScore + npcScore + mimicMandragoraScore + enchantmentScore + trapScore + timeBonusScore + deathScore;
-            else
-                nonKillScore = characterScore + floorScore + baseScore;
-
-            var killScore = Score.KillScore(scoreData);
-            var score = nonKillScore + killScore;
-
-            if (showLog && !Score.ShowLogOnce)
+            if (!this.IsValidStartingFloor() || !calculateScore)
             {
-                Action<string> p = Log.Print;
-
-                Score.ShowLogOnce = true;
-                p(string.Empty);
-                p($"[{(isDutyComplete ? "Duty Complete" : "Duty Failed")}] ({baseScore})");
-                p($"Current Level: {saveSlot.CurrentLevel} (+{saveSlot.AetherpoolArm}/+{saveSlot.AetherpoolArmor})");
-                p($"Current Floor: {scoreData.StartingFloorNumber}->{scoreData.CurrentFloorNumber} ({scoreData.TotalReachedFloors})");
-                p(string.Empty);
-                p($"Character Score: {characterScore}");
-                p($"Floor Score: {floorScore}");
-                p($"Map Score: {mapScore}");
-                p($"Coffer Score: {cofferScore}");
-                p($"NPC Score: {npcScore}");
-                p($"Mimic/Mandragora Score: {mimicMandragoraScore}");
-                p($"Enchantment Score: {enchantmentScore}");
-                p($"Trap Score: {trapScore}");
-                p($"Time Bonus Score: {timeBonusScore}");
-                p($"Death Score: {deathScore}");
-                p($"Non-Kill Score: {nonKillScore}");
-                p($"Kill Score: {killScore}");
-                p(string.Empty);
-                p($"Total Score: {score}");
+                this.TotalScore = 0;
+                return;
             }
-            return score;
+
+            this.BaseScoreCalculation();
+            this.CharacterScoreCalculation();
+            this.FloorScoreCalculation();
+            this.MapScoreCalculation();
+            this.CofferScoreCalculation();
+            this.NPCScoreCalculation();
+            this.MimicgoraScoreCalculation();
+            this.EnchantmentScoreCalculation();
+            this.TrapScoreCalculation();
+            this.TimeBonusScoreCalculation();
+            this.DeathScoreCalculation();
+            this.NonKillScoreCalculation();
+            this.KillScoreCalculation();
+            this.TotalScore = this.NonKillScore + this.KillScore;
         }
+
+        protected abstract int FloorScoreCalculation(bool includeFloorCompletion);
+
+        protected abstract bool IsValidStartingFloor();
+
+        protected abstract bool IsNormalFloor(Floor floor);
+
+        protected abstract bool IsBonusFloor(Floor floor);
+
+        protected abstract int KillScoreMultiplier();
     }
 }

@@ -61,13 +61,6 @@ namespace DeepDungeonTracker
             this.DataUpdate();
         }
 
-        public void Load(string fileName)
-        {
-            this.SaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, fileName) ?? new();
-            this.Open = true;
-            this.DataUpdate();
-        }
-
         public void Load(SaveSlot? saveSlot)
         {
             this.SaveSlot = saveSlot;
@@ -85,7 +78,7 @@ namespace DeepDungeonTracker
             this.EnchantmentsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty;
             this.TrapsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty;
 
-            if (this.FloorSetStatistics != FloorSetStatistics.AllFloors)
+            if (this.FloorSetStatistics != FloorSetStatistics.Summary)
             {
                 this.FloorSet = this.SaveSlot?.FloorSets.Find(x => x.FirstFloor()?.Number == ((int)this.FloorSetStatistics * 10) - 9);
 
