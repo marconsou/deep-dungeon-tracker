@@ -27,7 +27,7 @@ namespace DeepDungeonTracker
             if (this.TotalReachedFloors == 200 && this.IsDutyComplete)
                 total += -9500 + 3200 * this.Duty;
 
-            if (this.CurrentFloorNumber == 200 && this.TotalReachedFloors == 150 && this.IsDutyComplete)
+            if (this.TotalReachedFloors == 150 && this.CurrentFloorNumber == 200 && this.IsDutyComplete)
                 total += -7000 + 3200 * this.Duty;
 
             if (this.CurrentFloorNumber == 200)
