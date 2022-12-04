@@ -75,10 +75,10 @@ namespace DeepDungeonTracker
                 var trapOffset = 8.0f;
                 var textOffset = -4.0f;
                 var iconSize = 48.0f;
-                var isAllFloors = statistics.FloorSetStatistics == FloorSetStatistics.AllFloors;
+                var isSummary = statistics.FloorSetStatistics == FloorSetStatistics.Summary;
                 float baseX;
                 float baseY;
-                if (!isAllFloors)
+                if (!isSummary)
                 {
                     var horizontalElements = 3;
                     var floors = floorSet?.Floors;
@@ -130,6 +130,32 @@ namespace DeepDungeonTracker
                         else
                             y += 56.0f;
                     }
+
+                    x += 350.0f;
+                    y = top;
+                    var score = this.Data.Common.Score;
+
+                    if (score != null)
+                    {
+                        var lineHeight = 28.0f;
+                        ui.DrawTextAxisLatinPro(x, y, $"[{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")}] ({score.BaseScore})", Color.White); y += lineHeight * 2.0f;
+                        ui.DrawTextAxisLatinPro(x, y, $"Level: {score.SaveSlot.CurrentLevel} (+{score.SaveSlot.AetherpoolArm}/+{score.SaveSlot.AetherpoolArmor})", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Floor: {score.StartingFloorNumber}->{score.CurrentFloorNumber} ({score.TotalReachedFloors})", Color.White); y += lineHeight * 2.0f;
+                        ui.DrawTextAxisLatinPro(x, y, $"Character: {score.CharacterScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Floors: {score.FloorScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Maps: {score.MapScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Coffers: {score.CofferScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"NPCs: {score.NPCScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Mimicgoras: {score.MimicgoraScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Enchantments: {score.EnchantmentScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Traps: {score.TrapScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Time Bonuses: {score.TimeBonusScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Deaths: {score.DeathScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Non-Kills: {score.NonKillScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Kills: {score.KillScore:N0}", Color.White); y += lineHeight * 2.0f;
+                        ui.DrawTextAxisLatinPro(x, y, $"Total: {score.TotalScore:N0}", Color.White);
+                    }
+
                     y = 601.0f;
                     ui.DrawDivisorHorizontal(14.0f, 601.0f, width - 26.0f);
                     y += 16.0f;
@@ -137,7 +163,7 @@ namespace DeepDungeonTracker
 
                 x = left;
 
-                this.DrawFloorText(x, y, $"Total:", statistics.TotalTime, null, statistics.TotalScore, null, isAllFloors);
+                this.DrawFloorText(x, y, $"Total:", statistics.TotalTime, null, statistics.TotalScore, null, isSummary);
 
                 baseX = x;
                 baseY = y;
@@ -150,7 +176,7 @@ namespace DeepDungeonTracker
                 {
                     x = baseX + (floorWidth * 2);
                     y = baseY;
-                    this.DrawFloorText(x, y, $"Last Floor:", statistics.LastFloorTime, null, statistics.LastFloorScore, null, isAllFloors);
+                    this.DrawFloorText(x, y, $"Last Floor:", statistics.LastFloorTime, null, statistics.LastFloorScore, null, isSummary);
                     this.DrawIcon(ref x, ref y, x, y, 0.0f, 20.0f, statisticsCommonOffset, statisticsCommonOffset, textOffset, textOffset, iconSize, statistics.LastFloorTotal);
                 }
             }
@@ -185,10 +211,10 @@ namespace DeepDungeonTracker
 
             var totalTimeTextSize = ui.GetAxisLatinProTextSize(totalTimeText);
             x += totalTimeTextSize.X;
-            ui.DrawTextAxisLatinPro(x, y, $"{totalScore:N0}pts", totalScore > 0 ? config.ScoreColor : totalScore < 0 ? Color.Red : Color.White);
+            ui.DrawTextAxisLatinPro(x, y, $"{totalScore:N0}", totalScore > 0 ? config.ScoreColor : totalScore < 0 ? Color.Red : Color.White);
 
             if (totalScore != previousScore && previousScore != null)
-                ui.DrawTextAxisLatinPro(x, y + lineHeight, $"{(previousScore > 0 ? "+" : string.Empty)}{previousScore:N0}pts", previousScore > 0 ? config.ScoreColor : previousScore < 0 ? Color.Red : Color.White);
+                ui.DrawTextAxisLatinPro(x, y + lineHeight, $"{(previousScore > 0 ? "+" : string.Empty)}{previousScore:N0}", previousScore > 0 ? config.ScoreColor : previousScore < 0 ? Color.Red : Color.White);
         }
 
         private void DrawIcon<T>(ref float x, ref float y, float left, float top, float offsetX, float offsetY, float iconOffsetX, float iconOffsetY, float textOffsetX, float textOffsetY, float iconSize, IEnumerable<DataStatistics.StatisticsItem<T>>? data, MapData? mapData = null) where T : Enum
