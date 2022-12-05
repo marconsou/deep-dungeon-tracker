@@ -70,7 +70,7 @@ namespace DeepDungeonTracker
             var left = 15.0f;
             var top = 50.0f;
             var lineHeight = 30.0f;
-            var skipNPC = (config.Fields?[4].Show ?? false) && this.Data.Common.DeepDungeon != DeepDungeon.ThePalaceOfTheDead;
+            var skipNPC = (config.Fields?[4].Show ?? false) && this.Data.Common.DeepDungeon != DeepDungeon.PalaceOfTheDead;
             var numberOfLines = (config.Fields?.Count(x => x.Show) ?? 0) + (!skipNPC ? 0 : -1);
             var width = 380.0f;
             var height = (top + (lineHeight * numberOfLines) - 3.0f);

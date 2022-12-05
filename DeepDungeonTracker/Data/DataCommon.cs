@@ -187,8 +187,8 @@ namespace DeepDungeonTracker
         public void DeepDungeonUpdate(DataText dataText, ushort territoryType)
         {
             var deepDungeon = this.DeepDungeon;
-            if (dataText.IsThePalaceOfTheDeadRegion(territoryType))
-                this.DeepDungeon = DeepDungeon.ThePalaceOfTheDead;
+            if (dataText.IsPalaceOfTheDeadRegion(territoryType))
+                this.DeepDungeon = DeepDungeon.PalaceOfTheDead;
             else if (dataText.IsHeavenOnHighRegion(territoryType))
                 this.DeepDungeon = DeepDungeon.HeavenOnHigh;
             else if (dataText.IsEurekaOrthosRegion(territoryType))
@@ -207,7 +207,7 @@ namespace DeepDungeonTracker
             if (this.IsLastFloor)
                 return default;
 
-            if (this.DeepDungeon == DeepDungeon.ThePalaceOfTheDead)
+            if (this.DeepDungeon == DeepDungeon.PalaceOfTheDead)
             {
                 if (floorNumber >= 1 && floorNumber <= 9)
                     return TimeSpan.FromSeconds(40);
@@ -297,10 +297,10 @@ namespace DeepDungeonTracker
 
         private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
 
-        public void CalculateScore()
+        public void CalculateScore(bool includeFloorCompletion)
         {
             this.Score = ScoreCreator.Create(this.CurrentSaveSlot ?? new(), true);
-            this.Score?.TotalScoreCalculation(ServiceUtility.IsSolo);
+            this.Score?.TotalScoreCalculation(ServiceUtility.IsSolo, includeFloorCompletion);
         }
 
         public void StartFirstFloor(int contentId)

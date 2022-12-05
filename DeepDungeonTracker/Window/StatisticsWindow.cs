@@ -139,7 +139,7 @@ namespace DeepDungeonTracker
                     {
                         var lineHeight = 28.0f;
                         ui.DrawTextAxisLatinPro(x, y, $"[{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")}] ({score.BaseScore})", Color.White); y += lineHeight * 2.0f;
-                        ui.DrawTextAxisLatinPro(x, y, $"Level: {score.SaveSlot.CurrentLevel} (+{score.SaveSlot.AetherpoolArm}/+{score.SaveSlot.AetherpoolArmor})", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Level: {score.CurrentLevel} (+{score.AetherpoolArm}/+{score.AetherpoolArmor})", Color.White); y += lineHeight;
                         ui.DrawTextAxisLatinPro(x, y, $"Floor: {score.StartingFloorNumber}->{score.CurrentFloorNumber} ({score.TotalReachedFloors})", Color.White); y += lineHeight * 2.0f;
                         ui.DrawTextAxisLatinPro(x, y, $"Character: {score.CharacterScore:N0}", Color.White); y += lineHeight;
                         ui.DrawTextAxisLatinPro(x, y, $"Floors: {score.FloorScore:N0}", Color.White); y += lineHeight;
@@ -204,10 +204,10 @@ namespace DeepDungeonTracker
 
             var floorTextSize = ui.GetAxisLatinProTextSize(floorText);
             x += floorTextSize.X;
-            ui.DrawTextAxisLatinPro(x, y, totalTimeText, config.TimeColor);
+            ui.DrawTextAxisLatinPro(x, y, totalTimeText, config.FloorTimeColor);
 
             if (totalTime != previousTime && previousTime != null)
-                ui.DrawTextAxisLatinPro(x, y + lineHeight, previousTimeText, config.TimeColor);
+                ui.DrawTextAxisLatinPro(x, y + lineHeight, previousTimeText, config.FloorTimeColor);
 
             var totalTimeTextSize = ui.GetAxisLatinProTextSize(totalTimeText);
             x += totalTimeTextSize.X;
