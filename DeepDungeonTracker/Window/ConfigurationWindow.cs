@@ -139,6 +139,8 @@ namespace DeepDungeonTracker
             WindowEx.Tooltip("You need to be either inside a Deep Dungeon or in the area outside to get into it.");
             ImGui.SameLine();
             this.CheckBox(config.ShowInBetweenFloors, x => config.ShowInBetweenFloors = x, "Show in between floors");
+            this.CheckBox(config.IncludeFloorCompletion, x => config.IncludeFloorCompletion = x, "Include floor completion");
+            WindowEx.Tooltip("Include all floor completion-related score up to the floor where it shows the next score result window.");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
             WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");
@@ -150,7 +152,7 @@ namespace DeepDungeonTracker
         {
             var config = this.Configuration.Statistics;
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
-            this.ColorEdit4(config.TimeColor, x => config.TimeColor = x, "Floor Time");
+            this.ColorEdit4(config.FloorTimeColor, x => config.FloorTimeColor = x, "Floor Time");
             ImGui.SameLine();
             this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
             ImGui.NewLine();

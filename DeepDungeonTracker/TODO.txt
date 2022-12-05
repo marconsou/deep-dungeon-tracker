@@ -3,12 +3,10 @@ Other languages test.
 Windows default position test.
 Windows simplified mode.
 Additional commands to show/hide specific windows.
-Save backup/Option to load a file from path.
+Save backup and option to load a file from path.
 NodeUtility.CreateTextNode.Malloc.
 [wait for next .net?] Map = false clear MapData.
-[Fixed?] Disable some features for party (Windows is hidden but calculations is still done).
+[Fixed?] Disable some features for party.
 [Fixed?] Time bonus icon bug (blinking) when entering DD.
-Tooltip/Info about kill/map/aetherpool/potsherds (from coffer)/Score is Duty Complete (Information Tab).
+Tooltip/Info about kill (HoH Mag.) /map/aetherpool/potsherds (from coffer)/Score is Duty Complete (Information Tab).
 Reduce Draw Commands.
-Score Refactor.
-Include floor completion (Option)

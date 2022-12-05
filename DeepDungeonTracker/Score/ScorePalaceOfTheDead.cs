@@ -2,11 +2,11 @@
 
 namespace DeepDungeonTracker
 {
-    public sealed class ScoreThePalaceOfTheDead : Score
+    public sealed class ScorePalaceOfTheDead : Score
     {
-        public ScoreThePalaceOfTheDead(SaveSlot saveSlot, bool isDutyComplete) : base(saveSlot, isDutyComplete) { }
+        public ScorePalaceOfTheDead(SaveSlot saveSlot, bool isDutyComplete) : base(saveSlot, isDutyComplete) { }
 
-        protected override int FloorScoreCalculation(bool includeFloorCompletion)
+        protected override int FloorCompletionScoreCalculation()
         {
             var total = 0;
             total += Math.Truncate(this.CurrentFloorNumber / 10.0) == (this.CurrentFloorNumber / 10.0) && this.IsDutyComplete && this.CurrentFloorNumber != 200 ? this.Duty * 300 : 0;
@@ -52,11 +52,13 @@ namespace DeepDungeonTracker
             return total;
         }
 
-        protected override bool IsValidStartingFloor() => this.StartingFloorNumber == 1 || this.StartingFloorNumber == 51;
+        protected override int Level() => 60;
 
-        protected override bool IsNormalFloor(Floor floor) => floor.Number >= 1 && floor.Number <= 100;
+        protected override int ShortcutStartingFloorNumber() => 51;
 
-        protected override bool IsBonusFloor(Floor floor) => floor.Number >= 101 && floor.Number <= 200;
+        protected override int LastNormalFloorNumber() => 100;
+
+        protected override int LastBonusFloorNumber() => 200;
 
         protected override int KillScoreMultiplier() => 1;
     }
