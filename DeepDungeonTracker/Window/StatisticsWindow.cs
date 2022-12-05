@@ -55,7 +55,7 @@ namespace DeepDungeonTracker
             var noData = (floorSet == null && floorSets == null);
 
             ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Statistics", Color.White, Align.Center);
+            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Statistics", Color.White, Alignment.Center);
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
 
             this.ArrowButtonPrevious.Position = new((width / 2.0f) - 108.0f, 7.0f);
@@ -181,7 +181,7 @@ namespace DeepDungeonTracker
                 }
             }
             else
-                ui.DrawTextAxisLatinPro(width / 2.0f, (height / 2.0f) + 15.0f, $"No data on {statistics.FloorSetStatistics.GetDescription().ToLower()}", Color.White, Align.Center);
+                ui.DrawTextAxisLatinPro(width / 2.0f, (height / 2.0f) + 15.0f, $"No data on {statistics.FloorSetStatistics.GetDescription().ToLower()}", Color.White, Alignment.Center);
 
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }
@@ -265,7 +265,7 @@ namespace DeepDungeonTracker
                 }
 
                 if (total > 1)
-                    ui.DrawTextAxisLatinPro(x + textOffsetX + iconSize, y + textOffsetY + iconSize, total.ToString(), Color.White, Align.Right, true);
+                    ui.DrawTextAxisLatinPro(x + textOffsetX + iconSize, y + textOffsetY + iconSize, total.ToString(), Color.White, Alignment.Right, true);
 
                 x += iconSize;
             }
