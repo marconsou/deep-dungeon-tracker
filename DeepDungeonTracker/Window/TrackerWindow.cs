@@ -89,16 +89,16 @@ namespace DeepDungeonTracker
 
             if (config.IsFloorNumberVisible)
             {
-                ui.DrawTextMiedingerMediumW00(x, 20.0f, "Floor", Color.White, Align.Center);
+                ui.DrawTextMiedingerMediumW00(x, 20.0f, "Floor", Color.White, Alignment.Center);
                 x += offsetX;
             }
             if (config.IsSetNumberVisible)
             {
-                ui.DrawTextMiedingerMediumW00(x, 20.0f, "Set", Color.White, Align.Center);
+                ui.DrawTextMiedingerMediumW00(x, 20.0f, "Set", Color.White, Alignment.Center);
                 x += offsetX;
             }
             if (config.IsTotalNumberVisible)
-                ui.DrawTextMiedingerMediumW00(x, 20.0f, "Total", Color.White, Align.Center);
+                ui.DrawTextMiedingerMediumW00(x, 20.0f, "Total", Color.White, Alignment.Center);
 
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
 
@@ -160,7 +160,7 @@ namespace DeepDungeonTracker
             var numberOffsetY = 7.0f;
             var iconOffsetY = 7.0f;
             var x = columnX;
-            ui.DrawTextAxisLatinPro(15.0f, y, label, Color.White, Align.Left);
+            ui.DrawTextAxisLatinPro(15.0f, y, label, Color.White, Alignment.Left);
             if (config.IsFloorNumberVisible)
             {
                 var valueX = x;
@@ -168,7 +168,7 @@ namespace DeepDungeonTracker
                 if (floorValue >= 0)
                 {
                     if (!floorValueAsIcon)
-                        ui.DrawNumber(valueX, valueY + numberOffsetY, floorValue, false, config.FloorNumberColor, Align.Center);
+                        ui.DrawNumber(valueX, valueY + numberOffsetY, floorValue, false, config.FloorNumberColor, Alignment.Center);
                     else
                         ui.DrawCheckMark(valueX, valueY + iconOffsetY, floorValue == 1);
                 }
@@ -181,7 +181,7 @@ namespace DeepDungeonTracker
                 if (setValue >= 0)
                 {
                     if (!setValueAsIcon)
-                        ui.DrawNumber(valueX, valueY + numberOffsetY, setValue, false, config.SetNumberColor, Align.Center);
+                        ui.DrawNumber(valueX, valueY + numberOffsetY, setValue, false, config.SetNumberColor, Alignment.Center);
                     else
                         ui.DrawCheckMark(valueX, valueY + iconOffsetY, setValue == 1);
                 }
@@ -192,7 +192,7 @@ namespace DeepDungeonTracker
                 var valueX = x;
                 var valueY = y;
                 if (totalValue >= 0)
-                    ui.DrawNumber(valueX, valueY + numberOffsetY, totalValue, false, config.TotalNumberColor, Align.Center);
+                    ui.DrawNumber(valueX, valueY + numberOffsetY, totalValue, false, config.TotalNumberColor, Alignment.Center);
             }
         }
     }

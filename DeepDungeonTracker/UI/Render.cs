@@ -18,17 +18,17 @@ namespace DeepDungeonTracker
             ImGui.Image(textureWrap.ImGuiHandle, new(width * finalScale, height * finalScale), new(x1, y1), new(x2, y2), color ?? Color.White);
         }
 
-        public void DrawText(Font font, float x, float y, string text, Vector4 color, Align align, bool drawShadow)
+        public void DrawText(Font font, float x, float y, string text, Vector4 color, Alignment align, bool drawShadow)
         {
             var fontLayout = font.FontLayout;
-            var textSize = (align != Align.Left) ? Render.GetTextSize(fontLayout, text) : Vector2.Zero;
+            var textSize = (align != Alignment.Left) ? Render.GetTextSize(fontLayout, text) : Vector2.Zero;
 
             var atlasWidth = fontLayout.Atlas!.Width;
             var atlasHeight = fontLayout.Atlas.Height;
             var atlasSize = fontLayout.Atlas.Size;
             var advance = 0.0;
 
-            var alignFactor = (align == Align.Center) ? 2.0f : 1.0f;
+            var alignFactor = (align == Alignment.Center) ? 2.0f : 1.0f;
 
             var baseX = x + (-textSize.X / alignFactor);
             var baseY = y + 1.0f + ((fontLayout.Metrics!.Ascender + fontLayout.Metrics.Descender) * atlasSize) - (textSize.Y / alignFactor);
@@ -78,7 +78,7 @@ namespace DeepDungeonTracker
             return new((float)advance, (float)maxHeight);
         }
 
-        public void DrawUIElement(TextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector4? color = null, Align align = Align.Left, bool mirrorHorizontal = false)
+        public void DrawUIElement(TextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector4? color = null, Alignment align = Alignment.Left, bool mirrorHorizontal = false)
         {
             var tWidth = (float)textureWrap.Width;
             var tHeight = (float)textureWrap.Height;
@@ -94,12 +94,12 @@ namespace DeepDungeonTracker
             var x2 = (tOffsetX + width) / tWidth;
             var y2 = (tOffsetY + height) / tHeight;
 
-            if (align == Align.Center)
+            if (align == Alignment.Center)
             {
                 x -= width / 2.0f * innerScale;
                 y -= height / 2.0f * innerScale;
             }
-            else if (align == Align.Right)
+            else if (align == Alignment.Right)
             {
                 x -= width * innerScale;
                 y -= height * innerScale;
@@ -111,7 +111,7 @@ namespace DeepDungeonTracker
             this.DrawObject(textureWrap, x, y, width, height, x1, y1, x2, y2, innerScale, color);
         }
 
-        public void DrawNumber(TextureWrap textureWrap, float x, float y, float innerScale, int number, Vector4? color, Align align)
+        public void DrawNumber(TextureWrap textureWrap, float x, float y, float innerScale, int number, Vector4? color, Alignment align)
         {
             var baseX = x;
             var baseY = y;
@@ -122,12 +122,12 @@ namespace DeepDungeonTracker
             var numberString = number.ToString();
             var totalWidth = width * numberString.Length;
 
-            if (align == Align.Center)
+            if (align == Alignment.Center)
             {
                 baseX = x - (totalWidth / 2.0f * innerScale);
                 baseY = y - (height / 2.0f * innerScale);
             }
-            else if (align == Align.Right)
+            else if (align == Alignment.Right)
             {
                 baseX = x - (totalWidth * innerScale);
                 baseY = y - (height * innerScale);

@@ -1,6 +1,6 @@
 ﻿namespace DeepDungeonTracker
 {
-    public enum Align
+    public enum Alignment
     {
         Left,
         Center,

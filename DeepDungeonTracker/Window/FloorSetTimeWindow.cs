@@ -34,16 +34,16 @@ namespace DeepDungeonTracker
 
             void DrawTextLine(float x, float y, string label, TimeSpan? value, Vector4 labelColor, Vector4 valueColor)
             {
-                ui.DrawTextAxisLatinPro(x, y, label, labelColor, Align.Left);
+                ui.DrawTextAxisLatinPro(x, y, label, labelColor, Alignment.Left);
 
                 var size = ui.GetAxisLatinProTextSize(label + " ");
 
                 if (value != null)
-                    ui.DrawTextAxisLatinPro(x + size.X, y, $"{value:mm\\:ss}", valueColor, Align.Left);
+                    ui.DrawTextAxisLatinPro(x + size.X, y, $"{value:mm\\:ss}", valueColor, Alignment.Left);
             }
 
             ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Floor Set Time", Color.White, Align.Center);
+            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Floor Set Time", Color.White, Alignment.Center);
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
 
             var x = left;
