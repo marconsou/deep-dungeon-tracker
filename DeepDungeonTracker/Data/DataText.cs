@@ -109,7 +109,7 @@ namespace DeepDungeonTracker
 
         public (bool, TextIndex?) IsTrap(string name) => this.IsText(TextIndex.LandmineTrap, TextIndex.OdderTrap, name, null);
 
-        public bool IsThePalaceOfTheDeadRegion(uint territoryType) => new uint[] { 56, 1793 }.Contains(this.RegionId(territoryType));
+        public bool IsPalaceOfTheDeadRegion(uint territoryType) => new uint[] { 56, 1793 }.Contains(this.RegionId(territoryType));
 
         public bool IsHeavenOnHighRegion(uint territoryType) => new uint[] { 2409, 2775 }.Contains(this.RegionId(territoryType));
 

@@ -54,15 +54,15 @@ namespace DeepDungeonTracker
 
             public float Scale { get; set; } = 1.0f;
 
-            public bool IsFloorVisible { get; set; } = true;
+            public bool IsFloorNumberVisible { get; set; } = true;
 
             public Vector4 FloorNumberColor { get; set; } = Color.White;
 
-            public bool IsSetVisible { get; set; } = true;
+            public bool IsSetNumberVisible { get; set; } = true;
 
             public Vector4 SetNumberColor { get; set; } = Color.White;
 
-            public bool IsTotalVisible { get; set; } = true;
+            public bool IsTotalNumberVisible { get; set; } = true;
 
             public Vector4 TotalNumberColor { get; set; } = Color.White;
 
@@ -98,18 +98,20 @@ namespace DeepDungeonTracker
 
             public bool ShowInBetweenFloors { get; set; }
 
+            public bool IncludeFloorCompletion { get; set; }
+
+            public float Scale { get; set; } = 1.0f;
+
             public bool IsFlyTextScoreVisible { get; set; } = true;
 
             public Vector4 FlyTextScoreColor { get; set; } = new(0.0f, 0.666f, 0.0f, 1.0f);
-
-            public float Scale { get; set; } = 1.0f;
         }
 
         public class StatisticsTab
         {
             public float Scale { get; set; } = 1.0f;
 
-            public Vector4 TimeColor { get; set; } = Color.Gold;
+            public Vector4 FloorTimeColor { get; set; } = Color.Gold;
 
             public Vector4 ScoreColor { get; set; } = Color.Green;
         }
