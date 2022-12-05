@@ -63,7 +63,7 @@ namespace DeepDungeonTracker
         public override void PreOpenCheck()
         {
             this.OptionsUpdate();
-            this.Data.Common.CalculateScore();
+            this.Data.Common.CalculateScore(this.Configuration.Score.IncludeFloorCompletion);
             this.ScoreFlyText();
             this.GradualScoreUpdate();
         }

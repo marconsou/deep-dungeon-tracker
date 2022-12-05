@@ -5,8 +5,8 @@ namespace DeepDungeonTracker
     public enum DeepDungeon
     {
         None,
-        [Description("The Palace of the Dead")]
-        ThePalaceOfTheDead,
+        [Description("Palace of the Dead")]
+        PalaceOfTheDead,
         [Description("Heaven-on-High")]
         HeavenOnHigh,
         [Description("Eureka Orthos")]

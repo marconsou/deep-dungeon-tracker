@@ -5,17 +5,17 @@ namespace DeepDungeonTracker
 {
     public abstract class Score
     {
-        public SaveSlot SaveSlot { get; }
+        private SaveSlot SaveSlot { get; }
 
         protected int Duty { get; }
 
         public int StartingFloorNumber { get; }
 
-        public int CurrentFloorNumber { get; }
+        public int CurrentFloorNumber { get; private set; }
 
-        protected int DistanceFromStartingFloor { get; }
+        protected int DistanceFromStartingFloor { get; private set; }
 
-        public int TotalReachedFloors { get; }
+        public int TotalReachedFloors { get; private set; }
 
         public int BaseScore { get; private set; }
 
@@ -45,19 +45,28 @@ namespace DeepDungeonTracker
 
         public int TotalScore { get; private set; }
 
-        private int DutyFailed { get; }
-
         private static int DutyComplete => 101;
 
         public bool IsDutyComplete => this.Duty == DutyComplete;
 
+        public int CurrentLevel => this.SaveSlot.CurrentLevel;
+
+        public int AetherpoolArm => this.SaveSlot.AetherpoolArm;
+
+        public int AetherpoolArmor => this.SaveSlot.AetherpoolArmor;
+
         public Score(SaveSlot saveSlot, bool isDutyComplete)
         {
             this.SaveSlot = saveSlot;
-            this.DutyFailed = Score.DutyComplete - ((saveSlot.KOs + 1) * 10);
-            this.Duty = isDutyComplete ? Score.DutyComplete : this.DutyFailed;
+            var dutyFailed = Score.DutyComplete - ((saveSlot.KOs + 1) * 10);
+            this.Duty = isDutyComplete ? Score.DutyComplete : dutyFailed;
             this.StartingFloorNumber = saveSlot.StartingFloorNumber();
-            this.CurrentFloorNumber = saveSlot.CurrentFloorNumber();
+            this.FloorCompletionUpdate(saveSlot.CurrentFloorNumber());
+        }
+
+        private void FloorCompletionUpdate(int currentFloorNumber)
+        {
+            this.CurrentFloorNumber = currentFloorNumber;
             this.DistanceFromStartingFloor = this.CurrentFloorNumber - this.StartingFloorNumber;
             this.TotalReachedFloors = this.DistanceFromStartingFloor + 1;
         }
@@ -71,15 +80,15 @@ namespace DeepDungeonTracker
                 this.BaseScore = -10;
         }
 
-        private void CharacterScoreCalculation() => this.CharacterScore = (this.SaveSlot.AetherpoolArm + this.SaveSlot.AetherpoolArmor) * 10 + this.SaveSlot.CurrentLevel * 500;
+        private void CharacterScoreCalculation(int level) => this.CharacterScore = (this.AetherpoolArm + this.AetherpoolArmor) * 10 + level * 500;
 
         private void FloorScoreCalculation()
         {
             var total = 0;
-            total += (430 - ((198 - this.SaveSlot.AetherpoolArm - this.SaveSlot.AetherpoolArmor) * 10)) * this.DistanceFromStartingFloor;
+            total += (430 - ((198 - this.AetherpoolArm - this.AetherpoolArmor) * 10)) * this.DistanceFromStartingFloor;
             total += (int)(this.CurrentFloorNumber - (this.StartingFloorNumber + Math.Truncate(this.DistanceFromStartingFloor / 10.0))) * 50 * 91;
             total += (int)Math.Truncate(this.DistanceFromStartingFloor / 10.0) * this.Duty * 300;
-            total += this.FloorScoreCalculation(false);
+            total += this.FloorCompletionScoreCalculation();
             this.FloorScore = total;
         }
 
@@ -129,8 +138,8 @@ namespace DeepDungeonTracker
         private void KillScoreCalculation()
         {
             var floors = this.SaveSlot.FloorSets.SelectMany(x => x.Floors);
-            var normalFloors = floors.Where(this.IsNormalFloor);
-            var bonusFloors = floors.Where(this.IsBonusFloor);
+            var normalFloors = floors.Where(x => x.Number >= 1 && x.Number <= this.LastNormalFloorNumber());
+            var bonusFloors = floors.Where(x => x.Number >= this.LastNormalFloorNumber() + 1 && x.Number <= this.LastBonusFloorNumber());
 
             var killsBonusException = bonusFloors.Sum(x => x.Mimics + x.Mandragoras) + bonusFloors.Sum(x => x.NPCs) + bonusFloors.Where(x => x.IsLastFloor()).Sum(x => x.Kills);
             var kills = normalFloors.Sum(x => x.Kills) + killsBonusException;
@@ -141,16 +150,21 @@ namespace DeepDungeonTracker
             this.KillScore = (floorBonus * kills) + ((floorBonus + this.Duty) * killsBonus);
         }
 
-        public void TotalScoreCalculation(bool calculateScore)
+        public void TotalScoreCalculation(bool calculateScore, bool includeFloorCompletion)
         {
-            if (!this.IsValidStartingFloor() || !calculateScore)
+            if ((this.StartingFloorNumber != 1 && this.StartingFloorNumber != this.ShortcutStartingFloorNumber()) || !calculateScore)
             {
                 this.TotalScore = 0;
                 return;
             }
 
+            var currentFloorNumber = this.CurrentFloorNumber;
+
+            if (includeFloorCompletion)
+                this.FloorCompletionUpdate(currentFloorNumber > this.LastNormalFloorNumber() ? this.LastBonusFloorNumber() : this.LastNormalFloorNumber());
+
             this.BaseScoreCalculation();
-            this.CharacterScoreCalculation();
+            this.CharacterScoreCalculation(!includeFloorCompletion ? this.CurrentLevel : this.Level());
             this.FloorScoreCalculation();
             this.MapScoreCalculation();
             this.CofferScoreCalculation();
@@ -163,15 +177,20 @@ namespace DeepDungeonTracker
             this.NonKillScoreCalculation();
             this.KillScoreCalculation();
             this.TotalScore = this.NonKillScore + this.KillScore;
+
+            if (includeFloorCompletion)
+                this.FloorCompletionUpdate(currentFloorNumber);
         }
 
-        protected abstract int FloorScoreCalculation(bool includeFloorCompletion);
+        protected abstract int FloorCompletionScoreCalculation();
 
-        protected abstract bool IsValidStartingFloor();
+        protected abstract int Level();
 
-        protected abstract bool IsNormalFloor(Floor floor);
+        protected abstract int ShortcutStartingFloorNumber();
 
-        protected abstract bool IsBonusFloor(Floor floor);
+        protected abstract int LastNormalFloorNumber();
+
+        protected abstract int LastBonusFloorNumber();
 
         protected abstract int KillScoreMultiplier();
     }

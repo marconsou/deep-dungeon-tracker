@@ -72,15 +72,15 @@ namespace DeepDungeonTracker
             this.CheckBox(config.ShowFloorEffectPomanders, x => config.ShowFloorEffectPomanders = x, "Show floor effect pomanders");
             WindowEx.Tooltip("Show pomander icons (at the top left of the window) representing their effect on the current floor.");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
-            this.CheckBox(config.IsFloorVisible, x => config.IsFloorVisible = x, "##IsFloorVisible");
+            this.CheckBox(config.IsFloorNumberVisible, x => config.IsFloorNumberVisible = x, "##IsFloorNumberVisible");
             ImGui.SameLine();
             this.ColorEdit4(config.FloorNumberColor, x => config.FloorNumberColor = x, "Floor");
             ImGui.SameLine();
-            this.CheckBox(config.IsSetVisible, x => config.IsSetVisible = x, "##IsSetVisible");
+            this.CheckBox(config.IsSetNumberVisible, x => config.IsSetNumberVisible = x, "##IsSetNumberVisible");
             ImGui.SameLine();
             this.ColorEdit4(config.SetNumberColor, x => config.SetNumberColor = x, "Set");
             ImGui.SameLine();
-            this.CheckBox(config.IsTotalVisible, x => config.IsTotalVisible = x, "##IsTotalVisible");
+            this.CheckBox(config.IsTotalNumberVisible, x => config.IsTotalNumberVisible = x, "##IsTotalNumberVisible");
             ImGui.SameLine();
             this.ColorEdit4(config.TotalNumberColor, x => config.TotalNumberColor = x, "Total");
 
@@ -139,6 +139,8 @@ namespace DeepDungeonTracker
             WindowEx.Tooltip("You need to be either inside a Deep Dungeon or in the area outside to get into it.");
             ImGui.SameLine();
             this.CheckBox(config.ShowInBetweenFloors, x => config.ShowInBetweenFloors = x, "Show in between floors");
+            this.CheckBox(config.IncludeFloorCompletion, x => config.IncludeFloorCompletion = x, "Include floor completion");
+            WindowEx.Tooltip("Include all floor completion-related score up to the floor where it shows the next score result window.");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
             WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");
@@ -150,7 +152,7 @@ namespace DeepDungeonTracker
         {
             var config = this.Configuration.Statistics;
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
-            this.ColorEdit4(config.TimeColor, x => config.TimeColor = x, "Floor Time");
+            this.ColorEdit4(config.FloorTimeColor, x => config.FloorTimeColor = x, "Floor Time");
             ImGui.SameLine();
             this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
             ImGui.NewLine();

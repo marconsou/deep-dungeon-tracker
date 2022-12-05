@@ -70,14 +70,14 @@ namespace DeepDungeonTracker
             var left = 15.0f;
             var top = 50.0f;
             var lineHeight = 30.0f;
-            var skipNPC = (config.Fields?[4].Show ?? false) && this.Data.Common.DeepDungeon != DeepDungeon.ThePalaceOfTheDead;
+            var skipNPC = (config.Fields?[4].Show ?? false) && this.Data.Common.DeepDungeon != DeepDungeon.PalaceOfTheDead;
             var numberOfLines = (config.Fields?.Count(x => x.Show) ?? 0) + (!skipNPC ? 0 : -1);
             var width = 380.0f;
             var height = (top + (lineHeight * numberOfLines) - 3.0f);
             var columnX = 170;
             var spacing = 5.0f;
             var offsetX = 76.0f + spacing;
-            width = columnX - 27.0f + (Convert.ToInt32(config.IsFloorVisible) + Convert.ToInt32(config.IsSetVisible) + Convert.ToInt32(config.IsTotalVisible)) * offsetX;
+            width = columnX - 27.0f + (Convert.ToInt32(config.IsFloorNumberVisible) + Convert.ToInt32(config.IsSetNumberVisible) + Convert.ToInt32(config.IsTotalNumberVisible)) * offsetX;
 
             this.FieldCalls = new[] { Kills, Mimics, Mandragoras, Mimicgoras, !skipNPC ? NPCs : null, Coffers, Enchantments, Traps, Deaths, RegenPotions, Potsherds, Lurings, Maps, TimeBonuses };
 
@@ -87,17 +87,17 @@ namespace DeepDungeonTracker
             var y = top;
             x = columnX;
 
-            if (config.IsFloorVisible)
+            if (config.IsFloorNumberVisible)
             {
                 ui.DrawTextMiedingerMediumW00(x, 20.0f, "Floor", Color.White, Align.Center);
                 x += offsetX;
             }
-            if (config.IsSetVisible)
+            if (config.IsSetNumberVisible)
             {
                 ui.DrawTextMiedingerMediumW00(x, 20.0f, "Set", Color.White, Align.Center);
                 x += offsetX;
             }
-            if (config.IsTotalVisible)
+            if (config.IsTotalNumberVisible)
                 ui.DrawTextMiedingerMediumW00(x, 20.0f, "Total", Color.White, Align.Center);
 
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
@@ -161,7 +161,7 @@ namespace DeepDungeonTracker
             var iconOffsetY = 7.0f;
             var x = columnX;
             ui.DrawTextAxisLatinPro(15.0f, y, label, Color.White, Align.Left);
-            if (config.IsFloorVisible)
+            if (config.IsFloorNumberVisible)
             {
                 var valueX = x;
                 var valueY = y;
@@ -174,7 +174,7 @@ namespace DeepDungeonTracker
                 }
                 x += offsetX;
             }
-            if (config.IsSetVisible)
+            if (config.IsSetNumberVisible)
             {
                 var valueX = x;
                 var valueY = y;
@@ -187,7 +187,7 @@ namespace DeepDungeonTracker
                 }
                 x += offsetX;
             }
-            if (config.IsTotalVisible)
+            if (config.IsTotalNumberVisible)
             {
                 var valueX = x;
                 var valueY = y;
