@@ -77,13 +77,13 @@ namespace DeepDungeonTracker
             var height = 84.0f;
 
             ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Score", Color.White, Align.Center);
+            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Score", Color.White, Alignment.Center);
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
 
             var x = width - 14.0f;
             var y = 70.0f;
 
-            ui.DrawNumber(x, y, this.GradualScore, true, Color.White, Align.Right);
+            ui.DrawNumber(x, y, this.GradualScore, true, Color.White, Alignment.Right);
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }
     }
