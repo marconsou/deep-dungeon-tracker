@@ -7,6 +7,4 @@ Save backup and option to load a file from path.
 NodeUtility.CreateTextNode.Malloc.
 [wait for next .net?] Map = false clear MapData.
 [Fixed?] Disable some features for party.
-[Fixed?] Time bonus icon bug (blinking) when entering DD.
-Tooltip/Info about kill (HoH Mag.) /map/aetherpool/potsherds (from coffer)/Score is Duty Complete (Information Tab).
 Reduce Draw Commands.

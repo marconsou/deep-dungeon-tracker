@@ -47,6 +47,11 @@ namespace DeepDungeonTracker
                     this.Statistics();
                     ImGui.EndTabItem();
                 }
+                if (ImGui.BeginTabItem("Information"))
+                {
+                    this.Information();
+                    ImGui.EndTabItem();
+                }
                 ImGui.EndTabBar();
             }
         }
@@ -204,6 +209,25 @@ namespace DeepDungeonTracker
             }
             else
                 ImGui.TextColored(Color.Gray, "No save slots!");
+        }
+
+        private void Information()
+        {
+            ImGui.TextColored(Color.Gold, "About Scoring:");
+            ImGui.TextColored(Color.Green, "Kills:");
+            ImGui.TextWrapped(
+                "All enemies killed from a distance of more than two rooms cannot be counted. " +
+                "If you use magicite, do so in the center of the floor, covering all enemies killed (as much as possible). " +
+                "\nKilling an enemy takes almost 2 seconds to be counted. If you kill a boss, don't leave as soon as possible, or you could miss it.");
+            ImGui.NewLine();
+            ImGui.TextColored(Color.Green, "Potsherds:");
+            ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
+            ImGui.NewLine();
+            ImGui.TextColored(Color.Green, "Maps:");
+            ImGui.TextWrapped("If you keep your map menu closed, you must open it at least once to check if the map is fully revealed.");
+            ImGui.NewLine();
+            ImGui.TextColored(Color.Green, "Score:");
+            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.");
         }
     }
 }
