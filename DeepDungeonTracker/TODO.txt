@@ -1,10 +1,8 @@
-﻿Reset button config.
-Other languages test.
-Windows default position test.
-Windows simplified mode.
+﻿Windows simple mode.
 Additional commands to show/hide specific windows.
 Save backup and option to load a file from path.
 NodeUtility.CreateTextNode.Malloc.
-[wait for next .net?] Map = false clear MapData.
-[Fixed?] Disable some features for party.
+Map = false clear MapData (wait for next .net?).
+Disable some features for party.
+Time bonus icon bug (blinking) when entering DD.
 Reduce Draw Commands.
