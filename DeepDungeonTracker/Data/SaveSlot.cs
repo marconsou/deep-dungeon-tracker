@@ -104,8 +104,8 @@ namespace DeepDungeonTracker
 
         public void AetherpoolUpdate(int arm, int armor)
         {
-            this.AetherpoolArm = arm;
-            this.AetherpoolArmor = armor;
+            this.AetherpoolArm = Math.Max(this.AetherpoolArm, arm);
+            this.AetherpoolArmor = Math.Max(this.AetherpoolArmor, armor);
         }
     }
 }
