@@ -54,6 +54,9 @@ namespace DeepDungeonTracker
                 }
                 ImGui.EndTabBar();
             }
+
+            ImGui.Separator();
+            this.Button(this.Configuration.Reset, "Reset all settings to default", true);
         }
 
         private void General()
@@ -213,7 +216,6 @@ namespace DeepDungeonTracker
 
         private void Information()
         {
-            ImGui.TextColored(Color.Gold, "About Scoring:");
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
                 "All enemies killed from a distance of more than two rooms cannot be counted. " +
