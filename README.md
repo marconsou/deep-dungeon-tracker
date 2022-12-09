@@ -11,7 +11,8 @@ Type `/ddt` to open the configuration menu.
 - Scoring.
 
 ## Examples
-???
+![image1](https://user-images.githubusercontent.com/27457164/206748558-13186221-83b2-4bc2-9513-2dd1507ec1ea.png)
+
 
 ## Credits
 Scoring formula testing by Alpha ([#1](https://docs.google.com/document/d/1MnR2Xtj2lol1LESgscI6yi_1xcAeP3FBwJecbD-EiwE) and [#2](https://docs.google.com/spreadsheets/d/1FJGDlSI7yHVVoD3wXRYDjxMWfId8QOkEZkRXpZgH9Yk)).
