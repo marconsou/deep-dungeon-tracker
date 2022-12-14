@@ -16,3 +16,5 @@ Type `/ddt` to open the configuration menu.
 
 ## Credits
 Scoring formula testing by Alpha ([#1](https://docs.google.com/document/d/1MnR2Xtj2lol1LESgscI6yi_1xcAeP3FBwJecbD-EiwE) and [#2](https://docs.google.com/spreadsheets/d/1FJGDlSI7yHVVoD3wXRYDjxMWfId8QOkEZkRXpZgH9Yk)).
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/marconsou)
