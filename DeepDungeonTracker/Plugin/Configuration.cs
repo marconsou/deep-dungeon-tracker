@@ -77,6 +77,8 @@ namespace DeepDungeonTracker
 
             public bool ShowInBetweenFloors { get; set; }
 
+            public bool ShowTitle { get; set; } = true;
+
             public bool ShowFloorTime { get; set; } = true;
 
             public float Scale { get; set; } = 1.0f;
@@ -97,6 +99,8 @@ namespace DeepDungeonTracker
             public bool Show { get; set; }
 
             public bool ShowInBetweenFloors { get; set; }
+
+            public bool ShowTitle { get; set; } = true;
 
             public bool IncludeFloorCompletion { get; set; }
 
