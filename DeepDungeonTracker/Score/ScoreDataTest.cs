@@ -66,11 +66,11 @@ namespace DeepDungeonTracker
                 ScoreDataTest.SaveSlot.FloorSets[!bonus ? 0 : ^1].Floors[0].NPCKilled();
         }
 
-        private static void Coffers(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Coffers.AddRange(Enumerable.Repeat(Coffer.PomanderOfSafety, total).ToList());
+        private static void Coffers(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Coffers.ToList().AddRange(Enumerable.Repeat(Coffer.PomanderOfSafety, total).ToList());
 
-        private static void Enchantments(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Enchantments.AddRange(Enumerable.Repeat(Enchantment.Blindness, total).ToList());
+        private static void Enchantments(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Enchantments.ToList().AddRange(Enumerable.Repeat(Enchantment.Blindness, total).ToList());
 
-        private static void Traps(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Traps.AddRange(Enumerable.Repeat(Trap.Landmine, total).ToList());
+        private static void Traps(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Traps.ToList().AddRange(Enumerable.Repeat(Trap.Landmine, total).ToList());
 
         private static void Deaths(int total)
         {

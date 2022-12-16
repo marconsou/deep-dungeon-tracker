@@ -34,7 +34,7 @@ namespace DeepDungeonTracker
             ushort eventStart = 0;
             ushort systemLogMessage = 0;
 
-            var result = await NetworkStream.Load<ImmutableList<Root>>("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json");
+            var result = await NetworkStream.Load<ImmutableList<Root>>(new("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json"));
             var opCodes = result?.Find(x => x.Region == "Global")?.Lists.ServerZoneIpcType;
 
             for (var i = 0; i < opCodes?.Count; i++)

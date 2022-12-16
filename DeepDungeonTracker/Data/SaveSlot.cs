@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -28,6 +28,9 @@ namespace DeepDungeonTracker
         [JsonInclude]
         public int KOs { get { return this._KOs; } private set { this._KOs = Math.Min(value, 99); } }
 
+        [JsonInclude]
+        public Collection<FloorSet> FloorSets { get; private set; } = new();
+
         public SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, int currentLevel = 0)
         {
             this.DeepDungeon = deepDungeon;
@@ -37,7 +40,13 @@ namespace DeepDungeonTracker
 
         public void KOed() => this.KOs++;
 
+        public TimeSpan Time() => new(this.FloorSets.Sum(x => x.Time().Ticks));
+
+        public int Score() => this.FloorSets.Sum(x => x.Score());
+
         public int Kills() => this.FloorSets.Sum(x => x.Kills());
+
+        public int CairnOfPassageKills() => this.FloorSets.Sum(x => x.CairnOfPassageKills());
 
         public int Mimics() => this.FloorSets.Sum(x => x.Mimics());
 
@@ -62,13 +71,6 @@ namespace DeepDungeonTracker
         public int Maps() => this.FloorSets.Sum(x => x.Maps());
 
         public int TimeBonuses() => this.FloorSets.Sum(x => x.TimeBonus ? 1 : 0);
-
-        public TimeSpan Time() => new(this.FloorSets.Sum(x => x.Time().Ticks));
-
-        public int Score() => this.FloorSets.Sum(x => x.Score());
-
-        [JsonInclude]
-        public List<FloorSet> FloorSets { get; private set; } = new();
 
         public FloorSet? CurrentFloorSet() => this.FloorSets.LastOrDefault();
 

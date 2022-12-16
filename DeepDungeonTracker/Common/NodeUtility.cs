@@ -68,7 +68,7 @@ namespace DeepDungeonTracker
 
         public static void AccurateTargetHPPercentage(GameGui gameGui, TargetManager targetManager, string addonName, uint nodeId, int gaugeBarNodeIndex, bool isNodeVisible)
         {
-            var addon = (AtkUnitBase*)gameGui.GetAddonByName(addonName, 1);
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName(addonName, 1);
             if (addon == null)
                 return;
 
@@ -112,7 +112,7 @@ namespace DeepDungeonTracker
                     return;
             }
 
-            var target = targetManager.SoftTarget ?? targetManager.Target;
+            var target = targetManager?.SoftTarget ?? targetManager?.Target;
             var character = target as Character;
 
             var targetHPPercentage = 0.0f;
@@ -151,13 +151,13 @@ namespace DeepDungeonTracker
 
         public static (bool, int, int) AetherpoolMenu(GameGui gameGui)
         {
-            var addon = (AtkUnitBase*)gameGui.GetAddonByName("DeepDungeonMenu", 1);
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMenu", 1);
             return (addon != null) ? (true, NodeUtility.Aetherpool(addon, 6), NodeUtility.Aetherpool(addon, 5)) : (false, -1, -1);
         }
 
         public static (bool, int, int) AetherpoolStatus(GameGui gameGui)
         {
-            var addon = (AtkUnitBase*)gameGui.GetAddonByName("DeepDungeonStatus", 1);
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonStatus", 1);
             return (addon != null) ? (true, NodeUtility.Aetherpool(addon, 73), NodeUtility.Aetherpool(addon, 72)) : (false, -1, -1);
         }
 
@@ -185,7 +185,7 @@ namespace DeepDungeonTracker
             }
 
             var saveSlotNumber = 0;
-            var addon = (AtkUnitBase*)gameGui.GetAddonByName("DeepDungeonSaveData", 1);
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonSaveData", 1);
             if (addon == null)
                 return saveSlotNumber;
 
@@ -207,7 +207,7 @@ namespace DeepDungeonTracker
 
         public static (bool, int) MapFloorNumber(GameGui gameGui)
         {
-            var addon = (AtkUnitBase*)gameGui.GetAddonByName("DeepDungeonMap", 1);
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1);
             if (addon == null)
                 return (false, -1);
 
@@ -226,7 +226,7 @@ namespace DeepDungeonTracker
 
         public static IImmutableList<Node>? MapRoom(GameGui gameGui)
         {
-            var addon = (AtkUnitBase*)gameGui.GetAddonByName("DeepDungeonMap", 1);
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1);
             if (addon == null)
                 return null;
 
@@ -257,9 +257,43 @@ namespace DeepDungeonTracker
             return nodes;
         }
 
+        public static bool CairnOfPassageActivation(GameGui gameGui)
+        {
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1);
+            if (addon == null)
+                return false;
+
+            var skipFirst = false;
+            for (var i = addon->UldManager.NodeListCount - 1; i >= 0; i--)
+            {
+                var resNode = addon->UldManager.NodeList[i];
+                if (resNode == null)
+                    continue;
+
+                var componentNode = resNode->GetAsAtkComponentNode();
+                if (componentNode == null)
+                    continue;
+
+                var imageNode = componentNode->Component->UldManager.NodeListCount > 1 ? componentNode->Component->UldManager.NodeList[1]->GetAsAtkImageNode() : null;
+                if (imageNode == null)
+                    continue;
+
+                if (imageNode->PartsList->PartCount == 11)
+                {
+                    if (!skipFirst)
+                    {
+                        skipFirst = true;
+                        continue;
+                    }
+                    return imageNode->PartId == 10;
+                }
+            }
+            return false;
+        }
+
         public static bool IsNowLoading(GameGui gameGui)
         {
-            var addon = (AtkUnitBase*)gameGui.GetAddonByName("NowLoading", 1);
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("NowLoading", 1);
             return addon != null && addon->IsVisible;
         }
     }

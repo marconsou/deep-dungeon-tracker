@@ -11,17 +11,18 @@ namespace DeepDungeonTracker
         public FloorType FloorType { get; private set; }
 
         [JsonInclude]
-        public IList<int?> RoomIds { get; private set; } = Enumerable.Repeat<int?>(null, MapData.GetLength() * MapData.GetLength()).ToList();
+        public IList<int?> RoomIds { get; private set; } = Enumerable.Repeat<int?>(null, MapData.Length * MapData.Length).ToList();
 
-        public static int GetLength() => 5;
+        [JsonIgnore]
+        public static int Length => 5;
 
         private static int GetIndex(int x, int y)
         {
             var min = 0;
-            var max = MapData.GetLength() - 1;
+            var max = MapData.Length - 1;
             x = Math.Clamp(x, min, max);
             y = Math.Clamp(y, min, max);
-            return x + (y * MapData.GetLength());
+            return x + (y * MapData.Length);
         }
 
         public int? GetId(int x, int y) => this.RoomIds[MapData.GetIndex(x, y)];

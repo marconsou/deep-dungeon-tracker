@@ -6,3 +6,6 @@ Map = false clear MapData (wait for next .net?).
 Disable some features for party.
 Time bonus icon bug (blinking) when entering DD.
 Reduce Draw Commands.
+Job icon.
+Floor Set Time/Score Window title remove.
+Texture icon reorder.

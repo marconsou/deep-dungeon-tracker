@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,10 @@ namespace DeepDungeonTracker
         public bool EnableFlyTextScore { get; private set; }
 
         private bool SkipTimeBonusCheck { get; set; }
+
+        private bool IsCairnOfPassageActivated { get; set; }
+
+        private HashSet<uint> DeadEnemyIds { get; set; } = new();
 
         public DeepDungeon DeepDungeon { get; private set; }
 
@@ -63,6 +68,8 @@ namespace DeepDungeonTracker
             this.IsSoloSaveSlot = true;
             this.EnableFlyTextScore = false;
             this.SkipTimeBonusCheck = false;
+            this.IsCairnOfPassageActivated = false;
+            this.DeadEnemyIds = new();
             this.DutyStatus = DutyStatus.None;
             this.CurrentSaveSlot?.ContentIdUpdate(0);
         }
@@ -184,6 +191,31 @@ namespace DeepDungeonTracker
             this.CurrentSaveSlot?.CurrentFloorSet()?.CheckForTimeBonus(this.FloorSetTime.TotalTime);
         }
 
+        public void CheckForCairnOfPassageActivation(DataText dataText)
+        {
+            if (this.IsCairnOfPassageActivated)
+                return;
+
+            foreach (var enemy in Service.ObjectTable)
+            {
+                var character = enemy as Character;
+
+                if (character == null)
+                    continue;
+
+                if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || dataText.IsMandragora(character.Name.TextValue).Item1))
+                {
+                    if (!this.IsCairnOfPassageActivated && this.DeadEnemyIds.Add(character.ObjectId))
+                    {
+                        this.CurrentSaveSlot?.CurrentFloor()?.CairnOfPassageShines();
+                        break;
+                    }
+                }
+            }
+
+            this.IsCairnOfPassageActivated = NodeUtility.CairnOfPassageActivation(Service.GameGui);
+        }
+
         public void DeepDungeonUpdate(DataText dataText, ushort territoryType)
         {
             var deepDungeon = this.DeepDungeon;
@@ -257,13 +289,15 @@ namespace DeepDungeonTracker
 
         public void CheckForEnemyKilled(DataText dataText, string name)
         {
-            this.CurrentSaveSlot?.CurrentFloor()?.EnemyKilled();
+            var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
+
+            currentFloor?.EnemyKilled();
             if (dataText.IsMimic(name).Item1)
-                this.CurrentSaveSlot?.CurrentFloor()?.MimicKilled();
+                currentFloor?.MimicKilled();
             else if (dataText.IsMandragora(name).Item1)
-                this.CurrentSaveSlot?.CurrentFloor()?.MandragoraKilled();
+                currentFloor?.MandragoraKilled();
             else if (dataText.IsNPC(name).Item1)
-                this.CurrentSaveSlot?.CurrentFloor()?.NPCKilled();
+                currentFloor?.NPCKilled();
         }
 
         public void CheckForBossKilled(DataText dataText, string name)
@@ -345,6 +379,8 @@ namespace DeepDungeonTracker
             if (this.ContentId != 0 && this.IsTransferenceInitiated)
             {
                 this.IsTransferenceInitiated = false;
+                this.IsCairnOfPassageActivated = false;
+                this.DeadEnemyIds = new();
                 var time = this.FloorSetTime.AddFloor();
                 this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(time);
                 this.FloorScoreUpdate();

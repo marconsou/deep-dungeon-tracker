@@ -55,7 +55,7 @@ namespace DeepDungeonTracker
 
         public int AetherpoolArmor => this.SaveSlot.AetherpoolArmor;
 
-        public Score(SaveSlot saveSlot, bool isDutyComplete)
+        protected Score(SaveSlot saveSlot, bool isDutyComplete)
         {
             this.SaveSlot = saveSlot;
             var dutyFailed = Score.DutyComplete - ((saveSlot.KOs + 1) * 10);
@@ -137,9 +137,9 @@ namespace DeepDungeonTracker
 
         private void KillScoreCalculation()
         {
-            var floors = this.SaveSlot.FloorSets.SelectMany(x => x.Floors);
-            var normalFloors = floors.Where(x => x.Number >= 1 && x.Number <= this.LastNormalFloorNumber());
-            var bonusFloors = floors.Where(x => x.Number >= this.LastNormalFloorNumber() + 1 && x.Number <= this.LastBonusFloorNumber());
+            var floors = this.SaveSlot.FloorSets.SelectMany(x => x.Floors).ToList();
+            var normalFloors = floors.Where(x => x.Number >= 1 && x.Number <= this.LastNormalFloorNumber()).ToList();
+            var bonusFloors = floors.Where(x => x.Number >= this.LastNormalFloorNumber() + 1 && x.Number <= this.LastBonusFloorNumber()).ToList();
 
             var killsBonusException = bonusFloors.Sum(x => x.Mimics + x.Mandragoras) + bonusFloors.Sum(x => x.NPCs) + bonusFloors.Where(x => x.IsLastFloor()).Sum(x => x.Kills);
             var kills = normalFloors.Sum(x => x.Kills) + killsBonusException;

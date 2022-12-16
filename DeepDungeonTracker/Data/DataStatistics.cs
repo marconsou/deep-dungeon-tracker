@@ -80,12 +80,12 @@ namespace DeepDungeonTracker
 
             if (this.FloorSetStatistics != FloorSetStatistics.Summary)
             {
-                this.FloorSet = this.SaveSlot?.FloorSets.Find(x => x.FirstFloor()?.Number == ((int)this.FloorSetStatistics * 10) - 9);
+                this.FloorSet = this.SaveSlot?.FloorSets.FirstOrDefault(x => x.FirstFloor()?.Number == ((int)this.FloorSetStatistics * 10) - 9);
 
                 this.MiscellaneousByFloor = DataStatistics.GetMiscellaneousByFloorsList(this.FloorSet?.Floors ?? new());
-                this.CoffersByFloor = this.CoffersByFloor?.AddRange(this.FloorSet?.Floors.Select(x => x.Coffers.GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Coffer>>>.Empty);
-                this.EnchantmentsByFloor = this.EnchantmentsByFloor?.AddRange(this.FloorSet?.Floors.Select(x => x.Enchantments.GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count())).Take(3)) ?? ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty);
-                this.TrapsByFloor = this.TrapsByFloor?.AddRange(this.FloorSet?.Floors.Select(x => x.Traps.GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count())).Take(6)) ?? ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty);
+                this.CoffersByFloor = this.CoffersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Coffers.GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Coffer>>>.Empty);
+                this.EnchantmentsByFloor = this.EnchantmentsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Enchantments.GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count())).Take(3)) ?? ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty);
+                this.TrapsByFloor = this.TrapsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Traps.GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count())).Take(6)) ?? ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty);
 
                 this.MiscellaneousTotal = DataStatistics.GetMiscellaneousByFloorSet(this.FloorSet);
                 this.LastFloorTotal = (this.MiscellaneousByFloor?.Count == 10) ? this.MiscellaneousByFloor[^1] : default;
@@ -124,6 +124,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, floors?.Sum(x=> x.Kills) ?? 0),
+                new (Miscellaneous.CairnOfPassage, floors?.Sum(x=> x.CairnOfPassageKills) ?? 0),
                 new (Miscellaneous.Mimic, floors?.Sum(x=> x.Mimics) ?? 0),
                 new (Miscellaneous.Mandragora, floors?.Sum(x=> x.Mandragoras) ?? 0),
                 new (Miscellaneous.NPC, floors?.Sum(x=> x.NPCs) ?? 0),
@@ -140,6 +141,7 @@ namespace DeepDungeonTracker
                 return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
                 {
                     new (Miscellaneous.Enemy, floor?.Kills ?? 0),
+                    new (Miscellaneous.CairnOfPassage, floor?.CairnOfPassageKills ?? 0),
                     new (Miscellaneous.Mimic, floor?.Mimics ?? 0),
                     new (Miscellaneous.Mandragora, floor?.Mandragoras ?? 0),
                     new (Miscellaneous.NPC, floor?.NPCs ?? 0),
@@ -156,6 +158,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, floorSet?.Kills() ?? 0),
+                new (Miscellaneous.CairnOfPassage, floorSet?.CairnOfPassageKills() ?? 0),
                 new (Miscellaneous.Mimic, floorSet?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, floorSet?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, floorSet?.NPCs() ?? 0),
@@ -171,6 +174,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, saveSlot?.Kills() ?? 0),
+                new (Miscellaneous.CairnOfPassage, saveSlot?.CairnOfPassageKills() ?? 0),
                 new (Miscellaneous.Mimic, saveSlot?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, saveSlot?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, saveSlot?.NPCs() ?? 0),

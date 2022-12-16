@@ -172,7 +172,7 @@ namespace DeepDungeonTracker
                 this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, statistics.EnchantmentsTotal);
                 this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, trapOffset, trapOffset, textOffset, textOffset, iconSize, statistics.TrapsTotal);
 
-                if (statistics.LastFloorTotal?.Count() > 0)
+                if (statistics.LastFloorTime != default || statistics.LastFloorScore != 0)
                 {
                     x = baseX + (floorWidth * 2);
                     y = baseY;
@@ -239,23 +239,23 @@ namespace DeepDungeonTracker
                 else
                 {
                     var miscellaneousValue = (Miscellaneous)(Enum)item.Value;
-                    if (mapData != null && miscellaneousValue == Miscellaneous.Map && mapData?.FloorType != FloorType.None)
+                    if (mapData != null && miscellaneousValue == Miscellaneous.Map && mapData.FloorType != FloorType.None)
                     {
-                        for (var j = 0; j < MapData.GetLength(); j++)
+                        for (var j = 0; j < MapData.Length; j++)
                         {
-                            for (var i = 0; i < MapData.GetLength(); i++)
+                            for (var i = 0; i < MapData.Length; i++)
                             {
-                                var size = (44.0f / 9.0f) * ((mapData?.FloorType == FloorType.Normal) ? 2.0f : 1.0f);
+                                var size = (44.0f / 9.0f) * ((mapData.FloorType == FloorType.Normal) ? 2.0f : 1.0f);
                                 var posX = x + (i * size);
                                 var posY = y + (j * size);
-                                var id = mapData?.GetId(i, j);
+                                var id = mapData.GetId(i, j);
 
                                 if (id == null)
                                     continue;
 
-                                if (mapData?.FloorType == FloorType.Normal)
+                                if (mapData.FloorType == FloorType.Normal)
                                     ui.DrawMapNormal(posX, posY, id.Value);
-                                else if (mapData?.FloorType == FloorType.HallOfFallacies)
+                                else if (mapData.FloorType == FloorType.HallOfFallacies)
                                     ui.DrawMapHallOfFallacies(posX, posY, id.Value);
                             }
                         }

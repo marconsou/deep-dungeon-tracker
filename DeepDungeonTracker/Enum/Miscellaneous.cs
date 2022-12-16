@@ -9,6 +9,7 @@
         Death,
         RegenPotion,
         Map,
-        TimeBonus
+        TimeBonus,
+        CairnOfPassage
     }
 }
