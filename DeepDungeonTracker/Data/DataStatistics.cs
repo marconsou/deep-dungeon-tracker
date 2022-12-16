@@ -27,9 +27,11 @@ namespace DeepDungeonTracker
 
         public IImmutableList<IEnumerable<StatisticsItem<Trap>>>? TrapsByFloor { get; private set; }
 
-        public IEnumerable<StatisticsItem<Miscellaneous>>? MiscellaneousTotal { get; private set; }
+        public IImmutableList<IEnumerable<StatisticsItem<Pomander>>>? PomandersByFloor { get; private set; }
 
-        public IEnumerable<StatisticsItem<Miscellaneous>>? LastFloorTotal { get; private set; }
+        public IEnumerable<StatisticsItem<Miscellaneous>>? MiscellaneousLastFloor { get; private set; }
+
+        public IEnumerable<StatisticsItem<Miscellaneous>>? MiscellaneousTotal { get; private set; }
 
         public IEnumerable<StatisticsItem<Coffer>>? CoffersTotal { get; private set; }
 
@@ -37,13 +39,17 @@ namespace DeepDungeonTracker
 
         public IEnumerable<StatisticsItem<Trap>>? TrapsTotal { get; private set; }
 
-        public TimeSpan LastFloorTime { get; private set; }
+        public IEnumerable<StatisticsItem<Pomander>>? PomandersLastFloor { get; private set; }
 
-        public TimeSpan TotalTime { get; private set; }
+        public IEnumerable<StatisticsItem<Pomander>>? PomandersTotal { get; private set; }
 
-        public int LastFloorScore { get; private set; }
+        public TimeSpan TimeLastFloor { get; private set; }
 
-        public int TotalScore { get; private set; }
+        public TimeSpan TimeTotal { get; private set; }
+
+        public int ScoreLastFloor { get; private set; }
+
+        public int ScoreTotal { get; private set; }
 
         public void FloorSetStatisticsPrevious()
         {
@@ -77,6 +83,7 @@ namespace DeepDungeonTracker
             this.CoffersByFloor = ImmutableArray<IEnumerable<StatisticsItem<Coffer>>>.Empty;
             this.EnchantmentsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty;
             this.TrapsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty;
+            this.PomandersByFloor = ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty;
 
             if (this.FloorSetStatistics != FloorSetStatistics.Summary)
             {
@@ -86,36 +93,46 @@ namespace DeepDungeonTracker
                 this.CoffersByFloor = this.CoffersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Coffers.GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Coffer>>>.Empty);
                 this.EnchantmentsByFloor = this.EnchantmentsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Enchantments.GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count())).Take(3)) ?? ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty);
                 this.TrapsByFloor = this.TrapsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Traps.GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count())).Take(6)) ?? ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty);
+                this.PomandersByFloor = this.PomandersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty);
 
+                this.MiscellaneousLastFloor = (this.MiscellaneousByFloor?.Count == 10) ? this.MiscellaneousByFloor[^1] : default;
                 this.MiscellaneousTotal = DataStatistics.GetMiscellaneousByFloorSet(this.FloorSet);
-                this.LastFloorTotal = (this.MiscellaneousByFloor?.Count == 10) ? this.MiscellaneousByFloor[^1] : default;
+
                 this.CoffersTotal = this.FloorSet?.Floors.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count()));
                 this.EnchantmentsTotal = this.FloorSet?.Floors.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
                 this.TrapsTotal = this.FloorSet?.Floors.SelectMany(x => x.Traps).GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count()));
 
-                this.LastFloorTime = new(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
-                this.TotalTime = new(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);
+                this.PomandersLastFloor = this.FloorSet?.LastFloor()?.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9 - (this.MiscellaneousLastFloor?.Count() ?? 0));
+                this.PomandersTotal = this.FloorSet?.Floors.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()));
 
-                this.LastFloorScore = this.FloorSet?.LastFloor()?.Score ?? 0;
-                this.TotalScore = this.FloorSet?.Score() ?? 0;
+                this.TimeLastFloor = new(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
+                this.TimeTotal = new(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);
+
+                this.ScoreLastFloor = this.FloorSet?.LastFloor()?.Score ?? 0;
+                this.ScoreTotal = this.FloorSet?.Score() ?? 0;
             }
             else
             {
                 this.FloorSets = this.SaveSlot?.FloorSets;
+
                 var floors = this.FloorSets?.SelectMany(x => x.Floors);
                 var lastFloors = floors?.Where(x => x.IsLastFloor());
 
+                this.MiscellaneousLastFloor = DataStatistics.GetMiscellaneousByFloors(lastFloors);
                 this.MiscellaneousTotal = DataStatistics.GetMiscellaneousBySaveSlot(this.SaveSlot);
-                this.LastFloorTotal = DataStatistics.GetMiscellaneousByFloors(lastFloors);
+
                 this.CoffersTotal = floors?.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count()));
                 this.EnchantmentsTotal = floors?.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
                 this.TrapsTotal = floors?.SelectMany(x => x.Traps).GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count()));
 
-                this.LastFloorTime = new(lastFloors?.Sum(x => x.Time.Ticks) ?? default);
-                this.TotalTime = this.SaveSlot?.Time() ?? default;
+                this.PomandersLastFloor = lastFloors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9 - (this.MiscellaneousLastFloor?.Count() ?? 0));
+                this.PomandersTotal = floors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()));
 
-                this.LastFloorScore = lastFloors?.Sum(x => x.Score) ?? 0;
-                this.TotalScore = this.SaveSlot?.Score() ?? 0;
+                this.TimeLastFloor = new(lastFloors?.Sum(x => x.Time.Ticks) ?? default);
+                this.TimeTotal = this.SaveSlot?.Time() ?? default;
+
+                this.ScoreLastFloor = lastFloors?.Sum(x => x.Score) ?? 0;
+                this.ScoreTotal = this.SaveSlot?.Score() ?? 0;
             }
         }
 
@@ -124,7 +141,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, floors?.Sum(x=> x.Kills) ?? 0),
-                new (Miscellaneous.CairnOfPassage, floors?.Sum(x=> x.CairnOfPassageKills) ?? 0),
+                new (Miscellaneous.CairnOfPassageKill, floors?.Sum(x=> x.CairnOfPassageKills) ?? 0),
                 new (Miscellaneous.Mimic, floors?.Sum(x=> x.Mimics) ?? 0),
                 new (Miscellaneous.Mandragora, floors?.Sum(x=> x.Mandragoras) ?? 0),
                 new (Miscellaneous.NPC, floors?.Sum(x=> x.NPCs) ?? 0),
@@ -141,7 +158,7 @@ namespace DeepDungeonTracker
                 return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
                 {
                     new (Miscellaneous.Enemy, floor?.Kills ?? 0),
-                    new (Miscellaneous.CairnOfPassage, floor?.CairnOfPassageKills ?? 0),
+                    new (Miscellaneous.CairnOfPassageKill, floor?.CairnOfPassageKills ?? 0),
                     new (Miscellaneous.Mimic, floor?.Mimics ?? 0),
                     new (Miscellaneous.Mandragora, floor?.Mandragoras ?? 0),
                     new (Miscellaneous.NPC, floor?.NPCs ?? 0),
@@ -158,7 +175,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, floorSet?.Kills() ?? 0),
-                new (Miscellaneous.CairnOfPassage, floorSet?.CairnOfPassageKills() ?? 0),
+                new (Miscellaneous.CairnOfPassageKill, floorSet?.CairnOfPassageKills() ?? 0),
                 new (Miscellaneous.Mimic, floorSet?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, floorSet?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, floorSet?.NPCs() ?? 0),
@@ -174,7 +191,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, saveSlot?.Kills() ?? 0),
-                new (Miscellaneous.CairnOfPassage, saveSlot?.CairnOfPassageKills() ?? 0),
+                new (Miscellaneous.CairnOfPassageKill, saveSlot?.CairnOfPassageKills() ?? 0),
                 new (Miscellaneous.Mimic, saveSlot?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, saveSlot?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, saveSlot?.NPCs() ?? 0),

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker
 {
     public static class ScoreDataTest
     {
@@ -66,11 +64,23 @@ namespace DeepDungeonTracker
                 ScoreDataTest.SaveSlot.FloorSets[!bonus ? 0 : ^1].Floors[0].NPCKilled();
         }
 
-        private static void Coffers(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Coffers.ToList().AddRange(Enumerable.Repeat(Coffer.PomanderOfSafety, total).ToList());
+        private static void Coffers(int total)
+        {
+            for (var i = 0; i < total; i++)
+                ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].CofferOpened(Coffer.PomanderOfSafety);
+        }
 
-        private static void Enchantments(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Enchantments.ToList().AddRange(Enumerable.Repeat(Enchantment.Blindness, total).ToList());
+        private static void Enchantments(int total)
+        {
+            for (var i = 0; i < total; i++)
+                ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].EnchantmentAffected(Enchantment.Blindness);
+        }
 
-        private static void Traps(int total) => ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].Traps.ToList().AddRange(Enumerable.Repeat(Trap.Landmine, total).ToList());
+        private static void Traps(int total)
+        {
+            for (var i = 0; i < total; i++)
+                ScoreDataTest.SaveSlot.FloorSets[0].Floors[0].TrapTriggered(Trap.Landmine);
+        }
 
         private static void Deaths(int total)
         {
