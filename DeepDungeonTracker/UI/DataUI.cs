@@ -56,6 +56,8 @@ namespace DeepDungeonTracker
 
         public void DrawTrap(float x, float y, Trap trap) => this.Render.DrawUIElement(this.ResourceUI.Trap, x, y, 0.5f, (int)trap, 3, 2, Color.Red);
 
+        public void DrawPomander(float x, float y, Pomander pomander) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)pomander, 6, 5);
+
         public void DrawMapNormal(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapNormal, x, y, 1.0f / 9.0f, id, 4, 4);
 
         public void DrawMapHallOfFallacies(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapHallOfFallacies, x, y, 1.0f / 9.0f, id, 3, 3);

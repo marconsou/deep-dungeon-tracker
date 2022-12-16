@@ -296,22 +296,24 @@ namespace DeepDungeonTracker
         {
             var dataPtr = data.Item1;
             var logId = NetworkData.ExtractNumber(dataPtr, 4, 4);
-            var itemId = NetworkData.ExtractNumber(dataPtr, 12, 1);
             var goldCofferPomander = new[] { 7220, 7221 };
             var silverCofferPomander = new[] { 9206, 9207 };
             var silverCofferAetherpool = new[] { 7250, 7251, 7252, 7253 };
-            var useItem = 7254;
+            var usePomander = 7254;
+            var useMagicite = 9209;
             var transferenceInitiated = 7248;
             var discoverItem = new[] { 7279, 7280 };
 
             if (goldCofferPomander.Contains(logId))
-                this.Common.GoldCofferPomander(itemId);
+                this.Common.GoldCofferPomander(NetworkData.ExtractNumber(dataPtr, 12, 1));
             else if (silverCofferPomander.Contains(logId))
-                this.Common.SilverCofferPomander(itemId);
+                this.Common.SilverCofferPomander(NetworkData.ExtractNumber(dataPtr, 12, 1));
             else if (silverCofferAetherpool.Contains(logId))
                 this.Common.SilverCofferAetherpool();
-            else if (logId == useItem)
+            else if (logId == usePomander)
                 this.Common.PomanderUsed(NetworkData.ExtractNumber(dataPtr, 16, 1));
+            else if (logId == useMagicite)
+                this.Common.MagiciteUsed(NetworkData.ExtractNumber(dataPtr, 16, 1));
             else if (logId == transferenceInitiated)
                 this.Common.TransferenceInitiated();
             else if (discoverItem.Contains(logId))

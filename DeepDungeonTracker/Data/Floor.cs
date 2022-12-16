@@ -52,6 +52,13 @@ namespace DeepDungeonTracker
         [JsonPropertyName("Traps")]
         public Collection<Trap>? SerializationTraps { get => this.Traps?.Count > 0 ? this.Traps : null; private set => this.Traps = value ?? new(); }
 
+        [JsonIgnore]
+        public Collection<Pomander> Pomanders { get; private set; } = new();
+
+        [JsonInclude]
+        [JsonPropertyName("Pomanders")]
+        public Collection<Pomander>? SerializationPomanders { get => this.Pomanders?.Count > 0 ? this.Pomanders : null; private set => this.Pomanders = value ?? new(); }
+
         [JsonInclude]
         public int Deaths { get; private set; }
 
@@ -83,6 +90,19 @@ namespace DeepDungeonTracker
         public void MandragoraKilled() => this.Mandragoras++;
 
         public void NPCKilled() => this.NPCs++;
+
+        public void CofferOpened(Coffer coffer) => this.Coffers.Add(coffer);
+
+        public void EnchantmentAffected(Enchantment enchantment) => this.Enchantments.Add(enchantment);
+
+        public void TrapTriggered(Trap trap) => this.Traps.Add(trap);
+
+        public void PomanderUsed(Pomander pomander)
+        {
+            this.Pomanders.Add(pomander);
+            if (pomander == Pomander.Serenity)
+                this.Enchantments.Clear();
+        }
 
         public void PlayerKilled() => this.Deaths++;
 

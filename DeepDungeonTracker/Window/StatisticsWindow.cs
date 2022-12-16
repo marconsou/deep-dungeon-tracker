@@ -47,9 +47,9 @@ namespace DeepDungeonTracker
             var left = 15.0f;
             var top = 50.0f;
             var width = 1359.0f;
-            var height = 797.0f;
+            var height = 989.0f;
             var floorWidth = 450.0f;
-            var floorHeight = 189.0f;
+            var floorHeight = 189.0f + 48.0f;
             var floorSet = statistics.FloorSet;
             var floorSets = statistics.FloorSets;
             var noData = (floorSet == null && floorSets == null);
@@ -69,8 +69,9 @@ namespace DeepDungeonTracker
             {
                 var x = left;
                 var y = top;
-                var statisticsCommonOffset = 0.0f;
+                var miscellaneousOffset = 0.0f;
                 var cofferOffset = 4.0f;
+                var pomanderOffset = cofferOffset;
                 var enchantmentOffset = 0.0f;
                 var trapOffset = 8.0f;
                 var textOffset = -4.0f;
@@ -91,13 +92,17 @@ namespace DeepDungeonTracker
                         if (floor.Number > 0)
                         {
                             this.DrawFloorText(x, y, $"Floor {floor.Number}:", floor.Time, null, floor.Score, null);
-                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, statisticsCommonOffset, statisticsCommonOffset, textOffset, textOffset, iconSize, i < statistics.MiscellaneousByFloor?.Count ? statistics.MiscellaneousByFloor[i] : default, floor.MapData);
+                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, i < statistics.MiscellaneousByFloor?.Count ? statistics.MiscellaneousByFloor[i] : default, floor.MapData);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, i < statistics.CoffersByFloor?.Count ? statistics.CoffersByFloor[i] : default);
+                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, i < statistics.PomandersByFloor?.Count ? statistics.PomandersByFloor[i] : default);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, i < statistics.EnchantmentsByFloor?.Count ? statistics.EnchantmentsByFloor[i] : default);
                             this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, trapOffset, trapOffset, textOffset, textOffset, iconSize, i < statistics.TrapsByFloor?.Count ? statistics.TrapsByFloor[i] : default);
+
+                           
                         }
 
-                        ui.DrawDivisorVertical(baseX + floorWidth - 13.0f, baseY - 13.0f, floorHeight + 1.0f);
+                        if (!new int[] { 2, 5, 8 }.Contains(i))
+                            ui.DrawDivisorVertical(baseX + floorWidth - 11.0f, baseY - 13.0f, floorHeight + 1.0f);
 
                         x = baseX + floorWidth;
                         y = baseY;
@@ -116,6 +121,7 @@ namespace DeepDungeonTracker
                     x = left;
                     var totalTime = 0L;
                     var totalScore = 0;
+                    var lineHeight = 28.0f;
                     foreach (var item in floorSets ?? Enumerable.Empty<FloorSet>())
                     {
                         var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
@@ -128,7 +134,7 @@ namespace DeepDungeonTracker
                             y = top;
                         }
                         else
-                            y += 56.0f;
+                            y += lineHeight * 2.55f;
                     }
 
                     x += 350.0f;
@@ -137,7 +143,6 @@ namespace DeepDungeonTracker
 
                     if (score != null)
                     {
-                        var lineHeight = 28.0f;
                         ui.DrawTextAxisLatinPro(x, y, $"[{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")}] ({score.BaseScore})", Color.White); y += lineHeight * 2.0f;
                         ui.DrawTextAxisLatinPro(x, y, $"Level: {score.CurrentLevel} (+{score.AetherpoolArm}/+{score.AetherpoolArmor})", Color.White); y += lineHeight;
                         ui.DrawTextAxisLatinPro(x, y, $"Floor: {score.StartingFloorNumber}->{score.CurrentFloorNumber} ({score.TotalReachedFloors})", Color.White); y += lineHeight * 2.0f;
@@ -150,34 +155,36 @@ namespace DeepDungeonTracker
                         ui.DrawTextAxisLatinPro(x, y, $"Enchantments: {score.EnchantmentScore:N0}", Color.White); y += lineHeight;
                         ui.DrawTextAxisLatinPro(x, y, $"Traps: {score.TrapScore:N0}", Color.White); y += lineHeight;
                         ui.DrawTextAxisLatinPro(x, y, $"Time Bonuses: {score.TimeBonusScore:N0}", Color.White); y += lineHeight;
-                        ui.DrawTextAxisLatinPro(x, y, $"Deaths: {score.DeathScore:N0}", Color.White); y += lineHeight;
+                        ui.DrawTextAxisLatinPro(x, y, $"Deaths: {score.DeathScore:N0}", Color.White); y += lineHeight * 2.0f;
                         ui.DrawTextAxisLatinPro(x, y, $"Non-Kills: {score.NonKillScore:N0}", Color.White); y += lineHeight;
                         ui.DrawTextAxisLatinPro(x, y, $"Kills: {score.KillScore:N0}", Color.White); y += lineHeight * 2.0f;
                         ui.DrawTextAxisLatinPro(x, y, $"Total: {score.TotalScore:N0}", Color.White);
                     }
 
-                    y = 601.0f;
-                    ui.DrawDivisorHorizontal(14.0f, 601.0f, width - 26.0f);
+                    y = 793.0f - 48;
+                    ui.DrawDivisorHorizontal(14.0f, 793.0f - 48, width - 26.0f);
                     y += 16.0f;
                 }
 
                 x = left;
 
-                this.DrawFloorText(x, y, $"Total:", statistics.TotalTime, null, statistics.TotalScore, null, isSummary);
+                this.DrawFloorText(x, y, $"Total:", statistics.TimeTotal, null, statistics.ScoreTotal, null, isSummary);
 
                 baseX = x;
                 baseY = y;
-                this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, statisticsCommonOffset, statisticsCommonOffset, textOffset, textOffset, iconSize, statistics.MiscellaneousTotal);
+                this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, statistics.MiscellaneousTotal);
                 this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, statistics.CoffersTotal);
+                this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, statistics.PomandersTotal);
                 this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, statistics.EnchantmentsTotal);
                 this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, trapOffset, trapOffset, textOffset, textOffset, iconSize, statistics.TrapsTotal);
 
-                if (statistics.LastFloorTime != default || statistics.LastFloorScore != 0)
+                if (statistics.TimeLastFloor != default || statistics.ScoreLastFloor != 0)
                 {
                     x = baseX + (floorWidth * 2);
                     y = baseY;
-                    this.DrawFloorText(x, y, $"Last Floor:", statistics.LastFloorTime, null, statistics.LastFloorScore, null, isSummary);
-                    this.DrawIcon(ref x, ref y, x, y, 0.0f, 20.0f, statisticsCommonOffset, statisticsCommonOffset, textOffset, textOffset, iconSize, statistics.LastFloorTotal);
+                    this.DrawFloorText(x, y, $"Last Floor:", statistics.TimeLastFloor, null, statistics.ScoreLastFloor, null, isSummary);
+                    this.DrawIcon(ref x, ref y, x, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, statistics.MiscellaneousLastFloor);
+                    this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, statistics.PomandersLastFloor);
                 }
             }
             else
@@ -191,7 +198,7 @@ namespace DeepDungeonTracker
             var config = this.Configuration.Statistics;
             var ui = this.Data.UI;
 
-            var lineHeight = 20.0f;
+            var lineHeight = 28.0f;
             var space = "   ";
             floorText += space;
             var totalTimeText = (totalTime.Hours > 0 || forceShowHours) ? $"{totalTime}" : $"{totalTime:mm\\:ss}";
@@ -236,6 +243,8 @@ namespace DeepDungeonTracker
                     ui.DrawEnchantment(iconX, iconY, (Enchantment)(Enum)value);
                 else if (typeof(T) == typeof(Trap))
                     ui.DrawTrap(iconX, iconY, (Trap)(Enum)value);
+                else if (typeof(T) == typeof(Pomander))
+                    ui.DrawPomander(iconX, iconY, (Pomander)(Enum)value);
                 else
                 {
                     var miscellaneousValue = (Miscellaneous)(Enum)item.Value;

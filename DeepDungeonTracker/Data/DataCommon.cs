@@ -27,7 +27,7 @@ namespace DeepDungeonTracker
 
         private bool IsCairnOfPassageActivated { get; set; }
 
-        private HashSet<uint> DeadEnemyIds { get; set; } = new();
+        private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
 
         public DeepDungeon DeepDungeon { get; private set; }
 
@@ -69,7 +69,7 @@ namespace DeepDungeonTracker
             this.EnableFlyTextScore = false;
             this.SkipTimeBonusCheck = false;
             this.IsCairnOfPassageActivated = false;
-            this.DeadEnemyIds = new();
+            this.CairnOfPassageKillIds = new();
             this.DutyStatus = DutyStatus.None;
             this.CurrentSaveSlot?.ContentIdUpdate(0);
         }
@@ -193,7 +193,7 @@ namespace DeepDungeonTracker
 
         public void CheckForCairnOfPassageActivation(DataText dataText)
         {
-            if (this.IsCairnOfPassageActivated)
+            if (this.IsCairnOfPassageActivated || (this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false))
                 return;
 
             foreach (var enemy in Service.ObjectTable)
@@ -205,7 +205,7 @@ namespace DeepDungeonTracker
 
                 if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || dataText.IsMandragora(character.Name.TextValue).Item1))
                 {
-                    if (!this.IsCairnOfPassageActivated && this.DeadEnemyIds.Add(character.ObjectId))
+                    if (!this.IsCairnOfPassageActivated && this.CairnOfPassageKillIds.Add(character.ObjectId))
                     {
                         this.CurrentSaveSlot?.CurrentFloor()?.CairnOfPassageShines();
                         break;
@@ -277,14 +277,14 @@ namespace DeepDungeonTracker
         {
             var result = dataText.IsEnchantment(message);
             if (result.Item1)
-                this.CurrentSaveSlot?.CurrentFloor()?.Enchantments.Add((Enchantment)(result.Item2! - TextIndex.BlindnessEnchantment));
+                this.CurrentSaveSlot?.CurrentFloor()?.EnchantmentAffected((Enchantment)(result.Item2! - TextIndex.BlindnessEnchantment));
         }
 
         public void TrapMessageReceived(DataText dataText, string message)
         {
             var result = dataText.IsTrap(message);
             if (result.Item1)
-                this.CurrentSaveSlot?.CurrentFloor()?.Traps.Add((Trap)(result.Item2! - TextIndex.LandmineTrap));
+                this.CurrentSaveSlot?.CurrentFloor()?.TrapTriggered((Trap)(result.Item2! - TextIndex.LandmineTrap));
         }
 
         public void CheckForEnemyKilled(DataText dataText, string name)
@@ -380,7 +380,7 @@ namespace DeepDungeonTracker
             {
                 this.IsTransferenceInitiated = false;
                 this.IsCairnOfPassageActivated = false;
-                this.DeadEnemyIds = new();
+                this.CairnOfPassageKillIds = new();
                 var time = this.FloorSetTime.AddFloor();
                 this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(time);
                 this.FloorScoreUpdate();
@@ -421,29 +421,44 @@ namespace DeepDungeonTracker
 
         public void RegenPotionConsumed() => this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
 
-        public void GoldCofferPomander(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.Coffers.Add((Coffer)(itemId - 1));
+        public void GoldCofferPomander(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened((Coffer)(itemId - 1));
 
-        public void SilverCofferPomander(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.Coffers.Add(itemId - 1 + Coffer.InfernoMagicite);
+        public void SilverCofferPomander(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
 
         public void SilverCofferAetherpool()
         {
             if (!this.IsLastFloor)
-                this.CurrentSaveSlot?.CurrentFloor()?.Coffers.Add(Coffer.Aetherpool);
+                this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Aetherpool);
         }
 
         public void PomanderUsed(int itemId)
         {
-            var coffer = (Coffer)(itemId - 1);
-            if (coffer == Coffer.PomanderOfSafety)
+            itemId--;
+            if (!Enum.IsDefined(typeof(Pomander), itemId))
+                return;
+
+            var pomander = (Pomander)itemId;
+
+            if (pomander == Pomander.Safety)
                 this.FloorEffect.ShowPomanderOfSafety = true;
-            else if (coffer == Coffer.PomanderOfAffluence)
+            else if (pomander == Pomander.Affluence)
                 this.FloorEffect.IsPomanderOfAffluenceUsed = true;
-            else if (coffer == Coffer.PomanderOfFlight)
+            else if (pomander == Pomander.Flight)
                 this.FloorEffect.IsPomanderOfFlightUsed = true;
-            else if (coffer == Coffer.PomanderOfAlteration)
+            else if (pomander == Pomander.Alteration)
                 this.FloorEffect.IsPomanderOfAlterationUsed = true;
-            else if (coffer == Coffer.PomanderOfSerenity)
-                this.CurrentSaveSlot?.CurrentFloor()?.Enchantments.Clear();
+
+            this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);
+        }
+
+        public void MagiciteUsed(int itemId)
+        {
+            itemId = itemId - 1 + (int)Coffer.InfernoMagicite;
+            if (!Enum.IsDefined(typeof(Pomander), itemId))
+                return;
+
+            var pomander = (Pomander)itemId;
+            this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);
         }
 
         public void TransferenceInitiated() => this.IsTransferenceInitiated = true;
@@ -479,9 +494,9 @@ namespace DeepDungeonTracker
                 this.IsBronzeCofferOpened = false;
                 var result = dataText.IsPotsherd((uint)itemId);
                 if (result.Item1)
-                    this.CurrentSaveSlot?.CurrentFloor()?.Coffers.Add(Coffer.Potsherd);
+                    this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Potsherd);
                 else
-                    this.CurrentSaveSlot?.CurrentFloor()?.Coffers.Add(Coffer.Medicine);
+                    this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Medicine);
             }
         }
 
