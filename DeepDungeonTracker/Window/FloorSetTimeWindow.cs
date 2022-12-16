@@ -30,7 +30,7 @@ namespace DeepDungeonTracker
             var lineHeight = 30.0f;
             var numberOfLines = config.ShowFloorTime ? 5 : 0;
             var width = 275.0f;
-            var height = (top + (lineHeight * numberOfLines) - 3.0f) + 37.0f + (!config.ShowFloorTime ? -7.0f : 0.0f);
+            var height = (top + (lineHeight * numberOfLines) - 3.0f) + 37.0f + (!config.ShowFloorTime ? -7.0f : 0.0f) + (config.ShowTitle ? 0.0f : -35.0f);
 
             void DrawTextLine(float x, float y, string label, TimeSpan? value, Vector4 labelColor, Vector4 valueColor)
             {
@@ -43,11 +43,16 @@ namespace DeepDungeonTracker
             }
 
             ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Floor Set Time", Color.White, Alignment.Center);
-            ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
+
+            if (config.ShowTitle)
+            {
+                ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Floor Set Time", Color.White, Alignment.Center);
+                ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
+            }
 
             var x = left;
-            var y = top;
+            var baseY = config.ShowTitle ? top : 15.0f;
+            var y = baseY;
 
             var showValue = (this.Data.IsInsideDeepDungeon || dataCommon.ContentId != 0);
             if (config.ShowFloorTime)
@@ -64,7 +69,7 @@ namespace DeepDungeonTracker
                     if (i == 4)
                     {
                         x = (width / 2.0f);
-                        y = top;
+                        y = baseY;
                     }
                     else
                         y += lineHeight;

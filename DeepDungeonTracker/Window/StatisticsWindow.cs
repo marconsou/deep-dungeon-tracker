@@ -98,7 +98,7 @@ namespace DeepDungeonTracker
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, i < statistics.EnchantmentsByFloor?.Count ? statistics.EnchantmentsByFloor[i] : default);
                             this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, trapOffset, trapOffset, textOffset, textOffset, iconSize, i < statistics.TrapsByFloor?.Count ? statistics.TrapsByFloor[i] : default);
 
-                           
+
                         }
 
                         if (!new int[] { 2, 5, 8 }.Contains(i))

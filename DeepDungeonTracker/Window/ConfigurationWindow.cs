@@ -128,6 +128,8 @@ namespace DeepDungeonTracker
             WindowEx.Tooltip("You need to be either inside a Deep Dungeon or in the area outside to get into it.");
             ImGui.SameLine();
             this.CheckBox(config.ShowInBetweenFloors, x => config.ShowInBetweenFloors = x, "Show in between floors");
+            ImGui.SameLine();
+            this.CheckBox(config.ShowTitle, x => config.ShowTitle = x, "Show title");
             this.CheckBox(config.ShowFloorTime, x => config.ShowFloorTime = x, "Show floor time");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.ColorEdit4(config.PreviousFloorTimeColor, x => config.PreviousFloorTimeColor = x, "Previous Floor Time");
@@ -147,6 +149,8 @@ namespace DeepDungeonTracker
             WindowEx.Tooltip("You need to be either inside a Deep Dungeon or in the area outside to get into it.");
             ImGui.SameLine();
             this.CheckBox(config.ShowInBetweenFloors, x => config.ShowInBetweenFloors = x, "Show in between floors");
+            ImGui.SameLine();
+            this.CheckBox(config.ShowTitle, x => config.ShowTitle = x, "Show title");
             this.CheckBox(config.IncludeFloorCompletion, x => config.IncludeFloorCompletion = x, "Include floor completion");
             WindowEx.Tooltip("Include all floor completion-related score up to the floor where it shows the next score result window.");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
@@ -220,7 +224,7 @@ namespace DeepDungeonTracker
             ImGui.TextWrapped(
                 "All enemies killed from a distance of more than two rooms cannot be counted. " +
                 "If you use magicite, do so in the center of the floor, covering all enemies killed (as much as possible). " +
-                "\nKilling an enemy takes almost 2 seconds to be counted. If you kill a boss, don't leave as soon as possible, or you could miss it.");
+                "\nKilling an enemy takes almost two seconds to be counted. If you kill a boss, don't leave as soon as possible, or you could miss it.");
             ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
             ImGui.TextWrapped("Keep your map menu open for the Cairn of Passage key status check. Killing too many enemies at the same time can be inaccurate.");
             ImGui.TextColored(Color.Green, "Maps:");
@@ -228,7 +232,7 @@ namespace DeepDungeonTracker
             ImGui.TextColored(Color.Green, "Potsherds:");
             ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
-            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.");
+            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you track it from an ongoing save file.");
         }
     }
 }
