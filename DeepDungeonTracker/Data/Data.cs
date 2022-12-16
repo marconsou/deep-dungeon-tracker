@@ -106,6 +106,7 @@ namespace DeepDungeonTracker
                 this.CheckForCharacterStats();
                 this.CheckForMapReveal();
                 this.CheckForTimeBonus();
+                this.CheckForCairnOfPassageActivation();
             }
             else
             {
@@ -150,6 +151,14 @@ namespace DeepDungeonTracker
                 return;
 
             this.Common.CheckForTimeBonus(this.Text);
+        }
+
+        private void CheckForCairnOfPassageActivation()
+        {
+            if (this.IsCharacterBusy)
+                return;
+
+            this.Common.CheckForCairnOfPassageActivation(this.Text);
         }
 
         public void Login() => this.Common.ResetCharacterData();

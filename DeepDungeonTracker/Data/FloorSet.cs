@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -8,13 +8,18 @@ namespace DeepDungeonTracker
     public class FloorSet
     {
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool TimeBonus { get; private set; }
 
         [JsonInclude]
-        public List<Floor> Floors { get; private set; } = new();
+        public Collection<Floor> Floors { get; private set; } = new();
+
+        public TimeSpan Time() => new(this.Floors.Sum(x => x.Time.Ticks));
+
+        public int Score() => this.Floors.Sum(x => x.Score);
 
         public int Kills() => this.Floors.Sum(x => x.Kills);
+
+        public int CairnOfPassageKills() => this.Floors.Sum(x => x.CairnOfPassageKills);
 
         public int Mimics() => this.Floors.Sum(x => x.Mimics);
 
@@ -38,15 +43,11 @@ namespace DeepDungeonTracker
 
         public int Maps() => this.Floors.Sum(x => x.Map ? 1 : 0);
 
-        public TimeSpan Time() => new(this.Floors.Sum(x => x.Time.Ticks));
-
-        public int Score() => this.Floors.Sum(x => x.Score);
-
         public Floor? FirstFloor() => this.Floors.FirstOrDefault();
 
         public Floor? CurrentFloor() => this.Floors.LastOrDefault();
 
-        public Floor? LastFloor() => this.Floors.Find(x => x.IsLastFloor());
+        public Floor? LastFloor() => this.Floors.FirstOrDefault(x => x.IsLastFloor());
 
         public void AddFloor(int number) => this.Floors.Add(new(number));
 

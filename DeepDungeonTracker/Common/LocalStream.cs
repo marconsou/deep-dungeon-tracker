@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DeepDungeonTracker
@@ -10,7 +11,8 @@ namespace DeepDungeonTracker
         {
             Directory.CreateDirectory(directory);
             using FileStream fileStream = File.Create(Path.Combine(directory, fileName));
-            await JsonSerializer.SerializeAsync(fileStream, data);
+            JsonSerializerOptions options = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
+            await JsonSerializer.SerializeAsync(fileStream, data, data!.GetType(), options);
             await fileStream.DisposeAsync();
         }
 

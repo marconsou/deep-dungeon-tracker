@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -8,71 +8,61 @@ namespace DeepDungeonTracker
     public class Floor
     {
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int Number { get; private set; }
 
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public TimeSpan Time { get; private set; } = new();
+
+        [JsonInclude]
+        public int Score { get; private set; }
+
+        [JsonInclude]
         public int Kills { get; private set; }
 
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int CairnOfPassageKills { get; private set; }
+
+        [JsonInclude]
         public int Mimics { get; private set; }
 
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int Mandragoras { get; private set; }
 
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int NPCs { get; private set; }
 
         [JsonIgnore]
-        public List<Coffer> Coffers { get; private set; } = new();
+        public Collection<Coffer> Coffers { get; private set; } = new();
 
         [JsonInclude]
         [JsonPropertyName("Coffers")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Coffer>? SerializationCoffers { get => this.Coffers?.Count > 0 ? this.Coffers : null; private set => this.Coffers = value ?? new(); }
+        public Collection<Coffer>? SerializationCoffers { get => this.Coffers?.Count > 0 ? this.Coffers : null; private set => this.Coffers = value ?? new(); }
 
         [JsonIgnore]
-        public List<Enchantment> Enchantments { get; private set; } = new();
+        public Collection<Enchantment> Enchantments { get; private set; } = new();
 
         [JsonInclude]
         [JsonPropertyName("Enchantments")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Enchantment>? SerializationEnchantments { get => this.Enchantments?.Count > 0 ? this.Enchantments : null; private set => this.Enchantments = value ?? new(); }
+        public Collection<Enchantment>? SerializationEnchantments { get => this.Enchantments?.Count > 0 ? this.Enchantments : null; private set => this.Enchantments = value ?? new(); }
 
         [JsonIgnore]
-        public List<Trap> Traps { get; private set; } = new();
+        public Collection<Trap> Traps { get; private set; } = new();
 
         [JsonInclude]
         [JsonPropertyName("Traps")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Trap>? SerializationTraps { get => this.Traps?.Count > 0 ? this.Traps : null; private set => this.Traps = value ?? new(); }
+        public Collection<Trap>? SerializationTraps { get => this.Traps?.Count > 0 ? this.Traps : null; private set => this.Traps = value ?? new(); }
 
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int Deaths { get; private set; }
 
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int RegenPotions { get; private set; }
 
         [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Map { get; private set; }
 
         [JsonInclude]
         public MapData MapData { get; private set; } = new();
-
-        [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public TimeSpan Time { get; private set; } = new();
-
-        [JsonInclude]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int Score { get; private set; } = new();
 
         public Floor(int number) => this.Number = number;
 
@@ -80,7 +70,13 @@ namespace DeepDungeonTracker
 
         public bool IsLastFloor() => this.Number % 10 == 0;
 
+        public void TimeUpdate(TimeSpan time) => this.Time = time;
+
+        public void ScoreUpdate(int score) => this.Score = score;
+
         public void EnemyKilled() => this.Kills++;
+
+        public void CairnOfPassageShines() => this.CairnOfPassageKills++;
 
         public void MimicKilled() => this.Mimics++;
 
@@ -93,10 +89,6 @@ namespace DeepDungeonTracker
         public void RegenPotionConsumed() => this.RegenPotions++;
 
         public void MapFullyRevealed() => this.Map = true;
-
-        public void TimeUpdate(TimeSpan time) => this.Time = time;
-
-        public void ScoreUpdate(int score) => this.Score = score;
 
         public int Potsherds() => this.Coffers.Count(x => x == Coffer.Potsherd);
 

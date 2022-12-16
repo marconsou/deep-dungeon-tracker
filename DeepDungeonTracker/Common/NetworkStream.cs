@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace DeepDungeonTracker
     {
         private static readonly HttpClient HttpClient = new();
 
-        public static async Task<T?> Load<T>(string uri)
+        public static async Task<T?> Load<T>(Uri uri)
         {
             var result = await NetworkStream.HttpClient.GetAsync(uri);
             return result.IsSuccessStatusCode ? await result.Content.ReadFromJsonAsync<T>() : default;
