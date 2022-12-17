@@ -14,10 +14,34 @@ namespace DeepDungeonTracker
 
         private Button CloseButton { get; set; } = new CloseButton();
 
+        private IDictionary<uint, uint> ClassJobIds { get; set; }
+
         public StatisticsWindow(string id, Configuration configuration, Data data) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
         {
             this.Data = data;
             this.IsOpen = true;
+            this.ClassJobIds = new Dictionary<uint, uint>()
+            {
+                {  1 /*GLA*/ ,0}, { 19 /*PLD*/ ,0},
+                {  2 /*PGL*/ ,1}, { 20 /*MNK*/ ,1},
+                {  3 /*MRD*/ ,2}, { 21 /*WAR*/ ,2},
+                {  4 /*LNC*/ ,3}, { 22 /*DRG*/ ,3},
+                {  5 /*ARC*/ ,4}, { 23 /*BRD*/ ,5},
+                {  6 /*CNJ*/ ,6}, { 24 /*WHM*/ ,6},
+                {  7 /*THM*/ ,7}, { 25 /*BLM*/ ,7},
+                { 26 /*ACN*/ ,8}, { 27 /*SMN*/ ,9}, { 28 /*SCH*/ ,10},
+                { 29 /*ROG*/ ,11},{ 30 /*NIN*/ ,11},
+                { 31 /*MCH*/ ,12},
+                { 32 /*DRK*/ ,13},
+                { 33 /*AST*/ ,14},
+                { 34 /*SAM*/ ,15},
+                { 35 /*RDM*/ ,16},
+                { 36 /*BLU*/ ,17},
+                { 37 /*GNB*/ ,18},
+                { 38 /*DNC*/ ,19},
+                { 39 /*RPR*/ ,20},
+                { 40 /*SGE*/ ,21}
+            };
         }
 
         public void Dispose() { }
@@ -55,8 +79,12 @@ namespace DeepDungeonTracker
             var noData = (floorSet == null && floorSets == null);
 
             ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
+
+            if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
+                ui.DrawJob(12.0f, 10.0f, classJobId);
+
             ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Statistics", Color.White, Alignment.Center);
-            ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
+            ui.DrawDivisorHorizontal(45.0f, 34.0f, width - 57.0f);
 
             this.ArrowButtonPrevious.Position = new((width / 2.0f) - 108.0f, 7.0f);
             this.ArrowButtonNext.Position = new((width / 2.0f) + 72.0f, 7.0f);

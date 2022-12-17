@@ -14,6 +14,8 @@ namespace DeepDungeonTracker
 
         public TextureWrap CheckMark { get; }
 
+        public TextureWrap Job { get; }
+
         public TextureWrap Miscellaneous { get; }
 
         public TextureWrap Coffer { get; }
@@ -42,6 +44,7 @@ namespace DeepDungeonTracker
             this.AxisLatinPro = new(Resources.AxisLatinProLayout, Resources.AxisLatinProFont);
             this.Number = Service.PluginInterface.UiBuilder.LoadImage(Resources.Number);
             this.CheckMark = Service.PluginInterface.UiBuilder.LoadImage(Resources.CheckMark);
+            this.Job = Service.PluginInterface.UiBuilder.LoadImage(Resources.Job);
             this.Miscellaneous = Service.PluginInterface.UiBuilder.LoadImage(Resources.Miscellaneous);
             this.Coffer = Service.PluginInterface.UiBuilder.LoadImage(Resources.Coffer);
             this.Enchantment = Service.PluginInterface.UiBuilder.LoadImage(Resources.Enchantment);
@@ -61,6 +64,7 @@ namespace DeepDungeonTracker
             this.AxisLatinPro.Dispose();
             this.Number.Dispose();
             this.CheckMark.Dispose();
+            this.Job.Dispose();
             this.Miscellaneous.Dispose();
             this.Coffer.Dispose();
             this.Enchantment.Dispose();

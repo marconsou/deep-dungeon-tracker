@@ -341,7 +341,7 @@ namespace DeepDungeonTracker
         {
             void CreateSaveSlot(int floorNumber)
             {
-                this.CurrentSaveSlot = new(this.DeepDungeon, contentId);
+                this.CurrentSaveSlot = new(this.DeepDungeon, contentId, Service.ClientState?.LocalPlayer?.ClassJob.Id ?? 0);
                 this.CurrentSaveSlot.AddFloorSet(floorNumber);
             }
 

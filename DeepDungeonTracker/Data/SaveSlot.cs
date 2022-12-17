@@ -14,6 +14,9 @@ namespace DeepDungeonTracker
         public int ContentId { get; private set; }
 
         [JsonInclude]
+        public uint ClassJobId { get; private set; }
+
+        [JsonInclude]
         public int CurrentLevel { get; private set; }
 
         [JsonInclude]
@@ -31,10 +34,11 @@ namespace DeepDungeonTracker
         [JsonInclude]
         public Collection<FloorSet> FloorSets { get; private set; } = new();
 
-        public SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, int currentLevel = 0)
+        public SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, uint classJobId = 0, int currentLevel = 0)
         {
             this.DeepDungeon = deepDungeon;
             this.ContentId = contentId;
+            this.ClassJobId = classJobId;
             this.CurrentLevel = currentLevel;
         }
 

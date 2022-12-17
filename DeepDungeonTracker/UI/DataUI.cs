@@ -48,6 +48,8 @@ namespace DeepDungeonTracker
 
         public void DrawCheckMark(float x, float y, bool checkMark) => this.Render.DrawUIElement(this.ResourceUI.CheckMark, x, y, 0.5f, Convert.ToInt32(checkMark), 2, 1, null, Alignment.Center);
 
+        public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 0.20f, (int)jobId, 4, 6);
+
         public void DrawMiscellaneous(float x, float y, Miscellaneous miscellaneous) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.5f, (int)miscellaneous, 4, 3);
 
         public void DrawCoffer(float x, float y, Coffer coffer) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)coffer, 6, 5);

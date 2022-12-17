@@ -1,5 +1,7 @@
 ﻿using ImGuiNET;
 using System;
+using System.Reflection.Emit;
+using System.Text.Json;
 
 namespace DeepDungeonTracker
 {
@@ -49,7 +51,7 @@ namespace DeepDungeonTracker
                 }
                 if (ImGui.BeginTabItem("Information"))
                 {
-                    ConfigurationWindow.Information();
+                    this.Information();
                     ImGui.EndTabItem();
                 }
                 ImGui.EndTabBar();
@@ -218,7 +220,7 @@ namespace DeepDungeonTracker
                 ImGui.TextColored(Color.Gray, "No save slots!");
         }
 
-        private static void Information()
+        private void Information()
         {
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
@@ -233,6 +235,11 @@ namespace DeepDungeonTracker
             ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
             ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you track it from an ongoing save file.");
+            if (ImGui.CollapsingHeader("OpCodes"))
+            {
+                ImGui.TextWrapped("Values in this section should not be zero.");
+                ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, new JsonSerializerOptions() { WriteIndented = true, })}");
+            }
         }
     }
 }
