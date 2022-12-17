@@ -51,6 +51,8 @@ namespace DeepDungeonTracker
 
         public int ScoreTotal { get; private set; }
 
+        public uint ClassJobId => this.SaveSlot?.ClassJobId ?? 0;
+
         public void FloorSetStatisticsPrevious()
         {
             var value = ((int)this.FloorSetStatistics) - 1;
