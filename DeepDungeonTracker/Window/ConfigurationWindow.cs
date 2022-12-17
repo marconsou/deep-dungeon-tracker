@@ -1,6 +1,5 @@
 ﻿using ImGuiNET;
 using System;
-using System.Reflection.Emit;
 using System.Text.Json;
 
 namespace DeepDungeonTracker
