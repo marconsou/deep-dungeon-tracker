@@ -1,4 +1,4 @@
-# Deep Dungeon Tracker
+# Deep Dungeon Tracker [![Download count](https://img.shields.io/endpoint?url=https://vz32sgcoal.execute-api.us-east-1.amazonaws.com/DeepDungeonTracker)](https://github.com/marconsou/deep-dungeon-tracker)
 <img src="https://user-images.githubusercontent.com/27457164/195154649-f18da733-842a-4a77-ac72-9fad9343bbad.png" width="256" height="256">
 
 A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to track things inside Deep Dungeons (Solo only).
