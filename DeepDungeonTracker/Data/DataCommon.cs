@@ -3,8 +3,6 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeepDungeonTracker
@@ -22,8 +20,6 @@ namespace DeepDungeonTracker
         public bool IsSoloSaveSlot { get; private set; }
 
         public bool EnableFlyTextScore { get; private set; }
-
-        private bool SkipTimeBonusCheck { get; set; }
 
         private bool IsCairnOfPassageActivated { get; set; }
 
@@ -67,7 +63,6 @@ namespace DeepDungeonTracker
             this.IsBronzeCofferOpened = false;
             this.IsSoloSaveSlot = true;
             this.EnableFlyTextScore = false;
-            this.SkipTimeBonusCheck = false;
             this.IsCairnOfPassageActivated = false;
             this.CairnOfPassageKillIds = new();
             this.DutyStatus = DutyStatus.None;
@@ -169,31 +164,44 @@ namespace DeepDungeonTracker
                 this.CurrentSaveSlot?.AetherpoolUpdate(result.Item2, result.Item3);
         }
 
+        public void CheckForBossKilled(DataText dataText)
+        {
+            if (!this.IsLastFloor || this.DutyStatus != DutyStatus.None)
+                return;
+
+            foreach (var enemy in Service.ObjectTable)
+            {
+                var character = enemy as Character;
+                if (character == null)
+                    continue;
+
+                if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && character.StatusFlags.HasFlag(StatusFlags.Hostile))
+                {
+                    if (dataText.IsBoss(character.Name.TextValue).Item1)
+                    {
+                        this.CurrentSaveSlot?.CurrentFloor()?.EnemyKilled();
+                        this.DutyCompleted();
+                        break;
+                    }
+                }
+            }
+        }
+
         public void CheckForMapReveal()
         {
+            if (this.IsLastFloor)
+                return;
+
             var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
             if (MapUtility.IsMapFullyRevealed(currentFloor?.MapData ?? new()))
                 currentFloor?.MapFullyRevealed();
         }
 
-        public void CheckForTimeBonus(DataText dataText)
+        public void CheckForTimeBonus()
         {
-            if (this.DutyStatus != DutyStatus.None || this.SkipTimeBonusCheck)
+            if (this.DutyStatus != DutyStatus.None)
                 return;
 
-            if (this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false)
-            {
-                var enemies = Service.ObjectTable.Where(x => x.ObjectKind == ObjectKind.BattleNpc && ((x as Character)?.IsDead ?? false) && ((x as Character)?.StatusFlags.HasFlag(StatusFlags.Hostile) ?? false));
-                foreach (var enemy in enemies)
-                {
-                    var character = enemy as Character;
-                    if (dataText.IsBoss(character?.Name.ToString() ?? string.Empty).Item1)
-                    {
-                        this.SkipTimeBonusCheck = true;
-                        return;
-                    }
-                }
-            }
             this.CurrentSaveSlot?.CurrentFloorSet()?.CheckForTimeBonus(this.FloorSetTime.TotalTime);
         }
 
@@ -205,7 +213,6 @@ namespace DeepDungeonTracker
             foreach (var enemy in Service.ObjectTable)
             {
                 var character = enemy as Character;
-
                 if (character == null)
                     continue;
 
@@ -326,15 +333,6 @@ namespace DeepDungeonTracker
                 currentFloor?.MandragoraKilled();
             else if (dataText.IsNPC(name).Item1)
                 currentFloor?.NPCKilled();
-        }
-
-        public void CheckForBossKilled(DataText dataText, string name)
-        {
-            if (dataText.IsBoss(name).Item1)
-            {
-                this.CurrentSaveSlot?.CurrentFloor()?.EnemyKilled();
-                this.DutyCompleted();
-            }
         }
 
         public void CheckForPlayerKilled(Character character)

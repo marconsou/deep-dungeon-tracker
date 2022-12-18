@@ -100,6 +100,7 @@ namespace DeepDungeonTracker
             {
                 this.CheckForSolo();
                 this.CheckForCharacterStats();
+                this.CheckForBossKilled();
                 this.CheckForMapReveal();
                 this.CheckForTimeBonus();
                 this.CheckForCairnOfPassageActivation();
@@ -133,9 +134,17 @@ namespace DeepDungeonTracker
             this.Common.CheckForCharacterStats();
         }
 
+        private void CheckForBossKilled()
+        {
+            if (this.IsCharacterBusy)
+                return;
+
+            this.Common.CheckForBossKilled(this.Text);
+        }
+
         private void CheckForMapReveal()
         {
-            if (this.IsCharacterBusy || this.Common.IsLastFloor)
+            if (this.IsCharacterBusy)
                 return;
 
             this.Common.CheckForMapReveal();
@@ -146,7 +155,7 @@ namespace DeepDungeonTracker
             if (this.IsCharacterBusy)
                 return;
 
-            this.Common.CheckForTimeBonus(this.Text);
+            this.Common.CheckForTimeBonus();
         }
 
         private void CheckForCairnOfPassageActivation()
@@ -238,8 +247,6 @@ namespace DeepDungeonTracker
                 {
                     if (!this.Common.IsLastFloor)
                         this.Common.CheckForEnemyKilled(this.Text, name);
-                    else
-                        this.Common.CheckForBossKilled(this.Text, name);
                 }
                 else if (character?.ObjectKind == ObjectKind.Player)
                     this.Common.CheckForPlayerKilled(character);
