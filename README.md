@@ -5,6 +5,14 @@ A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to tra
 
 Type `/ddt` to open the configuration menu.
 
+Type `/ddttracker` to toggle the Tracker Window visibility.
+
+Type `/ddttime` to toggle the Floor Set Time Window visibility.
+
+Type `/ddtscore` to toggle the Score Window visibility.
+
+Type `/ddtload` to load the last saved slot and open the Statistics Window.
+
 ## Features
 - Keep track of the number of kills, coffers opened, regeneration potions consumed, potsherds obtained, total time and more.
 - Examine the collected data.
