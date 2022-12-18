@@ -224,8 +224,7 @@ namespace DeepDungeonTracker
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
                 "All enemies killed from a distance of more than two rooms cannot be counted. " +
-                "If you use magicite, do so in the center of the floor, covering all enemies killed (as much as possible). " +
-                "\nKilling an enemy takes almost two seconds to be counted. If you kill a boss, don't leave as soon as possible, or you could miss it.");
+                "If you use magicite, do so in the center of the floor, covering all enemies killed (as much as possible). ");
             ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
             ImGui.TextWrapped("Keep your map menu open for the Cairn of Passage key status check. Killing too many enemies at the same time can be inaccurate.");
             ImGui.TextColored(Color.Green, "Maps:");
