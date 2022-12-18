@@ -150,7 +150,6 @@ namespace DeepDungeonTracker
                     var totalTime = 0L;
                     var totalScore = 0;
                     var lineHeight = 28.0f;
-                    var a = 0;
                     foreach (var item in floorSets ?? Enumerable.Empty<FloorSet>())
                     {
                         var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
