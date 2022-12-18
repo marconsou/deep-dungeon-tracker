@@ -132,8 +132,6 @@ namespace DeepDungeonTracker
 
             public ushort SystemLogMessage { get; set; }
 
-            public ushort UnknownDeepDungeonSaveData { get; set; }
-
             public ushort UnknownBronzeCofferItemInfo { get; set; }
 
             public ushort UnknownBronzeCofferOpen { get; set; }
