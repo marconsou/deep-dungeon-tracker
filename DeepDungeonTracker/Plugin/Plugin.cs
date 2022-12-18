@@ -14,7 +14,15 @@ namespace DeepDungeonTracker
     {
         public string Name => "Deep Dungeon Tracker";
 
-        private static string CommandName => "/ddt";
+        private static string ConfigCommand => "/ddt";
+
+        private static string TrackerCommand => $"{Plugin.ConfigCommand}tracker";
+
+        private static string TimeCommand => $"{Plugin.ConfigCommand}time";
+
+        private static string ScoreCommand => $"{Plugin.ConfigCommand}score";
+
+        private static string LoadCommand => $"{Plugin.ConfigCommand}load";
 
         private WindowSystem WindowSystem { get; }
 
@@ -24,19 +32,25 @@ namespace DeepDungeonTracker
 
         public Plugin(DalamudPluginInterface pluginInterface)
         {
-            pluginInterface.Create<Service>();
+            pluginInterface?.Create<Service>();
 
             this.Configuration = Service.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             this.Configuration.Initialize(Service.PluginInterface);
             this.Data = new(this.Configuration);
-            Service.CommandManager.AddHandler(Plugin.CommandName, new CommandInfo(this.OnCommand) { HelpMessage = $"Opens the [{this.Name}] configuration menu." });
+            Service.CommandManager.AddHandler(Plugin.ConfigCommand, new CommandInfo(this.OnConfigCommand) { HelpMessage = $"Opens the [{this.Name}] configuration menu." });
+            Service.CommandManager.AddHandler(Plugin.TrackerCommand, new CommandInfo(this.OnTrackerCommand) { HelpMessage = "Toggles the Tracker Window visibility." });
+            Service.CommandManager.AddHandler(Plugin.TimeCommand, new CommandInfo(this.OnTimeCommand) { HelpMessage = "Toggles the Floor Set Time Window visibility." });
+            Service.CommandManager.AddHandler(Plugin.ScoreCommand, new CommandInfo(this.OnScoreCommand) { HelpMessage = "Toggles the Score Window visibility." });
+            Service.CommandManager.AddHandler(Plugin.LoadCommand, new CommandInfo(this.OnLoadCommand) { HelpMessage = "Loads the last saved slot and opens the Statistics Window." });
 
             this.WindowSystem = new(this.Name.Replace(" ", string.Empty));
+#pragma warning disable CA2000
             this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new ScoreWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data));
+#pragma warning restore CA2000
 
             Service.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
             Service.PluginInterface.UiBuilder.DisableCutsceneUiHide = false;
@@ -68,11 +82,29 @@ namespace DeepDungeonTracker
 
             WindowEx.DisposeWindows(this.WindowSystem.Windows);
             this.WindowSystem.RemoveAllWindows();
-            Service.CommandManager.RemoveHandler(Plugin.CommandName);
+            Service.CommandManager.RemoveHandler(Plugin.ConfigCommand);
+            Service.CommandManager.RemoveHandler(Plugin.TrackerCommand);
+            Service.CommandManager.RemoveHandler(Plugin.TimeCommand);
+            Service.CommandManager.RemoveHandler(Plugin.ScoreCommand);
+            Service.CommandManager.RemoveHandler(Plugin.LoadCommand);
             this.Data.Dispose();
         }
 
-        private void OnCommand(string command, string args) => this.OpenConfigUi();
+        private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
+
+        private void OnTrackerCommand(string command, string args) => this.Configuration.Tracker.Show = !this.Configuration.Tracker.Show;
+
+        private void OnTimeCommand(string command, string args) => this.Configuration.FloorSetTime.Show = !this.Configuration.FloorSetTime.Show;
+
+        private void OnScoreCommand(string command, string args) => this.Configuration.Score.Show = !this.Configuration.Score.Show;
+
+        private void OnLoadCommand(string command, string args)
+        {
+            if (!this.Data.IsInsideDeepDungeon)
+                this.Data.Common.LoadDeepDungeonData();
+
+            this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot);
+        }
 
         private void Draw() => this.WindowSystem.Draw();
 
