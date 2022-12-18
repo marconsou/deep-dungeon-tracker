@@ -40,8 +40,6 @@ namespace DeepDungeonTracker
 
         private Event<(IntPtr, uint)> SystemLogMessage { get; } = new();
 
-        private Event<(IntPtr, uint)> UnknownDeepDungeonSaveData { get; } = new();
-
         private Event<(IntPtr, uint)> UnknownBronzeCofferItemInfo { get; } = new();
 
         private Event<(IntPtr, uint)> UnknownBronzeCofferOpen { get; } = new();
@@ -63,7 +61,6 @@ namespace DeepDungeonTracker
             this.Effect.Add(this.EffectAction);
             this.EventStart.Add(this.EventStartAction);
             this.SystemLogMessage.Add(this.SystemLogMessageAction);
-            this.UnknownDeepDungeonSaveData.Add(this.UnknownDeepDungeonSaveDataAction);
             this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
             this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
 
@@ -89,7 +86,6 @@ namespace DeepDungeonTracker
             this.Effect.Remove(this.EffectAction);
             this.EventStart.Remove(this.EventStartAction);
             this.SystemLogMessage.Remove(this.SystemLogMessageAction);
-            this.UnknownDeepDungeonSaveData.Remove(this.UnknownDeepDungeonSaveDataAction);
             this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
             this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
             this.UI.Dispose();
@@ -112,7 +108,7 @@ namespace DeepDungeonTracker
             {
                 if (this.Common.IsInDeepDungeonRegion)
                 {
-                    this.OpCodes.CheckForUnknownDeepDungeonSaveDataOpCode(configuration);
+                    this.Common.CheckForSaveSlotDeletion();
 
                     if (ServiceUtility.IsSolo)
                     {
@@ -197,16 +193,16 @@ namespace DeepDungeonTracker
 
         public void NetworkMessage(IntPtr dataPtr, ushort opCode, uint targetActorId, Configuration configuration)
         {
-            var opCodes = configuration.OpCodes;
             if (this.InDeepDungeon.IsActivated)
             {
                 if (this.Common.IsSoloSaveSlot)
                 {
-                    this.OpCodes.FindUnknownBronzeCofferItemInfoOpCode(dataPtr, opCode, targetActorId, configuration);
-                    this.OpCodes.FindUnknownBronzeCofferOpenOpCode(dataPtr, opCode, targetActorId, configuration);
+                    this.OpCodes.FindUnknownBronzeCofferItemInfoOpCode(dataPtr, opCode, targetActorId, configuration!);
+                    this.OpCodes.FindUnknownBronzeCofferOpenOpCode(dataPtr, opCode, targetActorId, configuration!);
                 }
 
-                if (opCode == opCodes.ActorControl)
+                var opCodes = configuration?.OpCodes;
+                if (opCode == opCodes!.ActorControl)
                     this.ActorControl.Execute((dataPtr, targetActorId));
                 else if (opCode == opCodes.ActorControlSelf)
                     this.ActorControlSelf.Execute((dataPtr, targetActorId));
@@ -220,15 +216,6 @@ namespace DeepDungeonTracker
                     this.UnknownBronzeCofferItemInfo.Execute((dataPtr, targetActorId));
                 else if (opCode == opCodes.UnknownBronzeCofferOpen)
                     this.UnknownBronzeCofferOpen.Execute((dataPtr, targetActorId));
-            }
-            else
-            {
-                if (this.Common.IsInDeepDungeonRegion)
-                {
-                    this.OpCodes.FindUnknownDeepDungeonSaveDataOpCode(dataPtr, opCode, targetActorId);
-                    if (opCode == opCodes.UnknownDeepDungeonSaveData)
-                        this.UnknownDeepDungeonSaveData.Execute((dataPtr, targetActorId));
-                }
             }
         }
 
@@ -319,8 +306,6 @@ namespace DeepDungeonTracker
             else if (discoverItem.Contains(logId))
                 this.Common.DutyCompleted();
         }
-
-        private void UnknownDeepDungeonSaveDataAction((IntPtr, uint) data) => this.Common.DeleteDeepDungeonSaveData(NetworkData.ExtractNumber(data.Item1, 8, 4), NetworkData.ExtractNumber(data.Item1, 168, 4));
 
         private void UnknownBronzeCofferItemInfoAction((IntPtr, uint) data) => this.Common.BronzeCofferUpdate(this.Text, NetworkData.ExtractNumber(data.Item1, 8, 2));
 
