@@ -8,4 +8,3 @@ Reduce Draw Commands.
 Coffer texture icon/enum reorder (will break save data).
 SaveSlotSelection check.
 Keep Enchantments removed after Serenity use.
-HoH NPC condition fix.
