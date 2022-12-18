@@ -22,11 +22,15 @@ namespace DeepDungeonTracker
             return File.Exists(path) ? JsonSerializer.Deserialize<T>(File.ReadAllText(path)) : default;
         }
 
-        public static void Delete(string directory, string fileName)
+        public static bool Delete(string directory, string fileName)
         {
             var path = Path.Combine(directory, fileName);
             if (File.Exists(path))
+            {
                 File.Delete(path);
+                return true;
+            }
+            return false;
         }
 
         public static bool Exists(string directory, string fileName) => File.Exists(Path.Combine(directory, fileName));

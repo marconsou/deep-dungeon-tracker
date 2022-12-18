@@ -8,19 +8,15 @@ namespace DeepDungeonTracker
 {
     public class DataOpCodes
     {
-        private record Root(string? Region, Lists Lists);
+        private sealed record Root(string? Region, Lists Lists);
 
-        private record Lists(IImmutableList<ServerZoneIpcType> ServerZoneIpcType);
+        private sealed record Lists(IImmutableList<ServerZoneIpcType> ServerZoneIpcType);
 
-        private record ServerZoneIpcType(string? Name, ushort OpCode);
-
-        private bool IsUnknownDeepDungeonSaveDataOpCodeFound { get; set; }
+        private sealed record ServerZoneIpcType(string? Name, ushort OpCode);
 
         private bool IsUnknownBronzeCofferItemInfoOpCodeFound { get; set; }
 
         private bool IsUnknownBronzeCofferOpenOpCodeFound { get; set; }
-
-        private IDictionary<ushort, (int, int)> UnknownDeepDungeonSaveDataOpCodes { get; } = new Dictionary<ushort, (int, int)>();
 
         private ICollection<ushort> KnownOpCodes { get; } = new List<ushort>(100);
 
@@ -57,55 +53,18 @@ namespace DeepDungeonTracker
 
             if (actorControl != 0 && actorControlSelf != 0 && effect != 0 && eventStart != 0 && systemLogMessage != 0)
             {
-                if (configuration.OpCodes.ActorControl != actorControl ||
+                if (configuration?.OpCodes.ActorControl != actorControl ||
                     configuration.OpCodes.ActorControlSelf != actorControlSelf ||
                     configuration.OpCodes.Effect != effect ||
                     configuration.OpCodes.EventStart != eventStart ||
                     configuration.OpCodes.SystemLogMessage != systemLogMessage)
                 {
-                    configuration.OpCodes.ActorControl = actorControl;
+                    configuration!.OpCodes.ActorControl = actorControl;
                     configuration.OpCodes.ActorControlSelf = actorControlSelf;
                     configuration.OpCodes.Effect = effect;
                     configuration.OpCodes.EventStart = eventStart;
                     configuration.OpCodes.SystemLogMessage = systemLogMessage;
                     configuration.Save();
-                }
-            }
-        }
-
-        public void FindUnknownDeepDungeonSaveDataOpCode(IntPtr dataPtr, ushort opCode, uint targetActorId)
-        {
-            if (this.IsUnknownDeepDungeonSaveDataOpCodeFound || this.IsKnownOpCode(opCode))
-                return;
-
-            if (targetActorId == Service.ClientState.LocalPlayer?.ObjectId && NetworkData.ExtractNumber(dataPtr, 2, 1) > 0 && NetworkData.ExtractString(dataPtr, 3, 5).All(x => x == '0'))
-            {
-                var aetherpoolArm = NetworkData.ExtractNumber(dataPtr, 0, 1);
-                var aetherpoolArmor = NetworkData.ExtractNumber(dataPtr, 1, 1);
-                this.UnknownDeepDungeonSaveDataOpCodes.TryAdd(opCode, (aetherpoolArm, aetherpoolArmor));
-            }
-        }
-
-        public void CheckForUnknownDeepDungeonSaveDataOpCode(Configuration configuration)
-        {
-            if (this.IsUnknownDeepDungeonSaveDataOpCodeFound)
-                return;
-
-            var result = NodeUtility.AetherpoolMenu(Service.GameGui);
-            if (result.Item1)
-            {
-                foreach (var item in this.UnknownDeepDungeonSaveDataOpCodes)
-                {
-                    if (item.Value.Item1 == result.Item2 && item.Value.Item2 == result.Item3)
-                    {
-                        this.IsUnknownDeepDungeonSaveDataOpCodeFound = true;
-                        if (configuration.OpCodes.UnknownDeepDungeonSaveData != item.Key)
-                        {
-                            configuration.OpCodes.UnknownDeepDungeonSaveData = item.Key;
-                            configuration.Save();
-                        }
-                        return;
-                    }
                 }
             }
         }
@@ -118,9 +77,9 @@ namespace DeepDungeonTracker
             if (new int[] { 3, 8 }.Contains(NetworkData.ExtractNumber(dataPtr, 0, 1)) && NetworkData.ExtractNumber(dataPtr, 4, 4) == targetActorId && this.IsUnknownBronzeCofferOpenOpCodeFound)
             {
                 this.IsUnknownBronzeCofferItemInfoOpCodeFound = true;
-                if (configuration.OpCodes.UnknownBronzeCofferItemInfo != opCode)
+                if (configuration?.OpCodes.UnknownBronzeCofferItemInfo != opCode)
                 {
-                    configuration.OpCodes.UnknownBronzeCofferItemInfo = opCode;
+                    configuration!.OpCodes.UnknownBronzeCofferItemInfo = opCode;
                     configuration.Save();
                 }
             }
@@ -135,9 +94,9 @@ namespace DeepDungeonTracker
             if (obj?.ObjectKind == ObjectKind.Treasure && NetworkData.ExtractString(dataPtr, 6, 2) == "9643")
             {
                 this.IsUnknownBronzeCofferOpenOpCodeFound = true;
-                if (configuration.OpCodes.UnknownBronzeCofferOpen != opCode)
+                if (configuration?.OpCodes.UnknownBronzeCofferOpen != opCode)
                 {
-                    configuration.OpCodes.UnknownBronzeCofferOpen = opCode;
+                    configuration!.OpCodes.UnknownBronzeCofferOpen = opCode;
                     configuration.Save();
                 }
             }

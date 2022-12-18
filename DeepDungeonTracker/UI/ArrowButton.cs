@@ -4,7 +4,7 @@
     {
         private bool MirrorHorizontal { get; }
 
-        public ArrowButton(bool mirrorHorizontal) : base(new(36.0f, 36.0f)) => this.MirrorHorizontal = mirrorHorizontal;
+        public ArrowButton(bool mirrorHorizontal) : base(new(36.0f, 28.0f)) => this.MirrorHorizontal = mirrorHorizontal;
 
         public override void Draw(DataUI ui)
         {

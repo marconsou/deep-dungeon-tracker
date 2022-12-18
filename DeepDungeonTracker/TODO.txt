@@ -1,5 +1,4 @@
 ﻿Windows simple mode.
-Additional commands to show/hide specific windows.
 Save backup and option to load a file from path.
 NodeUtility.CreateTextNode.Malloc.
 Map = false clear MapData (wait for next .net?).
@@ -7,3 +6,7 @@ Disable some features for party.
 Time bonus icon bug (blinking) when entering DD.
 Reduce Draw Commands.
 Coffer texture icon/enum reorder (will break save data).
+SaveSlotSelection check.
+Keep Enchantments removed after Serenity use.
+Boss kill not registered fix.
+HoH NPC condition fix.

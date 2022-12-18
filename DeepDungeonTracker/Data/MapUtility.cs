@@ -6,7 +6,7 @@ namespace DeepDungeonTracker
 {
     public static class MapUtility
     {
-        private record Room(float X = 0.0f, float Y = 0.0f, float Width = 0.0f, float Height = 0.0f, RoomOpening RoomOpening = RoomOpening.Special);
+        private sealed record Room(float X = 0.0f, float Y = 0.0f, float Width = 0.0f, float Height = 0.0f, RoomOpening RoomOpening = RoomOpening.Special);
 
         public static bool IsMapFullyRevealed(MapData mapData)
         {
