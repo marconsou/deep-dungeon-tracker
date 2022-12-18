@@ -17,7 +17,7 @@ namespace DeepDungeonTracker
 
         public virtual void Draw(DataUI ui)
         {
-            var scale = ui.Scale;
+            var scale = ui?.Scale ?? 1.0f;
             var mousePos = ImGui.GetMousePos() - ImGui.GetWindowPos();
             var pos = this.Position * scale;
             var size = this.Size * scale;

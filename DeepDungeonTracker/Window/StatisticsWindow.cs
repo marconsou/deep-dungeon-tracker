@@ -150,6 +150,7 @@ namespace DeepDungeonTracker
                     var totalTime = 0L;
                     var totalScore = 0;
                     var lineHeight = 28.0f;
+                    var a = 0;
                     foreach (var item in floorSets ?? Enumerable.Empty<FloorSet>())
                     {
                         var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
@@ -165,10 +166,9 @@ namespace DeepDungeonTracker
                             y += lineHeight * 2.55f;
                     }
 
-                    x += 350.0f;
+                    x = floorSets?.Count() > 10 ? 700.0f : 350.0f;
                     y = top;
                     var score = this.Data.Common.Score;
-
                     if (score != null)
                     {
                         ui.DrawTextAxisLatinPro(x, y, $"[{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")}] ({score.BaseScore})", Color.White); y += lineHeight * 2.0f;

@@ -92,11 +92,23 @@ namespace DeepDungeonTracker
 
         private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
 
-        private void OnTrackerCommand(string command, string args) => this.Configuration.Tracker.Show = !this.Configuration.Tracker.Show;
+        private void OnTrackerCommand(string command, string args)
+        {
+            this.Configuration.Tracker.Show = !this.Configuration.Tracker.Show;
+            this.Configuration.Save();
+        }
 
-        private void OnTimeCommand(string command, string args) => this.Configuration.FloorSetTime.Show = !this.Configuration.FloorSetTime.Show;
+        private void OnTimeCommand(string command, string args)
+        {
+            this.Configuration.FloorSetTime.Show = !this.Configuration.FloorSetTime.Show;
+            this.Configuration.Save();
+        }
 
-        private void OnScoreCommand(string command, string args) => this.Configuration.Score.Show = !this.Configuration.Score.Show;
+        private void OnScoreCommand(string command, string args)
+        {
+            this.Configuration.Score.Show = !this.Configuration.Score.Show;
+            this.Configuration.Save();
+        }
 
         private void OnLoadCommand(string command, string args)
         {

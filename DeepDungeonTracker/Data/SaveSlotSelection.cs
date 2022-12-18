@@ -22,6 +22,7 @@ namespace DeepDungeonTracker
             if (this.Data != null && !this.Data.TryAdd(key, data))
                 this.Data[key] = data;
         }
+
         private static SaveSlotSelectionData Get(string key, IDictionary<string, SaveSlotSelectionData>? data) => (data?.TryGetValue(key, out var value) ?? false) ? value : new();
 
         public SaveSlotSelectionData GetSelection(string key) => SaveSlotSelection.Get(key, this.Data);

@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Gui;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
@@ -203,6 +204,37 @@ namespace DeepDungeonTracker
                     saveSlotNumber = 2;
             }
             return saveSlotNumber;
+        }
+
+        public static (bool, bool) SaveSlotDeletion(GameGui gameGui)
+        {
+            static bool IsEmpty(AtkTextNode* node) => node->NodeText.ToString().IsNullOrWhitespace();
+
+            static AtkTextNode* GetSlotNodeData(AtkUnitBase* addon, int index)
+            {
+                var componentNode = NodeUtility.GetAddonChildNode(addon, 2)->GetAsAtkComponentNode();
+                componentNode = NodeUtility.GetComponentChildNode(componentNode, index)->GetAsAtkComponentNode();
+                var textNode = NodeUtility.GetComponentChildNode(componentNode, 19)->GetAsAtkTextNode();
+                if (textNode != null && !IsEmpty(textNode))
+                {
+                    var nextSiblingNode = textNode->AtkResNode.NextSiblingNode;
+                    if (nextSiblingNode != null)
+                        return nextSiblingNode->GetAsAtkTextNode();
+                }
+                return null;
+            }
+
+            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonSaveData", 1);
+            if (addon == null)
+                return (false, false);
+
+            var slot1NodeData = GetSlotNodeData(addon, 1);
+            var slot2NodeData = GetSlotNodeData(addon, 2);
+
+            if (slot1NodeData != null && slot2NodeData != null)
+                return (IsEmpty(slot1NodeData), IsEmpty(slot2NodeData));
+
+            return (false, false);
         }
 
         public static (bool, int) MapFloorNumber(GameGui gameGui)

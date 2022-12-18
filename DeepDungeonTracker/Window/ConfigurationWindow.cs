@@ -233,7 +233,7 @@ namespace DeepDungeonTracker
             ImGui.TextColored(Color.Green, "Potsherds:");
             ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
-            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you track it from an ongoing save file.");
+            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
             if (ImGui.CollapsingHeader("OpCodes"))
             {
                 ImGui.TextWrapped("Values in this section should not be zero.");
