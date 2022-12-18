@@ -109,15 +109,14 @@ namespace DeepDungeonTracker
 
         public void LoadDeepDungeonDataFromCurrentDeepDungeonRegion()
         {
-            var characterKey = this.CharacterKey;
-            if (characterKey.Length <= 3)
-                return;
+            var data = this.SaveSlotSelection.GetSelection(this.CharacterKey);
+            this.CurrentSaveSlot = (data.DeepDungeon == this.DeepDungeon && this.DeepDungeon != DeepDungeon.None) ? LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName()) : new();
+        }
 
-            var data = this.SaveSlotSelection.GetSelection(characterKey);
-            if (data.DeepDungeon == this.DeepDungeon)
-                this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName());
-            else
-                this.CurrentSaveSlot = new();
+        public void LoadDeepDungeonData()
+        {
+            var data = SaveSlotSelection.GetSelectionFromFile(this.CharacterKey);
+            this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, DataCommon.GetSaveSlotFileName(this.CharacterKey, data));
         }
 
         public void LoadDeepDungeonData()
