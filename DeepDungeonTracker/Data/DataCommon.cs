@@ -107,18 +107,6 @@ namespace DeepDungeonTracker
                 await LocalStream.Save(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(), this.CurrentSaveSlot);
         }
 
-        public void LoadDeepDungeonDataFromCurrentDeepDungeonRegion()
-        {
-            var data = this.SaveSlotSelection.GetSelection(this.CharacterKey);
-            this.CurrentSaveSlot = (data.DeepDungeon == this.DeepDungeon && this.DeepDungeon != DeepDungeon.None) ? LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName()) : new();
-        }
-
-        public void LoadDeepDungeonData()
-        {
-            var data = SaveSlotSelection.GetSelectionFromFile(this.CharacterKey);
-            this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, DataCommon.GetSaveSlotFileName(this.CharacterKey, data));
-        }
-
         public void LoadDeepDungeonData()
         {
             var data = SaveSlotSelection.GetSelectionFromFile(this.CharacterKey);
@@ -126,6 +114,19 @@ namespace DeepDungeonTracker
         }
 
         public void LoadDeepDungeonData(string key, SaveSlotSelection.SaveSlotSelectionData data) => this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, DataCommon.GetSaveSlotFileName(key, data));
+
+        private void LoadDeepDungeonDataAutomatic()
+        {
+            var characterKey = this.CharacterKey;
+            if (characterKey.Length <= 3)
+                return;
+
+            var data = this.SaveSlotSelection.GetSelection(characterKey);
+            if (data.DeepDungeon == this.DeepDungeon)
+                this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName());
+            else
+                this.CurrentSaveSlot = new();
+        }
 
         public void CheckForSaveSlotSelection()
         {
@@ -147,7 +148,7 @@ namespace DeepDungeonTracker
                 this.ServerName = Service.ClientState.LocalPlayer?.HomeWorld.GameData?.Name.ToString() ?? string.Empty;
 
             if (characterName.IsNullOrEmpty() && !this.CharacterName.IsNullOrEmpty() && serverName.IsNullOrEmpty() && !this.ServerName.IsNullOrEmpty())
-                this.LoadDeepDungeonDataFromCurrentDeepDungeonRegion();
+                this.LoadDeepDungeonDataAutomatic();
         }
 
         public void CheckForSolo()
@@ -256,7 +257,7 @@ namespace DeepDungeonTracker
                 this.DeepDungeon = DeepDungeon.None;
 
             if (this.DeepDungeon != DeepDungeon.None && this.DeepDungeon != deepDungeon)
-                this.LoadDeepDungeonDataFromCurrentDeepDungeonRegion();
+                this.LoadDeepDungeonDataAutomatic();
         }
 
         public TimeSpan GetRespawnTime()
@@ -388,7 +389,7 @@ namespace DeepDungeonTracker
                         CreateSaveSlot(floorNumber);
                     else
                     {
-                        this.LoadDeepDungeonDataFromCurrentDeepDungeonRegion();
+                        this.LoadDeepDungeonDataAutomatic();
                         if (this.CurrentSaveSlot?.ContentId != contentId)
                             this.CurrentSaveSlot?.AddFloorSet(floorNumber);
                         else
