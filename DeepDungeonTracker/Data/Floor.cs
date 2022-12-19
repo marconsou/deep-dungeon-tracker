@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -44,6 +45,13 @@ namespace DeepDungeonTracker
         [JsonInclude]
         [JsonPropertyName("Enchantments")]
         public Collection<Enchantment>? SerializationEnchantments { get => this.Enchantments?.Count > 0 ? this.Enchantments : null; private set => this.Enchantments = value ?? new(); }
+
+        [JsonIgnore]
+        public Collection<Enchantment> EnchantmentsSerenized { get; private set; } = new();
+
+        [JsonInclude]
+        [JsonPropertyName("EnchantmentsSerenized")]
+        public Collection<Enchantment>? SerializationEnchantmentsSerenized { get => this.EnchantmentsSerenized?.Count > 0 ? this.EnchantmentsSerenized : null; private set => this.EnchantmentsSerenized = value ?? new(); }
 
         [JsonIgnore]
         public Collection<Trap> Traps { get; private set; } = new();
@@ -101,7 +109,14 @@ namespace DeepDungeonTracker
         {
             this.Pomanders.Add(pomander);
             if (pomander == Pomander.Serenity)
-                this.Enchantments.Clear();
+            {
+                if (this.Enchantments.Count > 0)
+                {
+                    foreach (var item in this.Enchantments)
+                        this.EnchantmentsSerenized.Add(item);
+                    this.Enchantments.Clear();
+                }
+            }
         }
 
         public void PlayerKilled() => this.Deaths++;
@@ -113,5 +128,7 @@ namespace DeepDungeonTracker
         public int Potsherds() => this.Coffers.Count(x => x == Coffer.Potsherd);
 
         public int Lurings() => this.Traps.Count(x => x == Trap.Luring);
+
+        public IEnumerable<Enchantment> AdjustedEnchantments() => this.Enchantments.Count > 0 ? this.Enchantments : this.EnchantmentsSerenized.Count > 0 ? this.EnchantmentsSerenized : new();
     }
 }
