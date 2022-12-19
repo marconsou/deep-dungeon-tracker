@@ -123,10 +123,8 @@ namespace DeepDungeonTracker
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, i < statistics.MiscellaneousByFloor?.Count ? statistics.MiscellaneousByFloor[i] : default, floor.MapData);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, i < statistics.CoffersByFloor?.Count ? statistics.CoffersByFloor[i] : default);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, i < statistics.PomandersByFloor?.Count ? statistics.PomandersByFloor[i] : default);
-                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, i < statistics.EnchantmentsByFloor?.Count ? statistics.EnchantmentsByFloor[i] : default);
+                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, i < statistics.EnchantmentsByFloor?.Count ? statistics.EnchantmentsByFloor[i] : default, null, floor.EnchantmentsSerenized.Count > 0);
                             this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, trapOffset, trapOffset, textOffset, textOffset, iconSize, i < statistics.TrapsByFloor?.Count ? statistics.TrapsByFloor[i] : default);
-
-
                         }
 
                         if (!new int[] { 2, 5, 8 }.Contains(i))
@@ -251,7 +249,7 @@ namespace DeepDungeonTracker
                 ui.DrawTextAxisLatinPro(x, y + lineHeight, $"{(previousScore > 0 ? "+" : string.Empty)}{previousScore:N0}", previousScore > 0 ? config.ScoreColor : previousScore < 0 ? Color.Red : Color.White);
         }
 
-        private void DrawIcon<T>(ref float x, ref float y, float left, float top, float offsetX, float offsetY, float iconOffsetX, float iconOffsetY, float textOffsetX, float textOffsetY, float iconSize, IEnumerable<DataStatistics.StatisticsItem<T>>? data, MapData? mapData = null) where T : Enum
+        private void DrawIcon<T>(ref float x, ref float y, float left, float top, float offsetX, float offsetY, float iconOffsetX, float iconOffsetY, float textOffsetX, float textOffsetY, float iconSize, IEnumerable<DataStatistics.StatisticsItem<T>>? data, MapData? mapData = null, bool isEnchantmentSerenized = false) where T : Enum
         {
             var ui = this.Data.UI;
             x = left + offsetX;
@@ -267,7 +265,7 @@ namespace DeepDungeonTracker
                 if (typeof(T) == typeof(Coffer))
                     ui.DrawCoffer(iconX, iconY, (Coffer)(Enum)value);
                 else if (typeof(T) == typeof(Enchantment))
-                    ui.DrawEnchantment(iconX, iconY, (Enchantment)(Enum)value);
+                    ui.DrawEnchantment(iconX, iconY, (Enchantment)(Enum)value, isEnchantmentSerenized);
                 else if (typeof(T) == typeof(Trap))
                     ui.DrawTrap(iconX, iconY, (Trap)(Enum)value);
                 else if (typeof(T) == typeof(Pomander))

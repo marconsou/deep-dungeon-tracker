@@ -7,4 +7,3 @@ Time bonus icon bug (blinking) when entering DD.
 Reduce Draw Commands.
 Coffer texture icon/enum reorder (will break save data).
 SaveSlotSelection check.
-Keep Enchantments removed after Serenity use.

@@ -54,7 +54,7 @@ namespace DeepDungeonTracker
 
         public void DrawCoffer(float x, float y, Coffer coffer) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)coffer, 6, 5);
 
-        public void DrawEnchantment(float x, float y, Enchantment enchantment) => this.Render.DrawUIElement(this.ResourceUI.Enchantment, x, y, 0.5f, (int)enchantment, 4, 4);
+        public void DrawEnchantment(float x, float y, Enchantment enchantment, bool isEnchantmentSerenized) => this.Render.DrawUIElement(this.ResourceUI.Enchantment, x, y, 0.5f, (int)enchantment, 4, 4, !isEnchantmentSerenized ? Color.White : new(1.0f, 1.0f, 1.0f, 0.25f));
 
         public void DrawTrap(float x, float y, Trap trap) => this.Render.DrawUIElement(this.ResourceUI.Trap, x, y, 0.5f, (int)trap, 3, 2, Color.Red);
 
