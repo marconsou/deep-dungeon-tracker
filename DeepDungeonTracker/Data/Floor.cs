@@ -112,6 +112,7 @@ namespace DeepDungeonTracker
             {
                 if (this.Enchantments.Count > 0)
                 {
+                    this.EnchantmentsSerenized.Clear();
                     foreach (var item in this.Enchantments)
                         this.EnchantmentsSerenized.Add(item);
                     this.Enchantments.Clear();
