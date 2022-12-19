@@ -1,6 +1,9 @@
 ﻿using Dalamud;
+using Dalamud.Utility;
 using Lumina.Data;
 using Lumina.Excel.GeneratedSheets;
+using Lumina.Text;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -35,6 +38,8 @@ namespace DeepDungeonTracker
             };
         }
 
+        private void AddText(TextIndex key, uint id, SeString seString) => this.Texts.Add(key, (id, seString.ToDalamudString().ToString()));
+
         private void LoadItems(Language language)
         {
             var sheet = Service.DataManager.GameData.Excel.GetSheet<Item>(language);
@@ -42,8 +47,8 @@ namespace DeepDungeonTracker
 
             for (var i = 0; i < indices.Length; i++)
             {
-                var item = indices[i];
-                this.Texts.Add(TextIndex.GelmorranPotsherd + i, (item, sheet!.GetRow(item)!.Singular));
+                var id = indices[i];
+                this.AddText(TextIndex.GelmorranPotsherd + i, id, sheet!.GetRow(id)!.Singular);
             }
         }
 
@@ -56,8 +61,8 @@ namespace DeepDungeonTracker
 
             for (var i = 0; i < indices.Length; i++)
             {
-                var item = indices[i];
-                this.Texts.Add(TextIndex.Mimic + i, (item, sheet!.GetRow(item)!.Singular));
+                var id = indices[i];
+                this.AddText(TextIndex.Mimic + i, id, sheet!.GetRow(id)!.Singular);
             }
         }
 
@@ -68,8 +73,8 @@ namespace DeepDungeonTracker
 
             for (var i = 0; i < indices.Length; i++)
             {
-                var item = indices[i];
-                this.Texts.Add(TextIndex.BlindnessEnchantment + i, (item, sheet!.GetRow(item)!.Text));
+                var id = indices[i];
+                this.AddText(TextIndex.BlindnessEnchantment + i, id, sheet!.GetRow(id)!.Text);
             }
         }
 
@@ -80,8 +85,8 @@ namespace DeepDungeonTracker
 
             for (var i = 0; i < indices.Length; i++)
             {
-                var item = indices[i];
-                this.Texts.Add(TextIndex.LandmineTrap + i, (item, sheet!.GetRow(item)!.Text));
+                var id = indices[i];
+                this.AddText(TextIndex.LandmineTrap + i, id, sheet!.GetRow(id)!.Text);
             }
         }
 
@@ -89,7 +94,7 @@ namespace DeepDungeonTracker
         {
             for (var i = start; i <= end; i++)
             {
-                if ((name != null && name.ToLower() == this.Texts[i].Item2.ToLower()) || (index != null && this.Texts[i].Item1 == index))
+                if ((name != null && string.Equals(name, this.Texts[i].Item2, StringComparison.OrdinalIgnoreCase)) || (index != null && this.Texts[i].Item1 == index))
                     return (true, i);
             }
             return (false, null);
