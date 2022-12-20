@@ -224,11 +224,11 @@ namespace DeepDungeonTracker
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
                 "All enemies killed from a distance of more than two rooms cannot be counted. " +
-                "If you use magicite, do so in the center of the floor, covering all enemies killed (as much as possible). ");
+                "\nIf you use a magicite, do so in the center of the floor, covering all enemies killed (as much as possible). ");
             ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
-            ImGui.TextWrapped("Keep your map menu open for the Cairn of Passage key status check. Killing too many enemies at the same time can be inaccurate.");
+            ImGui.TextWrapped("Keep your map menu open to verify the Cairn of Passage key status. The value can be inaccurate if you kill too many enemies at the same time.");
             ImGui.TextColored(Color.Green, "Maps:");
-            ImGui.TextWrapped("Keep your map menu open to count the map reveal.");
+            ImGui.TextWrapped("Keep your map menu open to verify the map reveal.");
             ImGui.TextColored(Color.Green, "Potsherds:");
             ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
