@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 
 namespace DeepDungeonTracker
@@ -56,7 +57,7 @@ namespace DeepDungeonTracker
         public void FloorSetStatisticsPrevious()
         {
             var value = ((int)this.FloorSetStatistics) - 1;
-            var enumValues = Enum.GetValues(typeof(FloorSetStatistics)).Cast<FloorSetStatistics>();
+            var enumValues = Enum.GetValues(typeof(FloorSetStatistics)).Cast<FloorSetStatistics>().ToImmutableArray();
             this.FloorSetStatistics = value < (int)enumValues.Min() ? enumValues.Max() : (FloorSetStatistics)value;
             this.DataUpdate();
         }
@@ -64,7 +65,7 @@ namespace DeepDungeonTracker
         public void FloorSetStatisticsNext()
         {
             var value = ((int)this.FloorSetStatistics) + 1;
-            var enumValues = Enum.GetValues(typeof(FloorSetStatistics)).Cast<FloorSetStatistics>();
+            var enumValues = Enum.GetValues(typeof(FloorSetStatistics)).Cast<FloorSetStatistics>().ToImmutableArray();
             this.FloorSetStatistics = value > (int)enumValues.Max() ? enumValues.Min() : (FloorSetStatistics)value;
             this.DataUpdate();
         }
@@ -166,7 +167,7 @@ namespace DeepDungeonTracker
                     new (Miscellaneous.NPC, floor?.NPCs ?? 0),
                     new (Miscellaneous.Death, floor?.Deaths ?? 0),
                     new (Miscellaneous.RegenPotion, floor?.RegenPotions ?? 0),
-                    new (Miscellaneous.Map, Convert.ToInt32(floor?.Map))
+                    new (Miscellaneous.Map, Convert.ToInt32(floor?.Map, CultureInfo.InvariantCulture))
                 }).RemoveAll(x => x.Total == 0);
             }
             return floors?.SelectMany(x => ImmutableArray.Create(GetStatisticsCommonFloor(x))).ToImmutableList();
@@ -184,7 +185,7 @@ namespace DeepDungeonTracker
                 new (Miscellaneous.Death, floorSet?.Deaths() ?? 0),
                 new (Miscellaneous.RegenPotion, floorSet?.RegenPotions() ?? 0),
                 new (Miscellaneous.Map, floorSet?.Maps() ?? 0),
-                new (Miscellaneous.TimeBonus, Convert.ToInt32(floorSet?.TimeBonus))
+                new (Miscellaneous.TimeBonus, Convert.ToInt32(floorSet?.TimeBonus, CultureInfo.InvariantCulture))
             }).RemoveAll(x => x.Total == 0);
         }
 

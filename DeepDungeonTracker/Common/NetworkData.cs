@@ -20,7 +20,7 @@ namespace DeepDungeonTracker
             if (reverseBytes)
                 Array.Reverse(bytes);
 
-            return BitConverter.ToString(bytes).Replace("-", "");
+            return BitConverter.ToString(bytes).Replace("-", "", StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

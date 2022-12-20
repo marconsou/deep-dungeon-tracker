@@ -8,11 +8,13 @@ namespace DeepDungeonTracker
 {
     public class DataOpCodes
     {
+#pragma warning disable CA1812
         private sealed record Root(string? Region, Lists Lists);
 
         private sealed record Lists(IImmutableList<ServerZoneIpcType> ServerZoneIpcType);
 
         private sealed record ServerZoneIpcType(string? Name, ushort OpCode);
+#pragma warning restore CA1812
 
         private bool IsUnknownBronzeCofferItemInfoOpCodeFound { get; set; }
 
@@ -30,7 +32,7 @@ namespace DeepDungeonTracker
             ushort eventStart = 0;
             ushort systemLogMessage = 0;
 
-            var result = await NetworkStream.Load<ImmutableList<Root>>(new("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json"));
+            var result = await NetworkStream.Load<ImmutableList<Root>>(new("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json")).ConfigureAwait(true);
             var opCodes = result?.Find(x => x.Region == "Global")?.Lists.ServerZoneIpcType;
 
             for (var i = 0; i < opCodes?.Count; i++)

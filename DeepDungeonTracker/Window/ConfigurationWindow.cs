@@ -186,7 +186,7 @@ namespace DeepDungeonTracker
                 foreach (var key in saveSlotSelection.Keys)
                 {
                     ImGui.NewLine();
-                    ImGui.Text($"{key.Replace("-", "@")}");
+                    ImGui.Text($"{key.Replace("-", "@", StringComparison.InvariantCultureIgnoreCase)}");
                     saveSlotSelection.TryGetValue(key, out var SaveSlotSelectionData);
                     foreach (var deepDungeon in Enum.GetValues<DeepDungeon>())
                     {

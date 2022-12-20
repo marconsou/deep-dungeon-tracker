@@ -16,19 +16,19 @@ namespace DeepDungeonTracker
             if (nodes != null && nodes.Count > 0)
             {
                 rooms = ImmutableArray.Create<Room>();
-                mapData.Reset();
+                mapData?.Reset();
 
                 foreach (var node in nodes)
                 {
                     if (node.PartCount == 16)
                     {
                         rooms = rooms.Add(new(node.X, node.Y, node.Width, node.Height, (RoomOpening)node.PartId));
-                        mapData.Update((int)(node.X / node.Width), (int)(node.Y / node.Height), node.PartId, FloorType.Normal);
+                        mapData?.Update((int)(node.X / node.Width), (int)(node.Y / node.Height), node.PartId, FloorType.Normal);
                     }
                     else if (node.PartCount == 9)
                     {
                         rooms = rooms.Add(new());
-                        mapData.Update((int)(node.X / node.Width), (int)(node.Y / node.Height), node.PartId, FloorType.HallOfFallacies);
+                        mapData?.Update((int)(node.X / node.Width), (int)(node.Y / node.Height), node.PartId, FloorType.HallOfFallacies);
                     }
                 }
             }
@@ -38,26 +38,26 @@ namespace DeepDungeonTracker
             if (rooms.Count == 0)
                 return false;
 
-            if (mapData.FloorType == FloorType.Normal)
+            if (mapData?.FloorType == FloorType.Normal)
             {
                 foreach (var item in rooms)
                 {
-                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Top)!))
+                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Top)!, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (rooms.FirstOrDefault(i => (i.X == item.X) && (i.Y == item.Y - i.Height)) == null)
                             return false;
                     }
-                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Right)!))
+                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Right)!, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (rooms.FirstOrDefault(i => (i.X == item.X + item.Width) && (i.Y == item.Y)) == null)
                             return false;
                     }
-                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Bottom)!))
+                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Bottom)!, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (rooms.FirstOrDefault(i => (i.X == item.X) && (i.Y == item.Y + item.Height)) == null)
                             return false;
                     }
-                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Left)!))
+                    if (Enum.GetName(item.RoomOpening)!.Contains(Enum.GetName(RoomOpening.Left)!, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (rooms.FirstOrDefault(i => (i.X == item.X - i.Width) && (i.Y == item.Y)) == null)
                             return false;
@@ -65,7 +65,7 @@ namespace DeepDungeonTracker
                 }
                 return true;
             }
-            if (mapData.FloorType == FloorType.HallOfFallacies)
+            if (mapData?.FloorType == FloorType.HallOfFallacies)
             {
                 if (rooms.Count == 12)
                     return true;

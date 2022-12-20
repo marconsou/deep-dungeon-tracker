@@ -93,7 +93,7 @@ namespace DeepDungeonTracker
 
         public void Update(Configuration configuration)
         {
-            this.UI.Update(configuration.General.ShowAccurateTargetHPPercentage);
+            this.UI.Update(configuration?.General.ShowAccurateTargetHPPercentage ?? false);
             this.CharacterUpdate();
 
             if (this.InDeepDungeon.IsActivated)

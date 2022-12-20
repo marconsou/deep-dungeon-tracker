@@ -66,7 +66,9 @@ namespace DeepDungeonTracker
 
             public Vector4 TotalNumberColor { get; set; } = Color.White;
 
+#pragma warning disable CA1819
             public Field[] Fields { get; set; } = Enumerable.Repeat(new Field(), 14).Select((x, index) => new Field() { Show = (index != 3), Index = index }).ToArray();
+#pragma warning restore CA1819
         }
 
         public class FloorSetTimeTab

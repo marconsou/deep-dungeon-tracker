@@ -58,9 +58,9 @@ namespace DeepDungeonTracker
         protected Score(SaveSlot saveSlot, bool isDutyComplete)
         {
             this.SaveSlot = saveSlot;
-            var dutyFailed = Score.DutyComplete - ((saveSlot.KOs + 1) * 10);
+            var dutyFailed = Score.DutyComplete - (((saveSlot?.KOs ?? 0) + 1) * 10);
             this.Duty = isDutyComplete ? Score.DutyComplete : dutyFailed;
-            this.StartingFloorNumber = saveSlot.StartingFloorNumber();
+            this.StartingFloorNumber = saveSlot!.StartingFloorNumber();
             this.FloorCompletionUpdate(saveSlot.CurrentFloorNumber());
         }
 
