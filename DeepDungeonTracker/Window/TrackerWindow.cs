@@ -73,7 +73,8 @@ namespace DeepDungeonTracker
             var NPCindex = 4;
             var ShowNPC = (config.Fields?[NPCindex].Show ?? false) &&
                 ((this.Data.Common.CurrentSaveSlot?.DeepDungeon == DeepDungeon.PalaceOfTheDead) ||
-                (this.Data.Common.CurrentSaveSlot?.DeepDungeon == DeepDungeon.None && this.Data.Common.DeepDungeon == DeepDungeon.PalaceOfTheDead));
+                ((this.Data.Common.CurrentSaveSlot == null || this.Data.Common.CurrentSaveSlot.DeepDungeon == DeepDungeon.None) && this.Data.Common.DeepDungeon == DeepDungeon.PalaceOfTheDead));
+
             var numberOfLines = (config.Fields?.Where((x, Index) => Index != NPCindex).Count(x => x.Show) ?? 0) + (ShowNPC ? 1 : 0);
             var width = 380.0f;
             var height = (top + (lineHeight * numberOfLines) - 3.0f);
