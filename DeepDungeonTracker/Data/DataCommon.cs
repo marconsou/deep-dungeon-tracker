@@ -106,9 +106,14 @@ namespace DeepDungeonTracker
         {
             var data = SaveSlotSelection.GetSelectionFromFile(this.CharacterKey);
             this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, DataCommon.GetSaveSlotFileName(this.CharacterKey, data));
+            this.FloorSetTime = new();
         }
 
-        public void LoadDeepDungeonData(string key, SaveSlotSelection.SaveSlotSelectionData data) => this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, DataCommon.GetSaveSlotFileName(key, data));
+        public void LoadDeepDungeonData(string key, SaveSlotSelection.SaveSlotSelectionData data)
+        {
+            this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, DataCommon.GetSaveSlotFileName(key, data));
+            this.FloorSetTime = new();
+        }
 
         private void LoadDeepDungeonDataAutomatic()
         {
@@ -121,6 +126,8 @@ namespace DeepDungeonTracker
                 this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName());
             else
                 this.CurrentSaveSlot = new();
+
+            this.FloorSetTime = new();
         }
 
         public void CheckForSaveSlotSelection()

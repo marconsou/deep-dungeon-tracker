@@ -108,10 +108,30 @@ namespace DeepDungeonTracker
                 var isSummary = statistics.FloorSetStatistics == FloorSetStatistics.Summary;
                 float baseX;
                 float baseY;
+                TimeSpan timeBonusMissScoreTotal = TimeSpan.Zero;
+                bool isTimeBonusMissScore = false;
+
+                static void CheckForTimeBonusMissScore(ref TimeSpan timeBonusMissScoreTotal, ref bool isTimeBonusMissScore, TimeSpan floorTime)
+                {
+                    if (isTimeBonusMissScore)
+                    {
+                        timeBonusMissScoreTotal = TimeSpan.MinValue;
+                        isTimeBonusMissScore = false;
+                    }
+
+                    if (timeBonusMissScoreTotal != TimeSpan.MinValue)
+                    {
+                        timeBonusMissScoreTotal += floorTime;
+                        if (timeBonusMissScoreTotal > new TimeSpan(0, 30, 0))
+                            isTimeBonusMissScore = true;
+                    }
+                }
+
                 if (!isSummary)
                 {
                     var horizontalElements = 3;
                     var floors = floorSet?.Floors;
+
                     for (var i = 0; i < 9; i++)
                     {
                         baseX = x;
@@ -120,7 +140,8 @@ namespace DeepDungeonTracker
 
                         if (floor.Number > 0)
                         {
-                            this.DrawFloorText(x, y, $"Floor {floor.Number}:", floor.Time, null, floor.Score, null);
+                            CheckForTimeBonusMissScore(ref timeBonusMissScoreTotal, ref isTimeBonusMissScore, floor.Time);
+                            this.DrawFloorText(x, y, $"Floor {floor.Number}:", floor.Time, null, floor.Score, null, false, isTimeBonusMissScore);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, i < statistics.MiscellaneousByFloor?.Count ? statistics.MiscellaneousByFloor[i] : default, floor.MapData);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, i < statistics.CoffersByFloor?.Count ? statistics.CoffersByFloor[i] : default);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, i < statistics.PomandersByFloor?.Count ? statistics.PomandersByFloor[i] : default);
@@ -208,7 +229,8 @@ namespace DeepDungeonTracker
                 {
                     x = baseX + (floorWidth * 2);
                     y = baseY;
-                    this.DrawFloorText(x, y, $"Last Floor:", statistics.TimeLastFloor, null, statistics.ScoreLastFloor, null, isSummary);
+                    CheckForTimeBonusMissScore(ref timeBonusMissScoreTotal, ref isTimeBonusMissScore, statistics.TimeLastFloor);
+                    this.DrawFloorText(x, y, $"Last Floor:", statistics.TimeLastFloor, null, statistics.ScoreLastFloor, null, isSummary, isTimeBonusMissScore);
                     this.DrawIcon(ref x, ref y, x, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, statistics.MiscellaneousLastFloor);
                     this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, statistics.PomandersLastFloor);
                 }
@@ -219,7 +241,7 @@ namespace DeepDungeonTracker
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }
 
-        private void DrawFloorText(float x, float y, string floorText, TimeSpan totalTime, TimeSpan? previousTime, int totalScore, int? previousScore, bool forceShowHours = false)
+        private void DrawFloorText(float x, float y, string floorText, TimeSpan totalTime, TimeSpan? previousTime, int totalScore, int? previousScore, bool forceShowHours = false, bool isTimeBonusMissScore = false)
         {
             var config = this.Configuration.Statistics;
             var ui = this.Data.UI;
@@ -248,6 +270,15 @@ namespace DeepDungeonTracker
 
             if (totalScore != previousScore && previousScore != null)
                 ui.DrawTextAxisLatinPro(x, y + lineHeight, $"{(previousScore > 0 ? "+" : string.Empty)}{previousScore:N0}", previousScore > 0 ? config.ScoreColor : previousScore < 0 ? Color.Red : Color.White);
+
+            if (isTimeBonusMissScore)
+            {
+                var totalScoreTextSize = ui.GetAxisLatinProTextSize($"{totalScore.ToString(CultureInfo.InvariantCulture) + space}");
+                x += totalScoreTextSize.X;
+                var timeBonusMissScore = totalScore + (101 * 150);
+                ui.DrawMiscellaneous(x - 12.0f, y - 18.0f, Miscellaneous.TimeBonus);
+                ui.DrawTextAxisLatinPro(x + 32.0f, y, $"{timeBonusMissScore:N0}", timeBonusMissScore > 0 ? config.ScoreColor : timeBonusMissScore < 0 ? Color.Red : Color.White);
+            }
         }
 
         private void DrawIcon<T>(ref float x, ref float y, float left, float top, float offsetX, float offsetY, float iconOffsetX, float iconOffsetY, float textOffsetX, float textOffsetY, float iconSize, IEnumerable<DataStatistics.StatisticsItem<T>>? data, MapData? mapData = null, bool isEnchantmentSerenized = false) where T : Enum
