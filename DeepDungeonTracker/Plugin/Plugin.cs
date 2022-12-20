@@ -43,7 +43,7 @@ namespace DeepDungeonTracker
             Service.CommandManager.AddHandler(Plugin.ScoreCommand, new CommandInfo(this.OnScoreCommand) { HelpMessage = "Toggles the Score Window visibility." });
             Service.CommandManager.AddHandler(Plugin.LoadCommand, new CommandInfo(this.OnLoadCommand) { HelpMessage = "Loads the last saved slot and opens the Statistics Window." });
 
-            this.WindowSystem = new(this.Name.Replace(" ", string.Empty));
+            this.WindowSystem = new(this.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
             this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));

@@ -12,7 +12,7 @@ namespace DeepDungeonTracker
         {
             var bytes = new byte[bufferSize];
             Marshal.Copy(dataPtr, bytes, 0, bytes.Length);
-            PluginLog.Information($"[{opCode:D3}, {opCode:X3}]: {message} {(showBytes ? BitConverter.ToString(bytes).Replace("-", !trimBytes ? " " : "") : string.Empty)}");
+            PluginLog.Information($"[{opCode:D3}, {opCode:X3}]: {message} {(showBytes ? BitConverter.ToString(bytes).Replace("-", !trimBytes ? " " : "", StringComparison.InvariantCultureIgnoreCase) : string.Empty)}");
         }
     }
 }

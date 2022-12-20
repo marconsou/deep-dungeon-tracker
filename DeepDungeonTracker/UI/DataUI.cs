@@ -36,9 +36,9 @@ namespace DeepDungeonTracker
                 (ServiceUtility.IsSolo || (!ServiceUtility.IsSolo && isInDeepDungeonRegion && !isInsideDeepDungeon));
         }
 
-        public void DrawTextMiedingerMediumW00(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left, bool drawShadow = false) => this.Render.DrawText(this.ResourceUI.MiedingerMediumW00, x, y, text.ToUpper(), color, align, drawShadow);
+        public void DrawTextMiedingerMediumW00(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.MiedingerMediumW00, x, y, text?.ToUpperInvariant() ?? string.Empty, color, align);
 
-        public void DrawTextAxisLatinPro(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left, bool drawShadow = false) => this.Render.DrawText(this.ResourceUI.AxisLatinPro, x, y, text, color, align, drawShadow);
+        public void DrawTextAxisLatinPro(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.AxisLatinPro, x, y, text, color, align);
 
         public Vector2 GetMiedingerMediumW00TextSize(string text) => Render.GetTextSize(this.ResourceUI.MiedingerMediumW00.FontLayout, text);
 

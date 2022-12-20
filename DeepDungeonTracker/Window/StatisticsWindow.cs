@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace DeepDungeonTracker
@@ -213,7 +214,7 @@ namespace DeepDungeonTracker
                 }
             }
             else
-                ui.DrawTextAxisLatinPro(width / 2.0f, (height / 2.0f) + 15.0f, $"No data on {statistics.FloorSetStatistics.GetDescription().ToLower()}", Color.White, Alignment.Center);
+                ui.DrawTextAxisLatinPro(width / 2.0f, (height / 2.0f) + 15.0f, $"No data on {statistics.FloorSetStatistics.GetDescription()}", Color.White, Alignment.Center);
 
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }
@@ -299,7 +300,7 @@ namespace DeepDungeonTracker
                 }
 
                 if (total > 1)
-                    ui.DrawTextAxisLatinPro(x + textOffsetX + iconSize, y + textOffsetY + iconSize, total.ToString(), Color.White, Alignment.Right, true);
+                    ui.DrawTextAxisLatinPro(x + textOffsetX + iconSize, y + textOffsetY + iconSize, total.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Right);
 
                 x += iconSize;
             }

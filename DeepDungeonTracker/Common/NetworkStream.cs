@@ -11,8 +11,8 @@ namespace DeepDungeonTracker
 
         public static async Task<T?> Load<T>(Uri uri)
         {
-            var result = await NetworkStream.HttpClient.GetAsync(uri);
-            return result.IsSuccessStatusCode ? await result.Content.ReadFromJsonAsync<T>() : default;
+            var result = await NetworkStream.HttpClient.GetAsync(uri).ConfigureAwait(true);
+            return result.IsSuccessStatusCode ? await result.Content.ReadFromJsonAsync<T>().ConfigureAwait(true) : default;
         }
     }
 }

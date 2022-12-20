@@ -88,7 +88,7 @@ namespace DeepDungeonTracker
             this.SaveDeepDungeonData();
         }
 
-        public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData data) => $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json";
+        public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
 
         public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data = null)
         {
@@ -99,7 +99,7 @@ namespace DeepDungeonTracker
         private async void SaveDeepDungeonData()
         {
             if (this.IsSoloSaveSlot)
-                await LocalStream.Save(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(), this.CurrentSaveSlot);
+                await LocalStream.Save(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(), this.CurrentSaveSlot).ConfigureAwait(true);
         }
 
         public void LoadDeepDungeonData()
@@ -177,7 +177,7 @@ namespace DeepDungeonTracker
 
                 if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && character.StatusFlags.HasFlag(StatusFlags.Hostile))
                 {
-                    if (dataText.IsBoss(character.Name.TextValue).Item1)
+                    if (dataText?.IsBoss(character.Name.TextValue).Item1 ?? false)
                     {
                         this.CurrentSaveSlot?.CurrentFloor()?.EnemyKilled();
                         this.DutyCompleted();
@@ -216,7 +216,7 @@ namespace DeepDungeonTracker
                 if (character == null)
                     continue;
 
-                if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || dataText.IsMandragora(character.Name.TextValue).Item1))
+                if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(character.Name.TextValue).Item1 ?? false)))
                 {
                     if (!this.IsCairnOfPassageActivated && this.CairnOfPassageKillIds.Add(character.ObjectId))
                     {
@@ -254,11 +254,11 @@ namespace DeepDungeonTracker
         public void DeepDungeonUpdate(DataText dataText, ushort territoryType)
         {
             var deepDungeon = this.DeepDungeon;
-            if (dataText.IsPalaceOfTheDeadRegion(territoryType))
+            if (dataText?.IsPalaceOfTheDeadRegion(territoryType) ?? false)
                 this.DeepDungeon = DeepDungeon.PalaceOfTheDead;
-            else if (dataText.IsHeavenOnHighRegion(territoryType))
+            else if (dataText?.IsHeavenOnHighRegion(territoryType) ?? false)
                 this.DeepDungeon = DeepDungeon.HeavenOnHigh;
-            else if (dataText.IsEurekaOrthosRegion(territoryType))
+            else if (dataText?.IsEurekaOrthosRegion(territoryType) ?? false)
                 this.DeepDungeon = DeepDungeon.EurekaOrthos;
             else
                 this.DeepDungeon = DeepDungeon.None;
@@ -310,14 +310,14 @@ namespace DeepDungeonTracker
 
         public void EnchantmentMessageReceived(DataText dataText, string message)
         {
-            var result = dataText.IsEnchantment(message);
+            var result = dataText?.IsEnchantment(message) ?? new();
             if (result.Item1)
                 this.CurrentSaveSlot?.CurrentFloor()?.EnchantmentAffected((Enchantment)(result.Item2! - TextIndex.BlindnessEnchantment));
         }
 
         public void TrapMessageReceived(DataText dataText, string message)
         {
-            var result = dataText.IsTrap(message);
+            var result = dataText?.IsTrap(message) ?? new();
             if (result.Item1)
                 this.CurrentSaveSlot?.CurrentFloor()?.TrapTriggered((Trap)(result.Item2! - TextIndex.LandmineTrap));
         }
@@ -327,11 +327,11 @@ namespace DeepDungeonTracker
             var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
 
             currentFloor?.EnemyKilled();
-            if (dataText.IsMimic(name).Item1)
+            if (dataText?.IsMimic(name).Item1 ?? false)
                 currentFloor?.MimicKilled();
-            else if (dataText.IsMandragora(name).Item1)
+            else if (dataText?.IsMandragora(name).Item1 ?? false)
                 currentFloor?.MandragoraKilled();
-            else if (dataText.IsNPC(name).Item1)
+            else if (dataText?.IsNPC(name).Item1 ?? false)
                 currentFloor?.NPCKilled();
         }
 
@@ -339,14 +339,14 @@ namespace DeepDungeonTracker
         {
             if (ServiceUtility.IsSolo)
             {
-                if (character.Name.ToString().ToLower() == this.CharacterName.ToLower() && character.CurrentHp == 0)
+                if (string.Equals(character?.Name.ToString(), this.CharacterName, StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
                     this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
             }
             else
             {
                 foreach (var item in Service.PartyList)
                 {
-                    if (character.Name.ToString().ToLower() == item.Name.ToString().ToLower() && character.CurrentHp == 0)
+                    if (string.Equals(character?.Name.ToString(), item.Name.ToString(), StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
                     {
                         this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
                         break;
@@ -382,7 +382,7 @@ namespace DeepDungeonTracker
 
                 if (this.IsSoloSaveSlot)
                 {
-                    Task.Delay(1000).ContinueWith(x => this.EnableFlyTextScore = true);
+                    Task.Delay(1000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
                     if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName()))
                         CreateSaveSlot(floorNumber);
                     else
@@ -494,7 +494,7 @@ namespace DeepDungeonTracker
             if (this.IsBronzeCofferOpened)
             {
                 this.IsBronzeCofferOpened = false;
-                var result = dataText.IsPotsherd((uint)itemId);
+                var result = dataText?.IsPotsherd((uint)itemId) ?? new();
                 if (result.Item1)
                     this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Potsherd);
                 else

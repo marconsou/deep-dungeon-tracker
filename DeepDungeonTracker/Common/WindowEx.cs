@@ -28,10 +28,13 @@ namespace DeepDungeonTracker
 
         protected Configuration Configuration { get; }
 
-        public static string GetWindowId(string id, string className) => $"{className.Replace("Window", string.Empty)}##{id}";
+        public static string GetWindowId(string id, string className) => $"{className?.Replace("Window", string.Empty, StringComparison.InvariantCultureIgnoreCase)}##{id}";
 
         public static void DisposeWindows(IReadOnlyList<Window> windows)
         {
+            if (windows == null)
+                return;
+
             foreach (var item in windows)
                 (item as IDisposable)?.Dispose();
         }
@@ -117,6 +120,9 @@ namespace DeepDungeonTracker
 
         protected (bool, int) DragInt(int value, Action<int> setter, string label, int speed, int min, int max, string format)
         {
+            if (setter == null)
+                return new();
+
             return this.Control((param) =>
             {
                 return (ImGui.DragInt(label, ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param);
@@ -125,6 +131,9 @@ namespace DeepDungeonTracker
 
         protected (bool, int, bool, int) DragInt(int valueLeft, int valueRight, Action<int> setterLeft, Action<int> setterRight, string label, int speed, int min, int max, string format)
         {
+            if (setterLeft == null || setterRight == null)
+                return new();
+
             var result1 = this.Control((param) =>
             {
                 return (ImGui.DragInt($"##{label}", ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param);
@@ -139,6 +148,9 @@ namespace DeepDungeonTracker
 
         protected (bool, float) DragFloat(float value, Action<float> setter, string label, float speed, float min, float max, string format)
         {
+            if (setter == null)
+                return new();
+
             return this.Control((param) =>
             {
                 return (ImGui.DragFloat(label, ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param);
@@ -147,6 +159,9 @@ namespace DeepDungeonTracker
 
         protected (bool, float, bool, float) DragFloat(float valueLeft, float valueRight, Action<float> setterLeft, Action<float> setterRight, string label, float speed, float min, float max, string format)
         {
+            if (setterLeft == null || setterRight == null)
+                return new();
+
             var result1 = this.Control((param) =>
             {
                 return (ImGui.DragFloat($"##{label}", ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param);
@@ -161,6 +176,9 @@ namespace DeepDungeonTracker
 
         protected (bool, Vector4) ColorEdit4(Vector4 value, Action<Vector4> setter, string label)
         {
+            if (setter == null)
+                return new();
+
             return this.Control((param) =>
             {
                 return (ImGui.ColorEdit4(label, ref param, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.AlphaBar), param);
@@ -169,6 +187,9 @@ namespace DeepDungeonTracker
 
         protected (bool, bool) CheckBox(bool value, Action<bool> setter, string label)
         {
+            if (setter == null)
+                return new();
+
             return this.Control((param) =>
             {
                 return (ImGui.Checkbox(label, ref param), param);
@@ -177,6 +198,9 @@ namespace DeepDungeonTracker
 
         protected (bool, T) Combo<T>(T value, Action<T> setter, string label) where T : Enum
         {
+            if (setter == null)
+                return new();
+
             var names = value.GetNames();
             return this.Control((param) =>
             {

@@ -21,6 +21,10 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<NeutralLanguage>en</NeutralLanguage>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 		<AnalysisLevel>latest-all</AnalysisLevel>
 	</PropertyGroup>

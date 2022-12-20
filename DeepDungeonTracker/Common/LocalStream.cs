@@ -12,8 +12,8 @@ namespace DeepDungeonTracker
             Directory.CreateDirectory(directory);
             using FileStream fileStream = File.Create(Path.Combine(directory, fileName));
             JsonSerializerOptions options = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
-            await JsonSerializer.SerializeAsync(fileStream, data, data!.GetType(), options);
-            await fileStream.DisposeAsync();
+            await JsonSerializer.SerializeAsync(fileStream, data, data!.GetType(), options).ConfigureAwait(true);
+            await fileStream.DisposeAsync().ConfigureAwait(true);
         }
 
         public static T? Load<T>(string directory, string fileName)

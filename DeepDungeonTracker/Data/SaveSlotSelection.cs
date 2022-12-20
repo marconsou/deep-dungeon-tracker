@@ -12,11 +12,11 @@ namespace DeepDungeonTracker
 
         private static IDictionary<string, SaveSlotSelectionData>? Load() => LocalStream.Load<Dictionary<string, SaveSlotSelectionData>>(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName) ?? new();
 
-        public async void Save() => await LocalStream.Save(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName, this.Data);
+        public async void Save() => await LocalStream.Save(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName, this.Data).ConfigureAwait(true);
 
         public void AddOrUpdateSelection(string key, SaveSlotSelectionData data)
         {
-            if (key.Length <= 3)
+            if (key == null || key.Length <= 3)
                 return;
 
             if (this.Data != null && !this.Data.TryAdd(key, data))

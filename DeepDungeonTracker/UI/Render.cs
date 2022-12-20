@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using ImGuiScene;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 
@@ -18,12 +19,12 @@ namespace DeepDungeonTracker
             ImGui.Image(textureWrap.ImGuiHandle, new(width * finalScale, height * finalScale), new(x1, y1), new(x2, y2), color ?? Color.White);
         }
 
-        public void DrawText(Font font, float x, float y, string text, Vector4 color, Alignment align, bool drawShadow)
+        public void DrawText(Font font, float x, float y, string text, Vector4 color, Alignment align)
         {
-            var fontLayout = font.FontLayout;
-            var textSize = (align != Alignment.Left) ? Render.GetTextSize(fontLayout, text) : Vector2.Zero;
+            var fontLayout = font?.FontLayout;
+            var textSize = (align != Alignment.Left) ? Render.GetTextSize(fontLayout!, text) : Vector2.Zero;
 
-            var atlasWidth = fontLayout.Atlas!.Width;
+            var atlasWidth = fontLayout!.Atlas!.Width;
             var atlasHeight = fontLayout.Atlas.Height;
             var atlasSize = fontLayout.Atlas.Size;
             var advance = 0.0;
@@ -33,7 +34,7 @@ namespace DeepDungeonTracker
             var baseX = x + (-textSize.X / alignFactor);
             var baseY = y + 1.0f + ((fontLayout.Metrics!.Ascender + fontLayout.Metrics.Descender) * atlasSize) - (textSize.Y / alignFactor);
 
-            foreach (var item in text)
+            foreach (var item in text ?? string.Empty)
             {
                 var glyph = fontLayout.Glyphs!.FirstOrDefault(x => x.Unicode == item);
                 if (glyph == null)
@@ -55,7 +56,7 @@ namespace DeepDungeonTracker
                     var x2 = (float)(ab.Right / atlasWidth);
                     var y2 = (float)((atlasHeight - ab.Bottom) / atlasHeight);
 
-                    this.DrawObject(font.TextureAtlas, x, y, width, height, x1, y1, x2, y2, 1.0f, color);
+                    this.DrawObject(font!.TextureAtlas, x, y, width, height, x1, y1, x2, y2, 1.0f, color);
                 }
                 advance += glyph.Advance * atlasSize;
             }
@@ -63,11 +64,14 @@ namespace DeepDungeonTracker
 
         public static Vector2 GetTextSize(FontLayout fontLayout, string text)
         {
+            if (fontLayout == null)
+                return new();
+
             var atlasSize = fontLayout.Atlas!.Size;
             var advance = 0.0;
             var maxHeight = (fontLayout.Metrics!.Ascender + fontLayout.Metrics.Descender) * atlasSize;
 
-            foreach (var item in text)
+            foreach (var item in text ?? string.Empty)
             {
                 var glyph = fontLayout.Glyphs!.FirstOrDefault(x => x.Unicode == item);
                 if (glyph == null)
@@ -80,6 +84,9 @@ namespace DeepDungeonTracker
 
         public void DrawUIElement(TextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector4? color = null, Alignment align = Alignment.Left, bool mirrorHorizontal = false)
         {
+            if (textureWrap == null)
+                return;
+
             var tWidth = (float)textureWrap.Width;
             var tHeight = (float)textureWrap.Height;
             var width = tWidth / horizontalElements;
@@ -113,13 +120,16 @@ namespace DeepDungeonTracker
 
         public void DrawNumber(TextureWrap textureWrap, float x, float y, float innerScale, int number, Vector4? color, Alignment align)
         {
+            if (textureWrap == null)
+                return;
+
             var baseX = x;
             var baseY = y;
             var horizontalElements = 10;
             var verticalElements = 1;
             var width = textureWrap.Width / horizontalElements;
             var height = textureWrap.Height / verticalElements;
-            var numberString = number.ToString();
+            var numberString = number.ToString(CultureInfo.InvariantCulture);
             var totalWidth = width * numberString.Length;
 
             if (align == Alignment.Center)
@@ -143,6 +153,9 @@ namespace DeepDungeonTracker
 
         public void DrawDivisorHorizontal(TextureWrap textureWrap, float x, float y, float width)
         {
+            if (textureWrap == null)
+                return;
+
             var offset = 4.0f;
             width -= offset * 2.0f;
             var tWidth = (float)textureWrap.Width;
@@ -158,6 +171,9 @@ namespace DeepDungeonTracker
 
         public void DrawDivisorVertical(TextureWrap textureWrap, float x, float y, float height)
         {
+            if (textureWrap == null)
+                return;
+
             var offset = 4.0f;
             height -= offset * 2.0f;
             var tHeight = (float)textureWrap.Height;
@@ -173,6 +189,9 @@ namespace DeepDungeonTracker
 
         public void DrawBackground(TextureWrap textureWrap, float width, float height, bool isFocused)
         {
+            if (textureWrap == null)
+                return;
+
             var baseX = 0.0f;
             var baseY = 0.0f;
             var cornerSize = 11.0f;
