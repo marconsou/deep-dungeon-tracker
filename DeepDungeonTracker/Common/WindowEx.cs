@@ -1,4 +1,6 @@
-﻿using Dalamud.Interface.Windowing;
+﻿using Dalamud.Interface;
+using Dalamud.Interface.Components;
+using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -8,13 +10,7 @@ namespace DeepDungeonTracker
 {
     public abstract class WindowEx : Window
     {
-        protected static ImGuiWindowFlags Static =>
-            ImGuiWindowFlags.NoTitleBar |
-            ImGuiWindowFlags.NoMove |
-            ImGuiWindowFlags.NoInputs |
-            ImGuiWindowFlags.NoScrollbar |
-            ImGuiWindowFlags.NoScrollWithMouse |
-            ImGuiWindowFlags.AlwaysAutoResize;
+        protected static ImGuiWindowFlags Static => ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.AlwaysAutoResize;
 
         protected static ImGuiWindowFlags StaticNoBackground => WindowEx.Static | ImGuiWindowFlags.NoBackground;
 
@@ -51,8 +47,8 @@ namespace DeepDungeonTracker
             {
                 var style = ImGui.GetStyle();
 
-                this.Padding = new Vector2(style.WindowPadding.X, style.WindowPadding.Y);
-                this.Rounding = style.WindowRounding;
+                this.Padding = ImGuiHelpers.ScaledVector2(style.WindowPadding.X, style.WindowPadding.Y);
+                this.Rounding = ImGuiHelpers.ScaledVector2(style.WindowRounding).X;
 
                 style.WindowPadding = Vector2.Zero;
                 style.WindowRounding = 0.0f;
@@ -82,6 +78,28 @@ namespace DeepDungeonTracker
             }
         }
 
+        protected static void Disabled(Action action, bool disabled, float disabledAlpha = 0.2f)
+        {
+            var style = ImGui.GetStyle();
+            var currentDisabledAlpha = style.DisabledAlpha;
+
+            style.DisabledAlpha = disabledAlpha;
+
+            ImGui.BeginDisabled(disabled);
+            action?.Invoke();
+            ImGui.EndDisabled();
+
+            style.DisabledAlpha = currentDisabledAlpha;
+        }
+
+        protected static bool Child(Action action, string id, float width, float height)
+        {
+            var result = ImGui.BeginChild(id, ImGuiHelpers.ScaledVector2(width, height));
+            action?.Invoke();
+            ImGui.EndChild();
+            return result;
+        }
+
         private (bool, T) Control<T>(Func<T, (bool, T)> function, T value, Action<T> setter, bool save = true)
         {
             var result = function(value);
@@ -94,7 +112,7 @@ namespace DeepDungeonTracker
             return result;
         }
 
-        protected bool Button(Action action, string label, bool save)
+        protected bool Button(Action action, string label, bool save = false)
         {
             return this.Control((param) =>
             {
@@ -102,7 +120,7 @@ namespace DeepDungeonTracker
             }, false, (setterParam) => action(), save).Item1;
         }
 
-        protected bool SmallButton(Action action, string label, bool save)
+        protected bool SmallButton(Action action, string label, bool save = false)
         {
             return this.Control((param) =>
             {
@@ -110,11 +128,19 @@ namespace DeepDungeonTracker
             }, false, (setterParam) => action(), save).Item1;
         }
 
-        protected bool ArrowButton(Action action, string label, ImGuiDir direction, bool save)
+        protected bool ArrowButton(Action action, string label, ImGuiDir direction, bool save = false)
         {
             return this.Control((param) =>
             {
                 return (ImGui.ArrowButton(label, direction), param);
+            }, false, (setterParam) => action(), save).Item1;
+        }
+
+        protected bool IconButton(Action action, FontAwesomeIcon icon, string id, bool save = false)
+        {
+            return this.Control((param) =>
+            {
+                return (ImGuiComponents.IconButton($"{icon.ToIconString()}##{id}"), param);
             }, false, (setterParam) => action(), save).Item1;
         }
 

@@ -1,5 +1,8 @@
-﻿using ImGuiNET;
+﻿using Dalamud.Interface;
+using ImGuiNET;
 using System;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace DeepDungeonTracker
@@ -9,6 +12,8 @@ namespace DeepDungeonTracker
         private Data Data { get; }
 
         private string[] FieldNames { get; init; }
+
+        private static string BackupsDirectory => Path.Combine(ServiceUtility.ConfigDirectory, "Backups");
 
         public ConfigurationWindow(string id, Configuration configuration, Data data) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
         {
@@ -55,7 +60,6 @@ namespace DeepDungeonTracker
                 }
                 ImGui.EndTabBar();
             }
-
             ImGui.Separator();
             this.Button(this.Configuration.Reset, "Reset all settings to default", true);
         }
@@ -164,6 +168,7 @@ namespace DeepDungeonTracker
         private void Statistics()
         {
             var config = this.Configuration.Statistics;
+            var statistics = this.Data.Statistics;
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.ColorEdit4(config.FloorTimeColor, x => config.FloorTimeColor = x, "Floor Time");
             ImGui.SameLine();
@@ -173,58 +178,107 @@ namespace DeepDungeonTracker
             var saveSlotSelection = this.Data.Common.SaveSlotSelection.Data;
             if (saveSlotSelection?.Count > 0)
             {
-                var statistics = this.Data.Statistics;
-                this.ArrowButton(statistics.FloorSetStatisticsPrevious, "##Up", ImGuiDir.Up, false);
-                ImGui.SameLine();
+                this.ArrowButton(statistics.FloorSetStatisticsPrevious, "##Up", ImGuiDir.Up);
 
-                this.ArrowButton(statistics.FloorSetStatisticsNext, "##Down", ImGuiDir.Down, false);
                 ImGui.SameLine();
+                this.ArrowButton(statistics.FloorSetStatisticsNext, "##Down", ImGuiDir.Down);
 
+                ImGui.SameLine();
                 if (this.Combo(statistics.FloorSetStatistics, x => statistics.FloorSetStatistics = x, "##FloorSetStatistics").Item1)
                     statistics.DataUpdate();
 
-                foreach (var key in saveSlotSelection.Keys)
+                ImGui.SameLine();
+                if (this.IconButton(() => { statistics.FloorSetStatistics = FloorSetStatistics.Summary; }, FontAwesomeIcon.ArrowUp, "Summary"))
+                    statistics.DataUpdate();
+
+                foreach (var saveSlot in saveSlotSelection)
                 {
                     ImGui.NewLine();
-                    ImGui.Text($"{key.Replace("-", "@", StringComparison.InvariantCultureIgnoreCase)}");
-                    saveSlotSelection.TryGetValue(key, out var SaveSlotSelectionData);
-                    foreach (var deepDungeon in Enum.GetValues<DeepDungeon>())
+                    WindowEx.Child(() =>
                     {
-                        if (deepDungeon == DeepDungeon.None)
-                            continue;
-
-                        ImGui.Text($"{deepDungeon.GetDescription()}:");
-                        for (var saveSlotNumber = 1; saveSlotNumber <= 2; saveSlotNumber++)
+                        saveSlotSelection.TryGetValue(saveSlot.Key, out var saveSlotSelectionData);
+                        ImGui.Text($"{saveSlot.Key.Replace("-", "@", StringComparison.InvariantCultureIgnoreCase)}");
+                        ImGuiHelpers.ScaledDummy(0.0f, 4.0f);
+                        foreach (var deepDungeon in Enum.GetValues<DeepDungeon>())
                         {
-                            ImGui.SameLine();
-                            var fileName = DataCommon.GetSaveSlotFileName(key, new(deepDungeon, saveSlotNumber));
-                            var saveSlotFileExists = LocalStream.Exists(ServiceUtility.ConfigDirectory, fileName);
-                            if ((!this.Data.IsInsideDeepDungeon && saveSlotFileExists) || (this.Data.IsInsideDeepDungeon && this.Data.Common.GetSaveSlotFileName(SaveSlotSelectionData ?? new()) == fileName))
-                            {
-                                this.SmallButton(() =>
-                                {
-                                    if (!this.Data.IsInsideDeepDungeon)
-                                        this.Data.Common.LoadDeepDungeonData(key, new(deepDungeon, saveSlotNumber));
+                            if (deepDungeon == DeepDungeon.None)
+                                continue;
 
-                                    statistics.Load(this.Data.Common.CurrentSaveSlot);
-                                }, $"Save Slot {saveSlotNumber}##{fileName}", false);
+                            if (ImGui.BeginTable($"{saveSlot.Key}Table", 3))
+                            {
+                                ImGui.TableNextRow();
+                                ImGui.TableNextColumn();
+                                ImGui.Text($"{deepDungeon.GetDescription()}:");
+                                for (var saveSlotNumber = 1; saveSlotNumber <= 2; saveSlotNumber++)
+                                {
+                                    var fileName = DataCommon.GetSaveSlotFileName(saveSlot.Key, new(deepDungeon, saveSlotNumber));
+
+                                    ImGui.TableNextColumn();
+                                    var enableButtons =
+                                        (!this.Data.IsInsideDeepDungeon && LocalStream.Exists(ServiceUtility.ConfigDirectory, fileName)) ||
+                                        (this.Data.IsInsideDeepDungeon && this.Data.Common.GetSaveSlotFileName(saveSlotSelectionData ?? new()) == fileName);
+
+                                    WindowEx.Disabled(() =>
+                                    {
+                                        this.IconButton(() => { LocalStream.Copy(ServiceUtility.ConfigDirectory, ConfigurationWindow.BackupsDirectory, fileName); }, FontAwesomeIcon.Clone, $"{fileName}Clone");
+                                        ImGui.SameLine();
+                                        this.Button(() =>
+                                        {
+                                            if (!this.Data.IsInsideDeepDungeon)
+                                                this.Data.Common.LoadDeepDungeonData(saveSlot.Key, new(deepDungeon, saveSlotNumber));
+
+                                            statistics.Load(this.Data.Common.CurrentSaveSlot);
+                                        }, $"Save Slot {saveSlotNumber}##{fileName}");
+                                    }, !enableButtons);
+                                }
+                                ImGui.EndTable();
                             }
-                            else
-                                ImGui.TextColored((this.Data.IsInsideDeepDungeon && saveSlotFileExists) ? Color.Red : Color.Gray, $"Save Slot {saveSlotNumber}");
                         }
-                    }
+                    }, $"{saveSlot.Key}Child", 364.0f, 135.0f);
+                    ImGui.Separator();
                 }
             }
             else
                 ImGui.TextColored(Color.Gray, "No save slots!");
+
+            ImGui.NewLine();
+
+            ImGui.Text("Backups");
+            ImGui.SameLine();
+            this.IconButton(() => { LocalStream.OpenFolder(ConfigurationWindow.BackupsDirectory); }, FontAwesomeIcon.FolderOpen, "FolderOpen");
+            var fileNames = LocalStream.GetFileNamesFromDirectory(ConfigurationWindow.BackupsDirectory).Where(x => LocalStream.IsExtension(x, ".json")).ToArray();
+            if (fileNames.Length > 0)
+            {
+                WindowEx.Child(() =>
+                {
+                    foreach (var fileName in fileNames)
+                    {
+                        var id = LocalStream.FormatFileName(fileName, true);
+                        WindowEx.Disabled(() =>
+                        {
+                            this.IconButton(() => { LocalStream.Delete(ConfigurationWindow.BackupsDirectory, id); }, FontAwesomeIcon.Trash, $"{id}Trash");
+                            ImGui.SameLine();
+                            this.Button(() =>
+                            {
+                                if (!this.Data.IsInsideDeepDungeon)
+                                    this.Data.Common.LoadDeepDungeonData(fileName);
+
+                                statistics.Load(this.Data.Common.CurrentSaveSlot);
+                            }, $"{LocalStream.FormatFileName(fileName, false)}");
+                        }, this.Data.IsInsideDeepDungeon);
+                    }
+                }, "Backups", 364.0f, (fileNames.Length + 1) * 27.0f);
+            }
+            else
+                ImGui.TextColored(Color.Gray, "No backups!");
         }
 
         private void Information()
         {
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
-                "All enemies killed from a distance of more than two rooms cannot be counted. " +
-                "\nIf you use a magicite, do so in the center of the floor, covering all enemies killed (as much as possible). ");
+                "All enemies killed from a distance of more than two rooms cannot be counted." +
+                "\nIf you use a magicite, do so in the center of the floor, covering all enemies killed (as much as possible).");
             ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
             ImGui.TextWrapped("Keep your map menu open to verify the Cairn of Passage key status. The value can be inaccurate if you kill too many enemies at the same time.");
             ImGui.TextColored(Color.Green, "Maps:");
@@ -233,6 +287,10 @@ namespace DeepDungeonTracker
             ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
             ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
+            ImGui.TextColored(Color.Green, "Save Files:");
+            ImGui.TextWrapped(
+                "Save files are automatically created once you enter a Deep Dungeon. They are deleted once you delete an in-game Save Slot and reopen the in-game Save Slot menu. These files cannot be renamed." +
+                "\nYou can backup your saved files, open the Backup folder, and rename them as you want.");
             if (ImGui.CollapsingHeader("OpCodes"))
             {
                 ImGui.TextWrapped("Values in this section should not be zero.");

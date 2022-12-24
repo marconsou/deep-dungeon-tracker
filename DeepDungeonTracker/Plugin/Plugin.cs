@@ -1,6 +1,5 @@
 ﻿using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.Command;
 using Dalamud.Game.Network;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
@@ -14,15 +13,7 @@ namespace DeepDungeonTracker
     {
         public string Name => "Deep Dungeon Tracker";
 
-        private static string ConfigCommand => "/ddt";
-
-        private static string TrackerCommand => $"{Plugin.ConfigCommand}tracker";
-
-        private static string TimeCommand => $"{Plugin.ConfigCommand}time";
-
-        private static string ScoreCommand => $"{Plugin.ConfigCommand}score";
-
-        private static string LoadCommand => $"{Plugin.ConfigCommand}load";
+        private Commands Commands { get; }
 
         private WindowSystem WindowSystem { get; }
 
@@ -36,12 +27,9 @@ namespace DeepDungeonTracker
 
             this.Configuration = Service.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             this.Configuration.Initialize(Service.PluginInterface);
+
             this.Data = new(this.Configuration);
-            Service.CommandManager.AddHandler(Plugin.ConfigCommand, new CommandInfo(this.OnConfigCommand) { HelpMessage = $"Opens the [{this.Name}] configuration menu." });
-            Service.CommandManager.AddHandler(Plugin.TrackerCommand, new CommandInfo(this.OnTrackerCommand) { HelpMessage = "Toggles the Tracker Window visibility." });
-            Service.CommandManager.AddHandler(Plugin.TimeCommand, new CommandInfo(this.OnTimeCommand) { HelpMessage = "Toggles the Floor Set Time Window visibility." });
-            Service.CommandManager.AddHandler(Plugin.ScoreCommand, new CommandInfo(this.OnScoreCommand) { HelpMessage = "Toggles the Score Window visibility." });
-            Service.CommandManager.AddHandler(Plugin.LoadCommand, new CommandInfo(this.OnLoadCommand) { HelpMessage = "Loads the last saved slot and opens the Statistics Window." });
+            this.Commands = new(this.Name, this.OnConfigCommand, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
 
             this.WindowSystem = new(this.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
@@ -82,11 +70,8 @@ namespace DeepDungeonTracker
 
             WindowEx.DisposeWindows(this.WindowSystem.Windows);
             this.WindowSystem.RemoveAllWindows();
-            Service.CommandManager.RemoveHandler(Plugin.ConfigCommand);
-            Service.CommandManager.RemoveHandler(Plugin.TrackerCommand);
-            Service.CommandManager.RemoveHandler(Plugin.TimeCommand);
-            Service.CommandManager.RemoveHandler(Plugin.ScoreCommand);
-            Service.CommandManager.RemoveHandler(Plugin.LoadCommand);
+
+            this.Commands.Dispose();
             this.Data.Dispose();
         }
 

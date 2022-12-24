@@ -12,7 +12,7 @@ namespace DeepDungeonTracker
 
         public bool Open { get; set; }
 
-        public FloorSetStatistics FloorSetStatistics { get; set; } = FloorSetStatistics.From001To010;
+        public FloorSetStatistics FloorSetStatistics { get; set; } = FloorSetStatistics.Summary;
 
         private SaveSlot? SaveSlot { get; set; }
 
