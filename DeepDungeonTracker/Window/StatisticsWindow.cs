@@ -143,8 +143,8 @@ namespace DeepDungeonTracker
                             CheckForTimeBonusMissScore(ref timeBonusMissScoreTotal, ref isTimeBonusMissScore, floor.Time);
                             this.DrawFloorText(x, y, $"Floor {floor.Number}:", floor.Time, null, floor.Score, null, false, isTimeBonusMissScore);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, i < statistics.MiscellaneousByFloor?.Count ? statistics.MiscellaneousByFloor[i] : default, floor.MapData);
-                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, i < statistics.CoffersByFloor?.Count ? statistics.CoffersByFloor[i] : default);
-                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, i < statistics.PomandersByFloor?.Count ? statistics.PomandersByFloor[i] : default);
+                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, i < statistics.CoffersByFloor?.Count ? statistics.CoffersByFloor[i] : default, showGotUsedText: true);
+                            this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, i < statistics.PomandersByFloor?.Count ? statistics.PomandersByFloor[i] : default, showGotUsedText: true);
                             this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, i < statistics.EnchantmentsByFloor?.Count ? statistics.EnchantmentsByFloor[i] : default, null, floor.EnchantmentsSerenized.Count > 0);
                             this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, trapOffset, trapOffset, textOffset, textOffset, iconSize, i < statistics.TrapsByFloor?.Count ? statistics.TrapsByFloor[i] : default);
                         }
@@ -220,8 +220,8 @@ namespace DeepDungeonTracker
                 baseX = x;
                 baseY = y;
                 this.DrawIcon(ref x, ref y, baseX, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, statistics.MiscellaneousTotal);
-                this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, statistics.CoffersTotal);
-                this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, statistics.PomandersTotal);
+                this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, cofferOffset, cofferOffset, textOffset, textOffset, iconSize, statistics.CoffersTotal, showGotUsedText: true);
+                this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, statistics.PomandersTotal, showGotUsedText: true);
                 this.DrawIcon(ref x, ref y, baseX, y, 0.0f, iconSize, enchantmentOffset, enchantmentOffset, textOffset, textOffset, iconSize, statistics.EnchantmentsTotal);
                 this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, trapOffset, trapOffset, textOffset, textOffset, iconSize, statistics.TrapsTotal);
 
@@ -230,7 +230,7 @@ namespace DeepDungeonTracker
                     x = baseX + (floorWidth * 2);
                     y = baseY;
                     CheckForTimeBonusMissScore(ref timeBonusMissScoreTotal, ref isTimeBonusMissScore, statistics.TimeLastFloor);
-                    this.DrawFloorText(x, y, $"Last Floor:", statistics.TimeLastFloor, null, statistics.ScoreLastFloor, null, isSummary, isTimeBonusMissScore);
+                    this.DrawFloorText(x, y, $"Last Floor:", statistics.TimeLastFloor, null, statistics.ScoreLastFloor, null, isSummary, !isSummary && isTimeBonusMissScore);
                     this.DrawIcon(ref x, ref y, x, y, 0.0f, 20.0f, miscellaneousOffset, miscellaneousOffset, textOffset, textOffset, iconSize, statistics.MiscellaneousLastFloor);
                     this.DrawIcon(ref x, ref y, x, y, 0.0f, 0.0f, pomanderOffset, pomanderOffset, textOffset, textOffset, iconSize, statistics.PomandersLastFloor);
                 }
@@ -281,11 +281,13 @@ namespace DeepDungeonTracker
             }
         }
 
-        private void DrawIcon<T>(ref float x, ref float y, float left, float top, float offsetX, float offsetY, float iconOffsetX, float iconOffsetY, float textOffsetX, float textOffsetY, float iconSize, IEnumerable<DataStatistics.StatisticsItem<T>>? data, MapData? mapData = null, bool isEnchantmentSerenized = false) where T : Enum
+        private void DrawIcon<T>(ref float x, ref float y, float left, float top, float offsetX, float offsetY, float iconOffsetX, float iconOffsetY, float textOffsetX, float textOffsetY, float iconSize, IEnumerable<DataStatistics.StatisticsItem<T>>? data, MapData? mapData = null, bool isEnchantmentSerenized = false, bool showGotUsedText = false) where T : Enum
         {
             var ui = this.Data.UI;
             x = left + offsetX;
             y = top + offsetY;
+            var gotUsedX = x + iconOffsetX;
+            var gotUsedY = y + iconOffsetY - 3.0f;
             foreach (var item in data ?? Enumerable.Empty<DataStatistics.StatisticsItem<T>>())
             {
                 var value = item.Value;
@@ -335,6 +337,9 @@ namespace DeepDungeonTracker
 
                 x += iconSize;
             }
+
+            if (showGotUsedText && (data?.Count() > 0) && (typeof(T) == typeof(Coffer) || typeof(T) == typeof(Pomander)))
+                ui.DrawTextMiedingerMediumW00(gotUsedX, gotUsedY, typeof(T) == typeof(Coffer) ? "Got" : "Used", Color.White);
         }
     }
 }

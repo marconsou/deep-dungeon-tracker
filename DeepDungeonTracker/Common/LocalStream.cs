@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -33,6 +36,33 @@ namespace DeepDungeonTracker
             return false;
         }
 
+        public static bool Exists(string directory) => Directory.Exists(directory);
+
         public static bool Exists(string directory, string fileName) => File.Exists(Path.Combine(directory, fileName));
+
+        public static void Copy(string sourceDirectory, string destDirectory, string fileName)
+        {
+            if (!LocalStream.Exists(sourceDirectory))
+                Directory.CreateDirectory(sourceDirectory);
+
+            if (!LocalStream.Exists(destDirectory))
+                Directory.CreateDirectory(destDirectory);
+
+            File.Copy(Path.Combine(sourceDirectory, fileName), Path.Combine(destDirectory, fileName), true);
+        }
+
+        public static string[] GetFileNamesFromDirectory(string directory) => LocalStream.Exists(directory) ? Directory.EnumerateFiles(directory).ToArray() : Array.Empty<string>();
+
+        public static void OpenFolder(string directory)
+        {
+            if (!LocalStream.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            Process.Start(new ProcessStartInfo { FileName = directory, UseShellExecute = true });
+        }
+
+        public static string FormatFileName(string fileName, bool includeExtension) => includeExtension ? Path.GetFileName(fileName) : Path.GetFileNameWithoutExtension(fileName);
+
+        public static bool IsExtension(string filename, string extension) => Path.GetExtension(filename).Equals(extension, StringComparison.OrdinalIgnoreCase);
     }
 }

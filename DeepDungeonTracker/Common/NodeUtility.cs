@@ -150,12 +150,6 @@ namespace DeepDungeonTracker
             return 0;
         }
 
-        public static (bool, int, int) AetherpoolMenu(GameGui gameGui)
-        {
-            var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMenu", 1);
-            return (addon != null) ? (true, NodeUtility.Aetherpool(addon, 6), NodeUtility.Aetherpool(addon, 5)) : (false, -1, -1);
-        }
-
         public static (bool, int, int) AetherpoolStatus(GameGui gameGui)
         {
             var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonStatus", 1);
@@ -277,14 +271,15 @@ namespace DeepDungeonTracker
                 if (imageNode == null)
                     continue;
 
-                if (resNode->X == 0.0f && resNode->Y == 0.0f)
+                var x = resNode->X;
+                var y = resNode->Y;
+                if (x == 0.0f && y == 0.0f)
                     continue;
 
-                if ((imageNode->PartId >= 0 && imageNode->PartId < 16 && imageNode->PartsList->PartCount == 16) ||
-                    (imageNode->PartId >= 0 && imageNode->PartId < 9 && imageNode->PartsList->PartCount == 9))
-                {
-                    nodes = nodes.Add(new(resNode->X, resNode->Y, resNode->Width, resNode->Height, imageNode->PartId, imageNode->PartsList->PartCount));
-                }
+                var id = imageNode->PartId;
+                var count = imageNode->PartsList->PartCount;
+                if ((id >= 0 && id < 16 && count == 16) || (id >= 0 && id < 9 && count == 9))
+                    nodes = nodes.Add(new(x, y, resNode->Width, resNode->Height, id, count));
             }
             return nodes;
         }

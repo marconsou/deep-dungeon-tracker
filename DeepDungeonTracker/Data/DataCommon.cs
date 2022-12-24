@@ -110,6 +110,8 @@ namespace DeepDungeonTracker
 
         public void LoadDeepDungeonData(string key, SaveSlotSelection.SaveSlotSelectionData data) => this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, DataCommon.GetSaveSlotFileName(key, data));
 
+        public void LoadDeepDungeonData(string fileName) => this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, fileName);
+
         private void LoadDeepDungeonDataAutomatic()
         {
             var characterKey = this.CharacterKey;
@@ -189,10 +191,11 @@ namespace DeepDungeonTracker
 
         public void CheckForMapReveal()
         {
-            if (this.IsLastFloor)
+            var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
+
+            if (this.IsLastFloor || (currentFloor?.Map ?? false))
                 return;
 
-            var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
             if (MapUtility.IsMapFullyRevealed(currentFloor?.MapData ?? new()))
                 currentFloor?.MapFullyRevealed();
         }
