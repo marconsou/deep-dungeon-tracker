@@ -48,7 +48,7 @@ namespace DeepDungeonTracker
 
         public void DrawCheckMark(float x, float y, bool checkMark) => this.Render.DrawUIElement(this.ResourceUI.CheckMark, x, y, 0.5f, Convert.ToInt32(checkMark), 2, 1, null, Alignment.Center);
 
-        public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 0.20f, (int)jobId, 4, 6);
+        public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 0.15f, (int)jobId, 4, 6);
 
         public void DrawMiscellaneous(float x, float y, Miscellaneous miscellaneous) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.5f, (int)miscellaneous, 4, 3);
 
@@ -60,9 +60,9 @@ namespace DeepDungeonTracker
 
         public void DrawPomander(float x, float y, Pomander pomander) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)pomander, 6, 5);
 
-        public void DrawMapNormal(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapNormal, x, y, 1.0f / 9.0f, id, 4, 4);
+        public void DrawMapNormal(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapNormal, x, y, 1.0f / 8.0f, id, 4, 4);
 
-        public void DrawMapHallOfFallacies(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapHallOfFallacies, x, y, 1.0f / 9.0f, id, 3, 3);
+        public void DrawMapHallOfFallacies(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapHallOfFallacies, x, y, 1.0f / 8.0f, id, 3, 3);
 
         public void DrawArrowButton(float x, float y, bool isMouseOver, bool mirrorHorizontal = false) => this.Render.DrawUIElement(this.ResourceUI.ArrowButton, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1, null, Alignment.Left, mirrorHorizontal);
 

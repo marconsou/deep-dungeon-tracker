@@ -144,7 +144,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, floors?.Sum(x=> x.Kills) ?? 0),
-                new (Miscellaneous.CairnOfPassageKill, floors?.Sum(x=> x.CairnOfPassageKills) ?? 0),
+                new (Miscellaneous.CairnOfPassageEnemy, floors?.Sum(x=> x.CairnOfPassageKills) ?? 0),
                 new (Miscellaneous.Mimic, floors?.Sum(x=> x.Mimics) ?? 0),
                 new (Miscellaneous.Mandragora, floors?.Sum(x=> x.Mandragoras) ?? 0),
                 new (Miscellaneous.NPC, floors?.Sum(x=> x.NPCs) ?? 0),
@@ -161,7 +161,7 @@ namespace DeepDungeonTracker
                 return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
                 {
                     new (Miscellaneous.Enemy, floor?.Kills ?? 0),
-                    new (Miscellaneous.CairnOfPassageKill, floor?.CairnOfPassageKills ?? 0),
+                    new (Miscellaneous.CairnOfPassageEnemy, floor?.CairnOfPassageKills ?? 0),
                     new (Miscellaneous.Mimic, floor?.Mimics ?? 0),
                     new (Miscellaneous.Mandragora, floor?.Mandragoras ?? 0),
                     new (Miscellaneous.NPC, floor?.NPCs ?? 0),
@@ -178,7 +178,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, floorSet?.Kills() ?? 0),
-                new (Miscellaneous.CairnOfPassageKill, floorSet?.CairnOfPassageKills() ?? 0),
+                new (Miscellaneous.CairnOfPassageEnemy, floorSet?.CairnOfPassageKills() ?? 0),
                 new (Miscellaneous.Mimic, floorSet?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, floorSet?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, floorSet?.NPCs() ?? 0),
@@ -194,7 +194,7 @@ namespace DeepDungeonTracker
             return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
             {
                 new (Miscellaneous.Enemy, saveSlot?.Kills() ?? 0),
-                new (Miscellaneous.CairnOfPassageKill, saveSlot?.CairnOfPassageKills() ?? 0),
+                new (Miscellaneous.CairnOfPassageEnemy, saveSlot?.CairnOfPassageKills() ?? 0),
                 new (Miscellaneous.Mimic, saveSlot?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, saveSlot?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, saveSlot?.NPCs() ?? 0),
