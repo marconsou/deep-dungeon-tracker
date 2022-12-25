@@ -3,7 +3,7 @@
     public enum Miscellaneous
     {
         Enemy,
-        CairnOfPassageKill,
+        CairnOfPassageEnemy,
         Mimic,
         Mandragora,
         NPC,

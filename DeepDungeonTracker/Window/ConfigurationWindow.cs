@@ -11,7 +11,7 @@ namespace DeepDungeonTracker
     {
         private Data Data { get; }
 
-        private string[] FieldNames { get; init; }
+        private string[] FieldNames { get; }
 
         private static string BackupsDirectory => Path.Combine(ServiceUtility.ConfigDirectory, "Backups");
 
