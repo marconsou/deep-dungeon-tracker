@@ -122,13 +122,13 @@ namespace DeepDungeonTracker
                 }
             }
 
-            var floorEffectPomandersScale = 0.5f;
+            var floorEffectPomandersScale = 0.60f;
             ui.Scale *= floorEffectPomandersScale;
             if (config.ShowFloorEffectPomanders && !floor.IsLastFloor())
             {
                 var multiplier = 1.0f / floorEffectPomandersScale;
                 x = left * multiplier;
-                y = 11.0f * multiplier;
+                y = 9.0f * multiplier;
                 var spaceX = 28.0f * multiplier;
 
                 if (this.Data.Common.FloorEffect.ShowPomanderOfSafety)
