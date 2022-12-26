@@ -275,8 +275,6 @@ namespace DeepDungeonTracker
 
         private void Information()
         {
-            ImGui.NewLine();
-
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
                 "All enemies killed from a distance of more than two rooms cannot be counted." +
