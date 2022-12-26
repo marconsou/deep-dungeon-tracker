@@ -47,8 +47,8 @@ namespace DeepDungeonTracker
             {
                 var style = ImGui.GetStyle();
 
-                this.Padding = ImGuiHelpers.ScaledVector2(style.WindowPadding.X, style.WindowPadding.Y);
-                this.Rounding = ImGuiHelpers.ScaledVector2(style.WindowRounding).X;
+                this.Padding = new Vector2(style.WindowPadding.X, style.WindowPadding.Y);
+                this.Rounding = new Vector2(style.WindowRounding).X;
 
                 style.WindowPadding = Vector2.Zero;
                 style.WindowRounding = 0.0f;
@@ -94,7 +94,7 @@ namespace DeepDungeonTracker
 
         protected static bool Child(Action action, string id, float width, float height)
         {
-            var result = ImGui.BeginChild(id, ImGuiHelpers.ScaledVector2(width, height));
+            var result = ImGui.BeginChild(id, new Vector2(width, height));
             action?.Invoke();
             ImGui.EndChild();
             return result;
