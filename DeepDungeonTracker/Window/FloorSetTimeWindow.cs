@@ -84,6 +84,12 @@ namespace DeepDungeonTracker
                 y += 15.0f;
             }
 
+            if (!config.ShowFloorTime && !config.ShowTitle)
+            {
+                y += 1.0f;
+                height += 7.0f;
+            }
+
             DrawTextLine(x, y, "Average:", showValue ? dataCommon.FloorSetTime.Average : null, Color.White, config.AverageTimeColor);
 
             x = width / 2.0f;

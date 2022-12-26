@@ -83,11 +83,12 @@ namespace DeepDungeonTracker
                 var value = (Miscellaneous)(Enum)item.Value;
                 if (value == Miscellaneous.Map && mapData != null && mapData.FloorType != FloorType.None)
                 {
+                    var scale = mapData.FloorType == FloorType.Normal ? 8.0f : mapData.FloorType == FloorType.HallOfFallacies ? 3.67f : 1.0f;
                     for (var j = 0; j < MapData.Length; j++)
                     {
                         for (var i = 0; i < MapData.Length; i++)
                         {
-                            var size = (44.0f / 8.0f) * ((mapData.FloorType == FloorType.Normal) ? 2.0f : 1.0f);
+                            var size = (44.0f / scale) * ((mapData.FloorType == FloorType.Normal) ? 2.0f : 1.0f);
                             var posX = x + (i * size);
                             var posY = y + (j * size) - 4.0f;
                             var id = mapData.GetId(i, j);
