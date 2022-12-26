@@ -198,7 +198,7 @@ namespace DeepDungeonTracker
                     {
                         saveSlotSelection.TryGetValue(saveSlot.Key, out var saveSlotSelectionData);
                         ImGui.Text($"{saveSlot.Key.Replace("-", "@", StringComparison.InvariantCultureIgnoreCase)}");
-                        ImGuiHelpers.ScaledDummy(0.0f, 4.0f);
+                        ImGui.Dummy(new(0.0f, 4.0f));
                         foreach (var deepDungeon in Enum.GetValues<DeepDungeon>())
                         {
                             if (deepDungeon == DeepDungeon.None)
@@ -275,6 +275,8 @@ namespace DeepDungeonTracker
 
         private void Information()
         {
+            ImGui.NewLine();
+
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
                 "All enemies killed from a distance of more than two rooms cannot be counted." +
