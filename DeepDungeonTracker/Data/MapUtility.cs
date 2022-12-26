@@ -18,12 +18,28 @@ namespace DeepDungeonTracker
                 rooms = ImmutableArray.Create<Room>();
                 mapData?.Reset();
 
+                var startX = float.MaxValue;
+                var startY = float.MaxValue;
+                var endX = float.MinValue;
+                var endY = float.MinValue;
+
+                foreach (var node in nodes)
+                {
+                    startX = Math.Min(startX, node.X);
+                    startY = Math.Min(startY, node.Y);
+                    endX = Math.Max(endX, node.X + node.Width);
+                    endY = Math.Max(endY, node.Y + node.Height);
+                }
+
                 foreach (var node in nodes)
                 {
                     if (node.PartCount == 16)
                     {
+                        int x = (int)(((node.X - startX) + (((node.Width * MapData.Length) / 2.0f) - ((endX - startX) / 2.0f))) / node.Width);
+                        int y = (int)(((node.Y - startY) + (((node.Height * MapData.Length) / 2.0f) - ((endY - startY) / 2.0f))) / node.Height);
+
                         rooms = rooms.Add(new(node.X, node.Y, node.Width, node.Height, (RoomOpening)node.PartId));
-                        mapData?.Update((int)(node.X / node.Width), (int)(node.Y / node.Height), node.PartId, FloorType.Normal);
+                        mapData?.Update(x, y, node.PartId, FloorType.Normal);
                     }
                     else if (node.PartCount == 9)
                     {
