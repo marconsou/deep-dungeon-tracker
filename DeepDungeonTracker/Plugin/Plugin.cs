@@ -98,7 +98,7 @@ namespace DeepDungeonTracker
         private void OnLoadCommand(string command, string args)
         {
             if (!this.Data.IsInsideDeepDungeon)
-                this.Data.Common.LoadDeepDungeonData();
+                this.Data.Common.LoadDeepDungeonData(true);
 
             this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot);
         }

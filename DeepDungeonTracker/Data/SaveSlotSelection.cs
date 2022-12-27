@@ -8,25 +8,23 @@ namespace DeepDungeonTracker
 
         private static string FileName => $"_{nameof(SaveSlotSelection)}.json";
 
-        public IDictionary<string, SaveSlotSelectionData>? Data { get; } = SaveSlotSelection.Load();
+        private IDictionary<string, SaveSlotSelectionData> Data { get; } = SaveSlotSelection.Load();
 
-        private static IDictionary<string, SaveSlotSelectionData>? Load() => LocalStream.Load<Dictionary<string, SaveSlotSelectionData>>(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName) ?? new();
+        public IDictionary<string, SaveSlotSelectionData> DataList => new Dictionary<string, SaveSlotSelectionData>(this.Data);
 
-        public async void Save() => await LocalStream.Save(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName, this.Data).ConfigureAwait(true);
+        private static IDictionary<string, SaveSlotSelectionData> Load() => LocalStream.Load<Dictionary<string, SaveSlotSelectionData>>(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName) ?? new();
 
-        public void AddOrUpdateSelection(string key, SaveSlotSelectionData data)
+        public static SaveSlotSelectionData Get(string key) => SaveSlotSelection.Load().TryGetValue(key, out var value) ? value : new();
+
+        public void Save() => LocalStream.Save(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName, this.Data).ConfigureAwait(true);
+
+        public void AddOrUpdate(string key, SaveSlotSelectionData data)
         {
-            if (key == null || key.Length <= 3)
+            if (string.IsNullOrWhiteSpace(key) || key.Length <= 3 || data == null || data.DeepDungeon == DeepDungeon.None)
                 return;
 
-            if (this.Data != null && !this.Data.TryAdd(key, data))
+            if (!this.Data.TryAdd(key, data))
                 this.Data[key] = data;
         }
-
-        private static SaveSlotSelectionData Get(string key, IDictionary<string, SaveSlotSelectionData>? data) => (data?.TryGetValue(key, out var value) ?? false) ? value : new();
-
-        public SaveSlotSelectionData GetSelection(string key) => SaveSlotSelection.Get(key, this.Data);
-
-        public static SaveSlotSelectionData GetSelectionFromFile(string key) => SaveSlotSelection.Get(key, SaveSlotSelection.Load());
     }
 }

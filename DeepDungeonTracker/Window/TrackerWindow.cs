@@ -122,10 +122,11 @@ namespace DeepDungeonTracker
                 }
             }
 
-            var floorEffectPomandersScale = 0.60f;
-            ui.Scale *= floorEffectPomandersScale;
             if (config.ShowFloorEffectPomanders && !floor.IsLastFloor())
             {
+                var floorEffectPomandersScale = 0.60f;
+                ui.Scale *= floorEffectPomandersScale;
+
                 var multiplier = 1.0f / floorEffectPomandersScale;
                 x = left * multiplier;
                 y = 9.0f * multiplier;
@@ -151,8 +152,9 @@ namespace DeepDungeonTracker
 
                 if (this.Data.Common.FloorEffect.ShowPomanderOfAlteration)
                     ui.DrawCoffer(x, y, Coffer.PomanderOfAlteration);
+
+                ui.Scale /= floorEffectPomandersScale;
             }
-            ui.Scale /= floorEffectPomandersScale;
 
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }
