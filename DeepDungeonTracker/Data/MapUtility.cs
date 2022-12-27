@@ -38,6 +38,9 @@ namespace DeepDungeonTracker
 
                     if (node.PartCount == 16)
                     {
+                        int x = (int)(((node.X - startX) + (((node.Width * MapData.Length) / 2.0f) - ((endX - startX) / 2.0f))) / node.Width);
+                        int y = (int)(((node.Y - startY) + (((node.Height * MapData.Length) / 2.0f) - ((endY - startY) / 2.0f))) / node.Height);
+
                         rooms = rooms.Add(new(node.X, node.Y, node.Width, node.Height, (RoomOpening)node.PartId));
                         mapData?.Update(x, y, node.PartId, FloorType.Normal);
                     }
