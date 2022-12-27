@@ -102,13 +102,11 @@ namespace DeepDungeonTracker
                 var data = SaveSlotSelection.Get(this.CharacterKey);
                 var fileName = DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
                 await LocalStream.Save(ServiceUtility.ConfigDirectory, fileName, this.CurrentSaveSlot).ConfigureAwait(true);
-                Log.Print($"Save: {fileName}");
             }
         }
 
         public SaveSlot? LoadDeepDungeonData(string fileName)
         {
-            Log.Print($"Load: {fileName}");
             this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, fileName);
             return this.CurrentSaveSlot;
         }
