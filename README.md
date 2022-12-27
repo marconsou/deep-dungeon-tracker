@@ -21,7 +21,7 @@ Type `/ddtload` to load the last saved slot and open the Statistics Window.
 ## Examples
 ![image1](https://user-images.githubusercontent.com/27457164/206748558-13186221-83b2-4bc2-9513-2dd1507ec1ea.png)
 
-![image2](https://user-images.githubusercontent.com/27457164/208556488-beb763eb-63e7-4a20-8056-e832c32d4800.png)
+![image2](https://user-images.githubusercontent.com/27457164/209603639-5a3a314a-dfb7-4b41-81b4-2adfdf31f371.png)
 
 ## Credits
 Scoring formula testing by Alpha ([#1](https://docs.google.com/document/d/1MnR2Xtj2lol1LESgscI6yi_1xcAeP3FBwJecbD-EiwE) and [#2](https://docs.google.com/spreadsheets/d/1FJGDlSI7yHVVoD3wXRYDjxMWfId8QOkEZkRXpZgH9Yk)).
