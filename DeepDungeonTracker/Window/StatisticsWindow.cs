@@ -325,7 +325,7 @@ namespace DeepDungeonTracker
                     y = top;
                 }
                 else
-                    y += lineHeight * 2.55f;
+                    y += lineHeight * 2.525f;
             }
 
             x = floorSets?.Count() > 10 ? 700.0f : 350.0f;
@@ -371,7 +371,7 @@ namespace DeepDungeonTracker
                     y = top;
                 }
                 else
-                    y += lineHeight * 2.55f;
+                    y += lineHeight * 2.525f;
             }
         }
 
@@ -526,7 +526,7 @@ namespace DeepDungeonTracker
 
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
 
-            if (floorSet != null || floorSets != null)
+            if (floorSet != null || floorSets?.Count() > 0)
             {
                 var left = 15.0f;
                 var top = 50.0f;
