@@ -54,7 +54,7 @@ namespace DeepDungeonTracker
             var baseY = config.ShowTitle ? top : 15.0f;
             var y = baseY;
 
-            var showValue = (this.Data.IsInsideDeepDungeon || dataCommon.ContentId != 0);
+            var showValue = (this.Data.IsInsideDeepDungeon || dataCommon.ContentId != 0) && dataCommon.ShowFloorSetTimeValues;
             if (config.ShowFloorTime)
             {
                 var number = dataCommon.CurrentSaveSlot?.CurrentFloorSet()?.FirstFloor()?.Number ?? null;
@@ -64,7 +64,7 @@ namespace DeepDungeonTracker
                     TimeSpan? floorTime = i < floorsTime.Count ? floorsTime[i] : null;
                     var isCurrentFloor = (i == floorsTime.Count - 1);
 
-                    DrawTextLine(x, y, $"{(number.HasValue ? $"{number:D3}" : " ??? ")}:", showValue ? floorTime : null, Color.White, !isCurrentFloor ? config.PreviousFloorTimeColor : config.CurrentFloorTimeColor);
+                    DrawTextLine(x, y, $"{(number.HasValue && dataCommon.ShowFloorSetTimeValues ? $"{number:D3}" : " ??? ")}:", showValue ? floorTime : null, Color.White, !isCurrentFloor ? config.PreviousFloorTimeColor : config.CurrentFloorTimeColor);
 
                     if (i == 4)
                     {
@@ -101,7 +101,7 @@ namespace DeepDungeonTracker
 
             var respawnTime = dataCommon.GetRespawnTime();
             var value = respawnTime - TimeSpan.FromTicks((currentFloorTime.Ticks) % (respawnTime.Ticks + 1));
-            DrawTextLine(x, y, "Respawn:", (!currentFloor?.IsLastFloor() ?? false) && this.Data.IsInsideDeepDungeon ? value : null, Color.White, config.RespawnTimeColor);
+            DrawTextLine(x, y, "Respawn:", (!currentFloor?.IsLastFloor() ?? false) && this.Data.IsInsideDeepDungeon && dataCommon.ShowFloorSetTimeValues ? value : null, Color.White, config.RespawnTimeColor);
 
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }

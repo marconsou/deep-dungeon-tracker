@@ -225,7 +225,7 @@ namespace DeepDungeonTracker
                                         this.Button(() =>
                                         {
                                             if (!this.Data.IsInsideDeepDungeon)
-                                                this.Data.Common.LoadDeepDungeonData(saveSlot.Key, new(deepDungeon, saveSlotNumber));
+                                                this.Data.Common.LoadDeepDungeonData(false, saveSlot.Key, new(deepDungeon, saveSlotNumber));
 
                                             statistics.Load(this.Data.Common.CurrentSaveSlot);
                                         }, $"Save Slot {saveSlotNumber}##{fileName}");
@@ -261,7 +261,7 @@ namespace DeepDungeonTracker
                             this.Button(() =>
                             {
                                 if (!this.Data.IsInsideDeepDungeon)
-                                    this.Data.Common.LoadDeepDungeonData(fileName);
+                                    this.Data.Common.LoadDeepDungeonData(false, fileName);
 
                                 statistics.Load(this.Data.Common.CurrentSaveSlot);
                             }, $"{LocalStream.FormatFileName(fileName, false)}");

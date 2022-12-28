@@ -22,6 +22,8 @@ namespace DeepDungeonTracker
 
         private bool IsCairnOfPassageActivated { get; set; }
 
+        public bool ShowFloorSetTimeValues { get; private set; }
+
         private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
 
         public DeepDungeon DeepDungeon { get; private set; }
@@ -105,23 +107,24 @@ namespace DeepDungeonTracker
             }
         }
 
-        public SaveSlot? LoadDeepDungeonData(string fileName)
+        public SaveSlot? LoadDeepDungeonData(bool showFloorSetTimeValues, string fileName)
         {
+            this.ShowFloorSetTimeValues = showFloorSetTimeValues;
             this.CurrentSaveSlot = LocalStream.Load<SaveSlot>(ServiceUtility.ConfigDirectory, fileName);
             return this.CurrentSaveSlot;
         }
 
-        public void LoadDeepDungeonData(string key, SaveSlotSelection.SaveSlotSelectionData data)
+        public void LoadDeepDungeonData(bool showFloorSetTimeValues, string key, SaveSlotSelection.SaveSlotSelectionData data)
         {
             var fileName = DataCommon.GetSaveSlotFileName(key, data);
-            this.LoadDeepDungeonData(fileName);
+            this.LoadDeepDungeonData(showFloorSetTimeValues, fileName);
         }
 
-        public void LoadDeepDungeonData(bool ignoreDeepDungeonRegion = false)
+        public void LoadDeepDungeonData(bool showFloorSetTimeValues, bool ignoreDeepDungeonRegion = false)
         {
             var data = SaveSlotSelection.Get(this.CharacterKey);
             var fileName = DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
-            this.CurrentSaveSlot = ((!ignoreDeepDungeonRegion && (data.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) && (data.SaveSlotNumber != 0) ? this.LoadDeepDungeonData(fileName) : new();
+            this.CurrentSaveSlot = ((!ignoreDeepDungeonRegion && (data.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) && (data.SaveSlotNumber != 0) ? this.LoadDeepDungeonData(showFloorSetTimeValues, fileName) : new();
         }
 
         public void CheckForSaveSlotSelection()
@@ -145,8 +148,8 @@ namespace DeepDungeonTracker
 
             if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) && string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
             {
-                this.LoadDeepDungeonData();
-                if (!this.SaveSlotSelection.DataList.ContainsKey(this.CharacterKey) && this.DeepDungeon != DeepDungeon.None)
+                this.LoadDeepDungeonData(false);
+                if (!this.SaveSlotSelection.DataList.ContainsKey(this.CharacterKey) && this.IsInDeepDungeonRegion)
                 {
                     this.SaveSlotSelection.AddOrUpdate(this.CharacterKey, new(this.DeepDungeon));
                     this.SaveSlotSelection.Save();
@@ -272,8 +275,8 @@ namespace DeepDungeonTracker
             else
                 this.DeepDungeon = DeepDungeon.None;
 
-            if (this.DeepDungeon != DeepDungeon.None && this.DeepDungeon != deepDungeon)
-                this.LoadDeepDungeonData();
+            if (this.IsInDeepDungeonRegion && this.DeepDungeon != deepDungeon)
+                this.LoadDeepDungeonData(false);
         }
 
         public TimeSpan GetRespawnTime()
@@ -378,11 +381,13 @@ namespace DeepDungeonTracker
             {
                 this.CurrentSaveSlot = new(this.DeepDungeon, contentId, Service.ClientState?.LocalPlayer?.ClassJob.Id ?? 0);
                 this.CurrentSaveSlot.AddFloorSet(floorNumber);
+                this.CurrentSaveSlot.CurrentFloorSet()?.CheckForTimeBonus(new TimeSpan(0, 59, 59)); //Icon blinking fix
             }
 
             if (this.ContentId == 0)
             {
                 this.FloorEffect = new();
+                this.ShowFloorSetTimeValues = true;
                 this.FloorSetTime.Start();
                 this.SaveSlotSelection.Save();
 
@@ -391,12 +396,12 @@ namespace DeepDungeonTracker
 
                 if (this.IsSoloSaveSlot)
                 {
-                    Task.Delay(1000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
+                    Task.Delay(2000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
                     if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(null)))
                         CreateSaveSlot(floorNumber);
                     else
                     {
-                        this.LoadDeepDungeonData();
+                        this.LoadDeepDungeonData(true);
                         if (this.CurrentSaveSlot?.ContentId != contentId)
                             this.CurrentSaveSlot?.AddFloorSet(floorNumber);
                         else
