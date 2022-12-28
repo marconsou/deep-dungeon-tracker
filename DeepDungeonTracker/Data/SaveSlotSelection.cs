@@ -8,9 +8,11 @@ namespace DeepDungeonTracker
 
         private static string FileName => $"_{nameof(SaveSlotSelection)}.json";
 
-        private IDictionary<string, SaveSlotSelectionData> Data { get; } = SaveSlotSelection.Load();
+        private IDictionary<string, SaveSlotSelectionData> Data { get; set; } = SaveSlotSelection.Load();
 
         public IDictionary<string, SaveSlotSelectionData> DataList => new Dictionary<string, SaveSlotSelectionData>(this.Data);
+
+        public void Reload() => this.Data = SaveSlotSelection.Load();
 
         private static IDictionary<string, SaveSlotSelectionData> Load() => LocalStream.Load<Dictionary<string, SaveSlotSelectionData>>(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName) ?? new();
 
