@@ -227,7 +227,7 @@ namespace DeepDungeonTracker
         {
             var config = this.Configuration.Statistics;
             var ui = this.Data.UI;
-
+            isTimeBonusMissScore = isTimeBonusMissScore && this.Data.Common.Score?.TotalScore != 0;
             var lineHeight = 28.0f;
 
             void DrawTotalScore()

@@ -148,6 +148,7 @@ namespace DeepDungeonTracker
 
             if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) && string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
             {
+                this.SaveSlotSelection.Reload();
                 this.LoadDeepDungeonData(false);
                 if (!this.SaveSlotSelection.DataList.ContainsKey(this.CharacterKey) && this.IsInDeepDungeonRegion)
                 {
@@ -381,7 +382,6 @@ namespace DeepDungeonTracker
             {
                 this.CurrentSaveSlot = new(this.DeepDungeon, contentId, Service.ClientState?.LocalPlayer?.ClassJob.Id ?? 0);
                 this.CurrentSaveSlot.AddFloorSet(floorNumber);
-                this.CurrentSaveSlot.CurrentFloorSet()?.CheckForTimeBonus(new TimeSpan(0, 59, 59)); //Icon blinking fix
             }
 
             if (this.ContentId == 0)
