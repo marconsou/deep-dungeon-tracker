@@ -315,9 +315,9 @@ namespace DeepDungeonTracker
                 this.DrawFloorText(x, y, $"{firstFloorNumber:D3}-{firstFloorNumber + 9:D3}:", new TimeSpan(totalTime), item.Time(), totalScore, item.Score(), true);
 
                 var kills = item.Kills();
-                if (kills != totalKills)
-                    this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 35.0f, $"+{item.Kills().ToString(CultureInfo.InvariantCulture)}", Color.Yellow, Alignment.Left);
-                this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 21.0f + (kills == totalKills ? 8.0f : 0.0f), totalKills.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Left);
+                if (kills != totalKills && kills > 0)
+                    this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 35.0f, $"+{kills.ToString(CultureInfo.InvariantCulture)}", Color.Yellow, Alignment.Left);
+                this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 21.0f + (kills == totalKills || kills == 0 ? 8.0f : 0.0f), totalKills.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Left);
 
                 if (firstFloorNumber == 91)
                 {

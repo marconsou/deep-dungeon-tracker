@@ -1,6 +1,4 @@
 ﻿NodeUtility.CreateTextNode.Malloc.
 Map = false clear MapData (.net 7).
-Disable some features for party (clear save slot).
-Time bonus icon bug (blinking) when entering DD.
+Disable some features for party (clear save slot at end).
 Coffer texture icon/enum reorder (will break silver/bronze coffer data).
-Floor Set Time (clear after load file).
