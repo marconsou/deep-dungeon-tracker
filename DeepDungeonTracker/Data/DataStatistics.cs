@@ -54,6 +54,12 @@ namespace DeepDungeonTracker
 
         public uint ClassJobId => this.SaveSlot?.ClassJobId ?? 0;
 
+        public void FloorSetStatisticsSummary()
+        {
+            this.FloorSetStatistics = FloorSetStatistics.Summary;
+            this.DataUpdate();
+        }
+
         public void FloorSetStatisticsPrevious()
         {
             var value = ((int)this.FloorSetStatistics) - 1;
@@ -67,6 +73,29 @@ namespace DeepDungeonTracker
             var value = ((int)this.FloorSetStatistics) + 1;
             var enumValues = Enum.GetValues(typeof(FloorSetStatistics)).Cast<FloorSetStatistics>().ToImmutableArray();
             this.FloorSetStatistics = value > (int)enumValues.Max() ? enumValues.Min() : (FloorSetStatistics)value;
+            this.DataUpdate();
+        }
+
+        public void FloorSetStatisticsCurrent()
+        {
+            var value = FloorSetStatistics.From001To010;
+            foreach (FloorSetStatistics item in Enum.GetValues(typeof(FloorSetStatistics)))
+            {
+                if (item == FloorSetStatistics.Summary)
+                    continue;
+
+                var floorNumbers = item.GetDescription().Split('-');
+                if (floorNumbers.Length == 2)
+                {
+                    var firstFloorNumber = this.SaveSlot?.CurrentFloorSet()?.FirstFloor()?.Number ?? 0;
+                    if (firstFloorNumber == Convert.ToInt32(floorNumbers[0], CultureInfo.InvariantCulture))
+                    {
+                        value = (FloorSetStatistics)(Convert.ToInt32(floorNumbers[1], CultureInfo.InvariantCulture) / 10);
+                        break;
+                    }
+                }
+            }
+            this.FloorSetStatistics = value;
             this.DataUpdate();
         }
 

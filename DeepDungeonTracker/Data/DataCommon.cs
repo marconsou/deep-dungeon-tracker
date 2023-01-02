@@ -105,6 +105,11 @@ namespace DeepDungeonTracker
                 var fileName = DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
                 await LocalStream.Save(ServiceUtility.ConfigDirectory, fileName, this.CurrentSaveSlot).ConfigureAwait(true);
             }
+            else
+            {
+                this.CurrentSaveSlot = new();
+                this.FloorSetTime = new();
+            }
         }
 
         public SaveSlot? LoadDeepDungeonData(bool showFloorSetTimeValues, string fileName)

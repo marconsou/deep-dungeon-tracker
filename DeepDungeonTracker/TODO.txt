@@ -1,4 +1,3 @@
 ﻿NodeUtility.CreateTextNode.Malloc.
 Map = false clear MapData (.net 7).
-Disable some features for party (clear save slot at end).
 Coffer texture icon/enum reorder (will break silver/bronze coffer data).

@@ -11,6 +11,10 @@ namespace DeepDungeonTracker
     {
         private Data Data { get; }
 
+        private Button DoubleArrowButtonSummary { get; } = new DoubleArrowButton(false);
+
+        private Button DoubleArrowButtonCurrent { get; } = new DoubleArrowButton(true);
+
         private Button ArrowButtonPrevious { get; } = new ArrowButton(false);
 
         private Button ArrowButtonNext { get; } = new ArrowButton(true);
@@ -53,11 +57,17 @@ namespace DeepDungeonTracker
         {
             var statistics = this.Data.Statistics;
 
-            if (this.ArrowButtonPrevious.OnMouseLeftClick())
+            if (this.DoubleArrowButtonSummary.OnMouseLeftClick())
+                statistics.FloorSetStatisticsSummary();
+
+            else if (this.ArrowButtonPrevious.OnMouseLeftClick())
                 statistics.FloorSetStatisticsPrevious();
 
             else if (this.ArrowButtonNext.OnMouseLeftClick())
                 statistics.FloorSetStatisticsNext();
+
+            else if (this.DoubleArrowButtonCurrent.OnMouseLeftClick())
+                statistics.FloorSetStatisticsCurrent();
 
             else if (this.CloseButton.OnMouseLeftClick())
                 statistics.Open = false;
@@ -517,11 +527,15 @@ namespace DeepDungeonTracker
             if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
                 ui.DrawJob(14.0f, 7.0f, classJobId);
 
+            this.DoubleArrowButtonSummary.Position = new((width / 2.0f) - 145.0f, 8.0f);
+            this.DoubleArrowButtonCurrent.Position = new((width / 2.0f) + 112.0f, 8.0f);
             this.ArrowButtonPrevious.Position = new((width / 2.0f) - 108.0f, 7.0f);
             this.ArrowButtonNext.Position = new((width / 2.0f) + 72.0f, 7.0f);
             this.CloseButton.Position = new(width - 35.0f, 7.0f);
             this.ArrowButtonPrevious.Draw(ui);
             this.ArrowButtonNext.Draw(ui);
+            this.DoubleArrowButtonSummary.Draw(ui);
+            this.DoubleArrowButtonCurrent.Draw(ui);
             this.CloseButton.Draw(ui);
 
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
