@@ -66,6 +66,8 @@ namespace DeepDungeonTracker
 
         public void DrawArrowButton(float x, float y, bool isMouseOver, bool mirrorHorizontal = false) => this.Render.DrawUIElement(this.ResourceUI.ArrowButton, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1, null, Alignment.Left, mirrorHorizontal);
 
+        public void DrawDoubleArrowButton(float x, float y, bool isMouseOver, bool mirrorHorizontal = false) => this.Render.DrawUIElement(this.ResourceUI.DoubleArrowButton, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, null, Alignment.Left, mirrorHorizontal);
+
         public void DrawCloseButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.CloseButton, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1);
 
         public void DrawDivisorHorizontal(float x, float y, float width) => this.Render.DrawDivisorHorizontal(this.ResourceUI.DivisorHorizontal, x, y, width);

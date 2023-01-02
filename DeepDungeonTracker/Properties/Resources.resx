@@ -145,6 +145,9 @@
   <data name="DivisorVertical" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DivisorVertical.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="DoubleArrowButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DoubleArrowButton.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Enchantment" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Enchantment.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

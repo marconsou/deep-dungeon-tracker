@@ -178,17 +178,19 @@ namespace DeepDungeonTracker
             var saveSlotSelection = this.Data.Common.SaveSlotSelection.DataList;
             if (saveSlotSelection?.Count > 0)
             {
-                this.ArrowButton(statistics.FloorSetStatisticsPrevious, "##Up", ImGuiDir.Up);
+                this.IconButton(statistics.FloorSetStatisticsSummary, FontAwesomeIcon.AngleDoubleLeft, "Summary");
 
                 ImGui.SameLine();
-                this.ArrowButton(statistics.FloorSetStatisticsNext, "##Down", ImGuiDir.Down);
+                this.IconButton(statistics.FloorSetStatisticsPrevious, FontAwesomeIcon.AngleLeft, "Left");
+
+                ImGui.SameLine();
+                this.IconButton(statistics.FloorSetStatisticsNext, FontAwesomeIcon.AngleRight, "Right");
+
+                ImGui.SameLine();
+                this.IconButton(statistics.FloorSetStatisticsCurrent, FontAwesomeIcon.AngleDoubleRight, "Current");
 
                 ImGui.SameLine();
                 if (this.Combo(statistics.FloorSetStatistics, x => statistics.FloorSetStatistics = x, "##FloorSetStatistics").Item1)
-                    statistics.DataUpdate();
-
-                ImGui.SameLine();
-                if (this.IconButton(() => { statistics.FloorSetStatistics = FloorSetStatistics.Summary; }, FontAwesomeIcon.ArrowUp, "Summary"))
                     statistics.DataUpdate();
 
                 foreach (var saveSlot in saveSlotSelection)
