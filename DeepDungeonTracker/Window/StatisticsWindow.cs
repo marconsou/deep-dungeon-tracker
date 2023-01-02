@@ -532,10 +532,10 @@ namespace DeepDungeonTracker
             this.ArrowButtonPrevious.Position = new((width / 2.0f) - 108.0f, 7.0f);
             this.ArrowButtonNext.Position = new((width / 2.0f) + 72.0f, 7.0f);
             this.CloseButton.Position = new(width - 35.0f, 7.0f);
-            this.ArrowButtonPrevious.Draw(ui);
-            this.ArrowButtonNext.Draw(ui);
             this.DoubleArrowButtonSummary.Draw(ui);
             this.DoubleArrowButtonCurrent.Draw(ui);
+            this.ArrowButtonPrevious.Draw(ui);
+            this.ArrowButtonNext.Draw(ui);
             this.CloseButton.Draw(ui);
 
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
