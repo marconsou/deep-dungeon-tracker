@@ -1,7 +1,6 @@
 ﻿using Dalamud.Interface;
 using ImGuiNET;
 using System;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 
@@ -12,8 +11,6 @@ namespace DeepDungeonTracker
         private Data Data { get; }
 
         private string[] FieldNames { get; }
-
-        private static string BackupsDirectory => Path.Combine(ServiceUtility.ConfigDirectory, "Backups");
 
         public ConfigurationWindow(string id, Configuration configuration, Data data) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
         {
@@ -222,7 +219,7 @@ namespace DeepDungeonTracker
 
                                     WindowEx.Disabled(() =>
                                     {
-                                        this.IconButton(() => { LocalStream.Copy(ServiceUtility.ConfigDirectory, ConfigurationWindow.BackupsDirectory, fileName); }, FontAwesomeIcon.Clone, $"{fileName}Clone");
+                                        this.IconButton(() => { LocalStream.Copy(ServiceUtility.ConfigDirectory, Directories.Backups, fileName); }, FontAwesomeIcon.Clone, $"{fileName}Clone");
                                         ImGui.SameLine();
                                         this.Button(() =>
                                         {
@@ -245,12 +242,17 @@ namespace DeepDungeonTracker
 
             ImGui.NewLine();
 
-            ImGui.Text("Backups");
+
+            this.IconButton(() => { LocalStream.OpenFolder(Directories.Backups); }, FontAwesomeIcon.FolderOpen, "BackupsFolderOpen");
             ImGui.SameLine();
-            this.IconButton(() => { LocalStream.OpenFolder(ConfigurationWindow.BackupsDirectory); }, FontAwesomeIcon.FolderOpen, "FolderOpen");
-            var fileNames = LocalStream.GetFileNamesFromDirectory(ConfigurationWindow.BackupsDirectory).Where(x => LocalStream.IsExtension(x, ".json")).ToArray();
+            ImGui.Text("Backups");
+            this.IconButton(() => { LocalStream.OpenFolder(Directories.Screenshots); }, FontAwesomeIcon.FolderOpen, "ScreenshotsFolderOpen");
+            ImGui.SameLine();
+            ImGui.Text("Screenshots");
+            var fileNames = LocalStream.GetFileNamesFromDirectory(Directories.Backups).Where(x => LocalStream.IsExtension(x, ".json")).ToArray();
             if (fileNames.Length > 0)
             {
+                ImGui.Dummy(new(0.0f, 4.0f));
                 WindowEx.Child(() =>
                 {
                     foreach (var fileName in fileNames)
@@ -258,7 +260,7 @@ namespace DeepDungeonTracker
                         var id = LocalStream.FormatFileName(fileName, true);
                         WindowEx.Disabled(() =>
                         {
-                            this.IconButton(() => { LocalStream.Delete(ConfigurationWindow.BackupsDirectory, id); }, FontAwesomeIcon.Trash, $"{id}Trash");
+                            this.IconButton(() => { LocalStream.Delete(Directories.Backups, id); }, FontAwesomeIcon.Trash, $"{id}Trash");
                             ImGui.SameLine();
                             this.Button(() =>
                             {
