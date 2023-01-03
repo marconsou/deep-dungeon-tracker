@@ -14,6 +14,8 @@ namespace DeepDungeonTracker
 
         public DataUI UI { get; } = new();
 
+        public DataAudio Audio { get; } = new();
+
         private DataText Text { get; } = new();
 
         public DataStatistics Statistics { get; } = new();

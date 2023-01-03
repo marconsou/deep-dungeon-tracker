@@ -52,6 +52,9 @@ namespace DeepDungeonTracker
         public static PartyList PartyList { get; private set; } = null!;
 
         [PluginService]
+        public static SigScanner SigScanner { get; private set; } = null!;
+
+        [PluginService]
         public static TargetManager TargetManager { get; private set; } = null!;
     }
 }

@@ -64,6 +64,8 @@ namespace DeepDungeonTracker
 
         public void DrawMapHallOfFallacies(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapHallOfFallacies, x, y, 1.0f / 3.67f, id, 3, 3);
 
+        public void DrawScreenshotButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.ScreenshotButton, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, null, Alignment.Left);
+
         public void DrawArrowButton(float x, float y, bool isMouseOver, bool mirrorHorizontal = false) => this.Render.DrawUIElement(this.ResourceUI.ArrowButton, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1, null, Alignment.Left, mirrorHorizontal);
 
         public void DrawDoubleArrowButton(float x, float y, bool isMouseOver, bool mirrorHorizontal = false) => this.Render.DrawUIElement(this.ResourceUI.DoubleArrowButton, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, null, Alignment.Left, mirrorHorizontal);

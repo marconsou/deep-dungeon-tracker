@@ -28,6 +28,8 @@ namespace DeepDungeonTracker
 
         public TextureWrap MapHallOfFallacies { get; }
 
+        public TextureWrap ScreenshotButton { get; }
+
         public TextureWrap ArrowButton { get; }
 
         public TextureWrap DoubleArrowButton { get; }
@@ -53,6 +55,7 @@ namespace DeepDungeonTracker
             this.Trap = Service.PluginInterface.UiBuilder.LoadImage(Resources.Trap);
             this.MapNormal = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapNormal);
             this.MapHallOfFallacies = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapHallOfFallacies);
+            this.ScreenshotButton = Service.PluginInterface.UiBuilder.LoadImage(Resources.ScreenshotButton);
             this.ArrowButton = Service.PluginInterface.UiBuilder.LoadImage(Resources.ArrowButton);
             this.DoubleArrowButton = Service.PluginInterface.UiBuilder.LoadImage(Resources.DoubleArrowButton);
             this.CloseButton = Service.PluginInterface.UiBuilder.LoadImage(Resources.CloseButton);
@@ -74,6 +77,7 @@ namespace DeepDungeonTracker
             this.Trap.Dispose();
             this.MapNormal.Dispose();
             this.MapHallOfFallacies.Dispose();
+            this.ScreenshotButton.Dispose();
             this.ArrowButton.Dispose();
             this.DoubleArrowButton.Dispose();
             this.CloseButton.Dispose();

@@ -18,31 +18,22 @@
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-	</PropertyGroup>
-
-	<PropertyGroup>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<NeutralLanguage>en</NeutralLanguage>
+		<AnalysisLevel>latest-all</AnalysisLevel>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
-		<AnalysisLevel>latest-all</AnalysisLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
 		<DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-	  <WarningLevel>7</WarningLevel>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-	  <WarningLevel>7</WarningLevel>
-	</PropertyGroup>
-
+	
 	<ItemGroup>
 		<PackageReference Include="DalamudPackager" Version="2.1.9" />
+		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 		<Reference Include="FFXIVClientStructs">
 			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>false</Private>
