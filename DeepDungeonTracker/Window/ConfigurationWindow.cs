@@ -10,11 +10,14 @@ namespace DeepDungeonTracker
     {
         private Data Data { get; }
 
+        private Action OpenStatisticsWindow { get; }
+
         private string[] FieldNames { get; }
 
-        public ConfigurationWindow(string id, Configuration configuration, Data data) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
+        public ConfigurationWindow(string id, Configuration configuration, Data data, Action openStatisticsWindow) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
         {
             this.Data = data;
+            this.OpenStatisticsWindow = openStatisticsWindow;
             this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds", "Lurings", "Maps", "Time Bonuses" };
             this.SizeConstraints = new() { MaximumSize = new(600.0f, 600.0f) };
         }
@@ -226,7 +229,7 @@ namespace DeepDungeonTracker
                                             if (!this.Data.IsInsideDeepDungeon)
                                                 this.Data.Common.LoadDeepDungeonData(false, saveSlot.Key, new(deepDungeon, saveSlotNumber));
 
-                                            statistics.Load(this.Data.Common.CurrentSaveSlot);
+                                            statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
                                         }, $"Save Slot {saveSlotNumber}##{fileName}");
                                     }, !enableButtons);
                                 }
@@ -267,7 +270,7 @@ namespace DeepDungeonTracker
                                 if (!this.Data.IsInsideDeepDungeon)
                                     this.Data.Common.LoadDeepDungeonData(false, fileName);
 
-                                statistics.Load(this.Data.Common.CurrentSaveSlot);
+                                statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
                             }, $"{LocalStream.FormatFileName(fileName, false)}");
                         }, this.Data.IsInsideDeepDungeon);
                     }

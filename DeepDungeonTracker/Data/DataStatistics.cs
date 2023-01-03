@@ -10,8 +10,6 @@ namespace DeepDungeonTracker
     {
         public record StatisticsItem<T>(T Value, int Total);
 
-        public bool Open { get; set; }
-
         public FloorSetStatistics FloorSetStatistics { get; set; } = FloorSetStatistics.Summary;
 
         private SaveSlot? SaveSlot { get; set; }
@@ -99,11 +97,11 @@ namespace DeepDungeonTracker
             this.DataUpdate();
         }
 
-        public void Load(SaveSlot? saveSlot)
+        public void Load(SaveSlot? saveSlot, Action openStatisticsWindow)
         {
             this.SaveSlot = saveSlot;
-            this.Open = true;
             this.DataUpdate();
+            openStatisticsWindow?.Invoke();
         }
 
         public void DataUpdate()

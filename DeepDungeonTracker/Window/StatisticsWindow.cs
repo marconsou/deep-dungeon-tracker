@@ -10,8 +10,6 @@ namespace DeepDungeonTracker
 {
     public sealed class StatisticsWindow : WindowEx, IDisposable
     {
-        private Vector2 PreviousPosition { get; set; } = Vector2.Zero;
-
         private Data Data { get; }
 
         private Button ScreenshotButton { get; } = new ScreenshotButton();
@@ -31,7 +29,6 @@ namespace DeepDungeonTracker
         public StatisticsWindow(string id, Configuration configuration, Data data) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
         {
             this.Data = data;
-            this.IsOpen = true;
             this.ClassJobIds = new Dictionary<uint, (uint, string)>()
             {
                 { 1, ( 0, "GLA")}, {19, ( 0, "PLD")},
@@ -58,52 +55,47 @@ namespace DeepDungeonTracker
 
         public void Dispose() { }
 
-        public override void PreOpenCheck()
+        public void CheckForEvents()
         {
             var statistics = this.Data.Statistics;
 
-            if (this.IsOpen)
+            if (this.DoubleArrowButtonSummary.OnMouseLeftClick())
             {
-                if (this.DoubleArrowButtonSummary.OnMouseLeftClick())
-                {
-                    this.Data.Audio.PlaySound(SoundIndex.OnClick);
-                    statistics.FloorSetStatisticsSummary();
-                }
-                else if (this.ArrowButtonPrevious.OnMouseLeftClick())
-                {
-                    this.Data.Audio.PlaySound(SoundIndex.OnClick);
-                    statistics.FloorSetStatisticsPrevious();
-                }
-                else if (this.ArrowButtonNext.OnMouseLeftClick())
-                {
-                    this.Data.Audio.PlaySound(SoundIndex.OnClick);
-                    statistics.FloorSetStatisticsNext();
-                }
-                else if (this.DoubleArrowButtonCurrent.OnMouseLeftClick())
-                {
-                    this.Data.Audio.PlaySound(SoundIndex.OnClick);
-                    statistics.FloorSetStatisticsCurrent();
-                }
-                else if (this.CloseButton.OnMouseLeftClick())
-                {
-                    this.Data.Audio.PlaySound(SoundIndex.OnCloseMenu);
-                    statistics.Open = false;
-                }
-                else if (this.ScreenshotButton.OnMouseLeftClick())
-                {
-                    this.Data.Audio.PlaySound(SoundIndex.Screenshot);
-                    var classJobName = this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId) ? classJobId.Item2 : string.Empty;
-                    var fileName = $"{classJobName} {statistics.FloorSetStatistics.GetDescription()} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.png".Trim();
-                    ScreenStream.Screenshot(this.PreviousPosition, this.Size ?? Vector2.One, Directories.Screenshots, fileName);
-                    Service.ChatGui.Print($"Screenshot saved: {fileName}");
-                }
+                this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                statistics.FloorSetStatisticsSummary();
             }
-
-            if (!this.IsOpen && statistics.Open)
-                this.Data.Audio.PlaySound(SoundIndex.OnOpenMenu);
-
-            this.IsOpen = statistics.Open;
+            else if (this.ArrowButtonPrevious.OnMouseLeftClick())
+            {
+                this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                statistics.FloorSetStatisticsPrevious();
+            }
+            else if (this.ArrowButtonNext.OnMouseLeftClick())
+            {
+                this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                statistics.FloorSetStatisticsNext();
+            }
+            else if (this.DoubleArrowButtonCurrent.OnMouseLeftClick())
+            {
+                this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                statistics.FloorSetStatisticsCurrent();
+            }
+            else if (this.CloseButton.OnMouseLeftClick())
+            {
+                this.IsOpen = false;
+            }
+            else if (this.ScreenshotButton.OnMouseLeftClick())
+            {
+                this.Data.Audio.PlaySound(SoundIndex.Screenshot);
+                var classJobName = this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId) ? classJobId.Item2 : string.Empty;
+                var fileName = $"{classJobName} {statistics.FloorSetStatistics.GetDescription()} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.png".Trim();
+                var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), this.Size ?? Vector2.One, Directories.Screenshots, fileName);
+                Service.ChatGui.Print(result.Item1 ? $"{result.Item2} ({fileName})" : result.Item2);
+            }
         }
+
+        public override void OnOpen() => this.Data.Audio.PlaySound(SoundIndex.OnOpenMenu);
+
+        public override void OnClose() => this.Data.Audio.PlaySound(SoundIndex.OnCloseMenu);
 
         private void DrawMiscellaneousIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, bool includeMapTotal)
         {
@@ -595,8 +587,8 @@ namespace DeepDungeonTracker
 
             ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Statistics", Color.White, Alignment.Center);
 
-            this.PreviousPosition = ImGui.GetWindowPos();
             this.Size = new(width * ui.Scale, height * ui.Scale);
+            this.CheckForEvents();
         }
     }
 }
