@@ -6,6 +6,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using System;
+using System.Linq;
 
 namespace DeepDungeonTracker
 {
@@ -33,7 +34,7 @@ namespace DeepDungeonTracker
 
             this.WindowSystem = new(this.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
-            this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data));
+            this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data, this.OpenStatisticsWindow));
             this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new ScoreWindow(this.Name, this.Configuration, this.Data));
@@ -100,7 +101,7 @@ namespace DeepDungeonTracker
             if (!this.Data.IsInsideDeepDungeon)
                 this.Data.Common.LoadDeepDungeonData(false, true);
 
-            this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot);
+            this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
         }
 
         private void Draw() => this.WindowSystem.Draw();
@@ -125,6 +126,13 @@ namespace DeepDungeonTracker
         {
             if (direction == NetworkMessageDirection.ZoneDown)
                 this.Data.NetworkMessage(dataPtr, opCode, targetActorId, this.Configuration);
+        }
+
+        public void OpenStatisticsWindow()
+        {
+            var window = this.WindowSystem.Windows.FirstOrDefault(x => x is StatisticsWindow);
+            if (window != null)
+                window.IsOpen = true;
         }
     }
 }
