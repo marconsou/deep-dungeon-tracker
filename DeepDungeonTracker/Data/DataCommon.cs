@@ -89,21 +89,17 @@ namespace DeepDungeonTracker
             this.SaveDeepDungeonData();
         }
 
-        public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
+        public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
 
-        public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data)
-        {
-            data ??= SaveSlotSelection.Get(this.CharacterKey);
-            return DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
-        }
+        public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data) => DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
 
-        private async void SaveDeepDungeonData()
+        private void SaveDeepDungeonData()
         {
             if (this.IsSoloSaveSlot)
             {
-                var data = SaveSlotSelection.Get(this.CharacterKey);
+                var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
                 var fileName = DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
-                await LocalStream.Save(ServiceUtility.ConfigDirectory, fileName, this.CurrentSaveSlot).ConfigureAwait(true);
+                LocalStream.Save(ServiceUtility.ConfigDirectory, fileName, this.CurrentSaveSlot).ConfigureAwait(true);
             }
             else
             {
@@ -127,19 +123,19 @@ namespace DeepDungeonTracker
 
         public void LoadDeepDungeonData(bool showFloorSetTimeValues, bool ignoreDeepDungeonRegion = false)
         {
-            var data = SaveSlotSelection.Get(this.CharacterKey);
+            var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
             var fileName = DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
-            this.CurrentSaveSlot = ((!ignoreDeepDungeonRegion && (data.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) && (data.SaveSlotNumber != 0) ? this.LoadDeepDungeonData(showFloorSetTimeValues, fileName) : new();
+            this.CurrentSaveSlot = ((!ignoreDeepDungeonRegion && (data?.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) && (data?.SaveSlotNumber != 0) ? this.LoadDeepDungeonData(showFloorSetTimeValues, fileName) : new();
         }
 
         public void CheckForSaveSlotSelection()
         {
             var saveSlotNumber = NodeUtility.SaveSlotNumber(Service.GameGui);
             if (saveSlotNumber != 0)
-                this.SaveSlotSelection.AddOrUpdate(this.CharacterKey, new(this.DeepDungeon, saveSlotNumber));
+                this.SaveSlotSelection.SetSelectionData(this.DeepDungeon, saveSlotNumber);
         }
 
-        public void ResetSaveSlotSelection() => this.SaveSlotSelection.AddOrUpdate(this.CharacterKey, new(this.DeepDungeon, 0));
+        public void ResetSaveSlotSelection() => this.SaveSlotSelection.SetSelectionData(this.DeepDungeon, 0);
 
         public void CharacterUpdate()
         {
@@ -153,12 +149,14 @@ namespace DeepDungeonTracker
 
             if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) && string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
             {
-                this.SaveSlotSelection.Reload();
-                this.LoadDeepDungeonData(false);
-                if (!this.SaveSlotSelection.DataList.ContainsKey(this.CharacterKey) && this.IsInDeepDungeonRegion)
+                if (this.IsInDeepDungeonRegion)
                 {
-                    this.SaveSlotSelection.AddOrUpdate(this.CharacterKey, new(this.DeepDungeon));
-                    this.SaveSlotSelection.Save();
+                    if (!this.SaveSlotSelection.GetData().ContainsKey(this.CharacterKey))
+                    {
+                        this.SaveSlotSelection.SetSelectionData(this.DeepDungeon, 0);
+                        this.SaveSlotSelection.Save(this.CharacterKey);
+                    }
+                    this.LoadDeepDungeonData(false);
                 }
             }
         }
@@ -258,11 +256,11 @@ namespace DeepDungeonTracker
                     var saveSlotNumber = i + 1;
                     if (LocalStream.Delete(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(new(this.DeepDungeon, saveSlotNumber))))
                     {
-                        var data = SaveSlotSelection.Get(this.CharacterKey);
-                        if (data.DeepDungeon == this.DeepDungeon && data.SaveSlotNumber == saveSlotNumber)
+                        var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
+                        if (data?.DeepDungeon == this.DeepDungeon && data.SaveSlotNumber == saveSlotNumber)
                         {
                             this.ResetSaveSlotSelection();
-                            this.SaveSlotSelection.Save();
+                            this.SaveSlotSelection.Save(this.CharacterKey);
                         }
                     }
                 }
@@ -394,15 +392,15 @@ namespace DeepDungeonTracker
                 this.FloorEffect = new();
                 this.ShowFloorSetTimeValues = true;
                 this.FloorSetTime.Start();
-                this.SaveSlotSelection.Save();
+                this.SaveSlotSelection.Save(this.CharacterKey);
 
                 var result = NodeUtility.MapFloorNumber(Service.GameGui);
                 var floorNumber = result.Item1 ? result.Item2 : 0;
 
                 if (this.IsSoloSaveSlot)
                 {
-                    Task.Delay(2000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
-                    if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(null)))
+                    var saveSlotSelection = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
+                    if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(saveSlotSelection)))
                         CreateSaveSlot(floorNumber);
                     else
                     {
@@ -413,6 +411,7 @@ namespace DeepDungeonTracker
                             this.CurrentSaveSlot.ResetFloorSet();
                         this.CurrentSaveSlot?.ContentIdUpdate(contentId);
                     }
+                    Task.Delay(2000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
                 }
                 else
                     CreateSaveSlot(floorNumber);

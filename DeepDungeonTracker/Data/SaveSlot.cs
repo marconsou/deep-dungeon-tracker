@@ -26,7 +26,7 @@ namespace DeepDungeonTracker
         public int AetherpoolArmor { get; private set; }
 
         [JsonIgnore]
-        int _KOs;
+        private int _KOs;
 
         [JsonInclude]
         public int KOs { get { return this._KOs; } private set { this._KOs = Math.Min(value, 99); } }
