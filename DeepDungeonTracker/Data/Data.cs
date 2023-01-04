@@ -52,7 +52,7 @@ namespace DeepDungeonTracker
 
         public Data(Configuration configuration)
         {
-            this.OpCodes.Load(configuration);
+            this.OpCodes.Load(configuration).ConfigureAwait(true);
 
             this.InDeepDungeon.AddActivating(this.DeepDungeonActivating);
             this.InDeepDungeon.AddDeactivating(this.DeepDungeonDeactivating);

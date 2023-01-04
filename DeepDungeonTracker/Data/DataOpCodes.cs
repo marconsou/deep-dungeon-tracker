@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeepDungeonTracker
 {
@@ -24,7 +25,7 @@ namespace DeepDungeonTracker
 
         private bool IsKnownOpCode(ushort opCode) => this.KnownOpCodes.Contains(opCode);
 
-        public async void Load(Configuration configuration)
+        public async Task Load(Configuration configuration)
         {
             ushort actorControl = 0;
             ushort actorControlSelf = 0;

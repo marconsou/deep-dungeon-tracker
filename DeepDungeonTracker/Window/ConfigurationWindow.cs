@@ -175,7 +175,7 @@ namespace DeepDungeonTracker
             this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
             ImGui.NewLine();
 
-            var saveSlotSelection = this.Data.Common.SaveSlotSelection.DataList;
+            var saveSlotSelection = this.Data.Common.SaveSlotSelection.GetData();
             if (saveSlotSelection?.Count > 0)
             {
                 this.IconButton(statistics.FloorSetStatisticsSummary, FontAwesomeIcon.AngleDoubleLeft, "Summary");
