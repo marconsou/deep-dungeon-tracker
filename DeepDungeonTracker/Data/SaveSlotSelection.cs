@@ -15,6 +15,8 @@ namespace DeepDungeonTracker
 
         public SaveSlotSelection() => this.Data = LocalStream.Load<Dictionary<string, SaveSlotSelectionData>>(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName) ?? new();
 
+        public void ResetSelectionData() => this.CurrrentSelectionData = null;
+
         public void SetSelectionData(DeepDungeon deepDungeon, int saveSlotNumber) => this.CurrrentSelectionData = new(deepDungeon, saveSlotNumber);
 
         public SaveSlotSelectionData? GetSelectionData(string key)

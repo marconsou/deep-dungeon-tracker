@@ -151,6 +151,7 @@ namespace DeepDungeonTracker
             {
                 if (this.IsInDeepDungeonRegion)
                 {
+                    this.SaveSlotSelection.ResetSelectionData();
                     if (!this.SaveSlotSelection.GetData().ContainsKey(this.CharacterKey))
                     {
                         this.SaveSlotSelection.SetSelectionData(this.DeepDungeon, 0);
