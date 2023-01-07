@@ -69,7 +69,6 @@ namespace DeepDungeonTracker
             var config = this.Configuration.General;
             this.CheckBox(config.ShowAccurateTargetHPPercentage, x => config.ShowAccurateTargetHPPercentage = x, "Show accurate target HP %");
             WindowEx.Tooltip("It doesn't apply to Focus Target.");
-            this.CheckBox(config.SolidBackgroundWindow, x => config.SolidBackgroundWindow = x, "Force solid background to all windows");
             this.CheckBox(config.UseInGameCursor, x => config.UseInGameCursor = x, "Use in game cursor");
         }
 
@@ -78,6 +77,7 @@ namespace DeepDungeonTracker
             var config = this.Configuration.Tracker;
             this.CheckBox(config.Lock, x => config.Lock = x, "Lock");
             ImGui.SameLine();
+            this.CheckBox(config.SolidBackground, x => config.SolidBackground = x, "Solid Background");
             this.CheckBox(config.Show, x => config.Show = x, "Show");
             WindowEx.Tooltip("You need to be either inside a Deep Dungeon or in the area outside to get into it.");
             ImGui.SameLine();
@@ -129,6 +129,7 @@ namespace DeepDungeonTracker
             var config = this.Configuration.FloorSetTime;
             this.CheckBox(config.Lock, x => config.Lock = x, "Lock");
             ImGui.SameLine();
+            this.CheckBox(config.SolidBackground, x => config.SolidBackground = x, "Solid Background");
             this.CheckBox(config.Show, x => config.Show = x, "Show");
             WindowEx.Tooltip("You need to be either inside a Deep Dungeon or in the area outside to get into it.");
             ImGui.SameLine();
@@ -150,6 +151,7 @@ namespace DeepDungeonTracker
             var config = this.Configuration.Score;
             this.CheckBox(config.Lock, x => config.Lock = x, "Lock");
             ImGui.SameLine();
+            this.CheckBox(config.SolidBackground, x => config.SolidBackground = x, "Solid Background");
             this.CheckBox(config.Show, x => config.Show = x, "Show");
             WindowEx.Tooltip("You need to be either inside a Deep Dungeon or in the area outside to get into it.");
             ImGui.SameLine();
@@ -169,6 +171,7 @@ namespace DeepDungeonTracker
         {
             var config = this.Configuration.Statistics;
             var statistics = this.Data.Statistics;
+            this.CheckBox(config.SolidBackground, x => config.SolidBackground = x, "Solid Background");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.ColorEdit4(config.FloorTimeColor, x => config.FloorTimeColor = x, "Floor Time");
             ImGui.SameLine();

@@ -536,7 +536,8 @@ namespace DeepDungeonTracker
         {
             var statistics = this.Data.Statistics;
             var ui = this.Data.UI;
-            ui.Scale = this.Configuration.Statistics.Scale;
+            var config = this.Configuration.Statistics;
+            ui.Scale = config.Scale;
             var audio = this.Data.Audio;
 
             var width = 1359.0f;
@@ -545,7 +546,7 @@ namespace DeepDungeonTracker
             var floorSet = statistics.FloorSet;
             var floorSets = statistics.FloorSets;
 
-            ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
+            ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
             if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
                 ui.DrawJob(14.0f, 7.0f, classJobId.Item1);

@@ -85,7 +85,7 @@ namespace DeepDungeonTracker
 
             this.FieldCalls = new[] { Kills, Mimics, Mandragoras, Mimicgoras, ShowNPC ? NPCs : null, Coffers, Enchantments, Traps, Deaths, RegenPotions, Potsherds, Lurings, Maps, TimeBonuses };
 
-            ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
+            ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
             var x = left;
             var y = top;

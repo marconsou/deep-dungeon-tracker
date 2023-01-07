@@ -42,7 +42,7 @@ namespace DeepDungeonTracker
                     ui.DrawTextAxisLatinPro(x + size.X, y, $"{value:mm\\:ss}", valueColor, Alignment.Left);
             }
 
-            ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
+            ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
             if (config.ShowTitle)
             {
