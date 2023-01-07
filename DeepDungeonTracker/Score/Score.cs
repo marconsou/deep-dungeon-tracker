@@ -162,7 +162,7 @@ namespace DeepDungeonTracker
 
             if (scoreCalculationType != ScoreCalculationType.CurrentFloor)
             {
-                var floor = 0;
+                var floor = this.CurrentFloorNumber;
                 if (scoreCalculationType == ScoreCalculationType.ScoreWindowFloor)
                     floor = currentFloorNumber > this.LastNormalFloorNumber() ? this.LastBonusFloorNumber() : this.LastNormalFloorNumber();
                 else if (scoreCalculationType == ScoreCalculationType.LastFloor)
