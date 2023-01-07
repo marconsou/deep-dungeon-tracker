@@ -108,7 +108,7 @@ namespace DeepDungeonTracker
 
             public bool ShowTitle { get; set; } = true;
 
-            public bool IncludeFloorCompletion { get; set; }
+            public ScoreCalculationType ScoreCalculationType { get; set; }
 
             public float Scale { get; set; } = 1.0f;
 

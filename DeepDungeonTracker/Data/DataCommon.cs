@@ -374,10 +374,10 @@ namespace DeepDungeonTracker
 
         private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
 
-        public void CalculateScore(bool includeFloorCompletion)
+        public void CalculateScore(ScoreCalculationType scoreCalculationType)
         {
             this.Score = ScoreCreator.Create(this.CurrentSaveSlot ?? new(), true);
-            this.Score?.TotalScoreCalculation(ServiceUtility.IsSolo, includeFloorCompletion);
+            this.Score?.TotalScoreCalculation(ServiceUtility.IsSolo, scoreCalculationType);
         }
 
         public void StartFirstFloor(int contentId)

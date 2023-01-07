@@ -150,7 +150,7 @@ namespace DeepDungeonTracker
             this.KillScore = (floorBonus * kills) + ((floorBonus + this.Duty) * killsBonus);
         }
 
-        public void TotalScoreCalculation(bool calculateScore, bool includeFloorCompletion)
+        public void TotalScoreCalculation(bool calculateScore, ScoreCalculationType scoreCalculationType)
         {
             if ((this.StartingFloorNumber != 1 && this.StartingFloorNumber != this.ShortcutStartingFloorNumber()) || !calculateScore)
             {
@@ -160,11 +160,19 @@ namespace DeepDungeonTracker
 
             var currentFloorNumber = this.CurrentFloorNumber;
 
-            if (includeFloorCompletion)
-                this.FloorCompletionUpdate(currentFloorNumber > this.LastNormalFloorNumber() ? this.LastBonusFloorNumber() : this.LastNormalFloorNumber());
+            if (scoreCalculationType != ScoreCalculationType.CurrentFloor)
+            {
+                var floor = 0;
+                if (scoreCalculationType == ScoreCalculationType.ScoreWindowFloor)
+                    floor = currentFloorNumber > this.LastNormalFloorNumber() ? this.LastBonusFloorNumber() : this.LastNormalFloorNumber();
+                else if (scoreCalculationType == ScoreCalculationType.LastFloor)
+                    floor = this.LastBonusFloorNumber();
+
+                this.FloorCompletionUpdate(floor);
+            }
 
             this.BaseScoreCalculation();
-            this.CharacterScoreCalculation(!includeFloorCompletion ? this.CurrentLevel : this.Level());
+            this.CharacterScoreCalculation((scoreCalculationType == ScoreCalculationType.CurrentFloor) ? this.CurrentLevel : this.Level());
             this.FloorScoreCalculation();
             this.MapScoreCalculation();
             this.CofferScoreCalculation();
@@ -178,7 +186,7 @@ namespace DeepDungeonTracker
             this.KillScoreCalculation();
             this.TotalScore = this.NonKillScore + this.KillScore;
 
-            if (includeFloorCompletion)
+            if (scoreCalculationType != ScoreCalculationType.CurrentFloor)
                 this.FloorCompletionUpdate(currentFloorNumber);
         }
 

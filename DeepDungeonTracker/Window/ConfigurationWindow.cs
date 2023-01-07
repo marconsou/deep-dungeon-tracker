@@ -158,8 +158,11 @@ namespace DeepDungeonTracker
             this.CheckBox(config.ShowInBetweenFloors, x => config.ShowInBetweenFloors = x, "Show in between floors");
             ImGui.SameLine();
             this.CheckBox(config.ShowTitle, x => config.ShowTitle = x, "Show title");
-            this.CheckBox(config.IncludeFloorCompletion, x => config.IncludeFloorCompletion = x, "Include floor completion");
-            WindowEx.Tooltip("Include all floor completion-related score up to the floor where it shows the next score result window.");
+            this.Combo(config.ScoreCalculationType, x => config.ScoreCalculationType = x, "Score Calculation");
+            WindowEx.Tooltip(
+                "Current Floor: Include all floor completion-related score up to the current floor and current character level.\nYou can see your score progressively increasing each time you go to the next floor and level up.\n\n"+
+                "Score Window Floor: Include all floor completion-related score up to the floor where it shows the next score window.\n\n" +
+                "Last Floor: Include all floor completion-related score.");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
             WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");
