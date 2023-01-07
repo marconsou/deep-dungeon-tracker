@@ -30,8 +30,6 @@ namespace DeepDungeonTracker
         {
             public bool ShowAccurateTargetHPPercentage { get; set; }
 
-            public bool SolidBackgroundWindow { get; set; }
-
             public bool UseInGameCursor { get; set; }
         }
 
@@ -45,6 +43,8 @@ namespace DeepDungeonTracker
             }
 
             public bool Lock { get; set; }
+
+            public bool SolidBackground { get; set; }
 
             public bool Show { get; set; }
 
@@ -75,6 +75,8 @@ namespace DeepDungeonTracker
         {
             public bool Lock { get; set; }
 
+            public bool SolidBackground { get; set; }
+
             public bool Show { get; set; }
 
             public bool ShowInBetweenFloors { get; set; }
@@ -98,6 +100,8 @@ namespace DeepDungeonTracker
         {
             public bool Lock { get; set; }
 
+            public bool SolidBackground { get; set; }
+
             public bool Show { get; set; }
 
             public bool ShowInBetweenFloors { get; set; }
@@ -115,6 +119,8 @@ namespace DeepDungeonTracker
 
         public class StatisticsTab
         {
+            public bool SolidBackground { get; set; }
+
             public float Scale { get; set; } = 1.0f;
 
             public Vector4 FloorTimeColor { get; set; } = Color.Gold;

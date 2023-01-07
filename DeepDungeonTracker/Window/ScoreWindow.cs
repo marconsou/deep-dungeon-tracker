@@ -77,7 +77,7 @@ namespace DeepDungeonTracker
             var width = 224.0f;
             var height = 84.0f + (config.ShowTitle ? 0.0f : -30.0f);
 
-            ui.DrawBackground(width, height, (!this.Configuration.General.SolidBackgroundWindow && this.IsFocused) || this.Configuration.General.SolidBackgroundWindow);
+            ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
             var x = width - 14.0f;
             var y = 0.0f;
