@@ -11,9 +11,12 @@ using System.Text.RegularExpressions;
 
 namespace DeepDungeonTracker
 {
-    public unsafe static class NodeUtility
+    public unsafe static partial class NodeUtility
     {
         public record Node(float X, float Y, ushort Width, ushort Height, ushort PartId, uint PartCount);
+
+        [GeneratedRegex("\\d+")]
+        private static partial Regex NumberRegex();
 
         private static AtkTextNode* CreateTextNode(AtkTextNode* sourceNode, uint nodeId)
         {
@@ -141,7 +144,7 @@ namespace DeepDungeonTracker
                         var text = textNode->NodeText.ToString();
                         if (text != null)
                         {
-                            if (int.TryParse(Regex.Match(text, @"\d+").Value, out var aetherpool))
+                            if (int.TryParse(NodeUtility.NumberRegex().Match(text).Value, out var aetherpool))
                                 return aetherpool;
                         }
                     }
@@ -243,7 +246,7 @@ namespace DeepDungeonTracker
                 if (textNode == null)
                     continue;
 
-                if (int.TryParse(Regex.Match(textNode->NodeText.ToString(), @"\d+").Value, out var number))
+                if (int.TryParse(NodeUtility.NumberRegex().Match(textNode->NodeText.ToString()).Value, out var number))
                     return (true, number);
                 break;
             }
