@@ -160,7 +160,7 @@ namespace DeepDungeonTracker
             this.CheckBox(config.ShowTitle, x => config.ShowTitle = x, "Show title");
             this.Combo(config.ScoreCalculationType, x => config.ScoreCalculationType = x, "Score Calculation");
             WindowEx.Tooltip(
-                "Current Floor: Include all floor completion-related score up to the current floor and current character level.\nYou can see your score progressively increasing each time you go to the next floor and level up.\n\n"+
+                "Current Floor: Include all floor completion-related score up to the current floor and current character level.\nYou can see your score progressively increasing each time you go to the next floor and level up.\n\n" +
                 "Score Window Floor: Include all floor completion-related score up to the floor where it shows the next score window.\n\n" +
                 "Last Floor: Include all floor completion-related score.");
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
