@@ -32,7 +32,7 @@ namespace DeepDungeonTracker
 
             var scoreDifference = this.Data.Common.TotalScore - this.PreviousScore;
             if (config.IsFlyTextScoreVisible && this.Data.Common.EnableFlyTextScore && scoreDifference != 0)
-                Service.FlyTextGui.AddFlyText(FlyTextKind.Named, 0, 0, 0, $"{(scoreDifference > 0 ? "+" : string.Empty)}{scoreDifference.ToString("N0", CultureInfo.InvariantCulture)}pts", string.Empty, ImGui.ColorConvertFloat4ToU32(scoreDifference > 0 ? config.FlyTextScoreColor : Color.Red), 0);
+                Service.FlyTextGui.AddFlyText(FlyTextKind.Named, 0, 0, 0, $"{(scoreDifference > 0 ? "+" : string.Empty)}{scoreDifference.ToString("N0", CultureInfo.InvariantCulture)}pts", string.Empty, ImGui.ColorConvertFloat4ToU32(scoreDifference > 0 ? config.FlyTextScoreColor : Color.Red), 0, 0);
 
             this.PreviousScore = this.Data.Common.TotalScore;
         }
