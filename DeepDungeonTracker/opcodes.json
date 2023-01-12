@@ -1,0 +1,29 @@
+[
+  {
+    "region": "Global",
+    "lists": {
+      "ServerZoneIpcType": [
+        {
+          "name": "ActorControl",
+          "opcode": 305
+        },
+        {
+          "name": "ActorControlSelf",
+          "opcode": 424
+        },
+        {
+          "name": "Effect",
+          "opcode": 486
+        },
+        {
+          "name": "EventStart",
+          "opcode": 905
+        },
+        {
+          "name": "SystemLogMessage",
+          "opcode": 594
+        }
+      ]
+    }
+  }
+]
