@@ -104,6 +104,19 @@ namespace DeepDungeonTracker
 
         private Vector4 SummarySelectionColor(bool condition = true) => (this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary && this.Data.Statistics.SaveSlotSummary != null && condition) ? this.Configuration.Statistics.SummarySelectionColor : Color.White;
 
+        private static (float, float) AdjustSummaryFloorSetPosition(float x, float y, float top, float lineHeight, int firstFloorNumber)
+        {
+            if (firstFloorNumber == 91)
+            {
+                x = 350.0f;
+                y = top;
+            }
+            else
+                y += lineHeight * 2.525f;
+
+            return (x, y);
+        }
+
         private void DrawMiscellaneousIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, bool includeMapTotal)
         {
             foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Miscellaneous>>())
@@ -358,13 +371,7 @@ namespace DeepDungeonTracker
                     this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 35.0f, $"+{kills.ToString(CultureInfo.InvariantCulture)}", Color.Yellow, Alignment.Left);
                 this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 21.0f + (kills == totalKills || kills == 0 ? 8.0f : 0.0f), totalKills.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Left);
 
-                if (firstFloorNumber == 91)
-                {
-                    x = 350.0f;
-                    y = top;
-                }
-                else
-                    y += lineHeight * 2.525f;
+                (x, y) = StatisticsWindow.AdjustSummaryFloorSetPosition(x, y, top, lineHeight, firstFloorNumber);
             }
 
             x = left;
@@ -394,13 +401,7 @@ namespace DeepDungeonTracker
 
                 buttonIndex++;
 
-                if (firstFloorNumber == 91)
-                {
-                    x = 350.0f;
-                    y = top;
-                }
-                else
-                    y += lineHeight * 2.525f;
+                (x, y) = StatisticsWindow.AdjustSummaryFloorSetPosition(x, y, top, lineHeight, firstFloorNumber);
             }
 
             x = floorSets.Count() > 10 ? 700.0f : 350.0f;
@@ -442,13 +443,7 @@ namespace DeepDungeonTracker
                 var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
                 this.Data.UI.DrawMiscellaneous(x - 10.0f, y + 10.0f, Miscellaneous.Enemy);
 
-                if (firstFloorNumber == 91)
-                {
-                    x = 350.0f;
-                    y = top;
-                }
-                else
-                    y += lineHeight * 2.525f;
+                (x, y) = StatisticsWindow.AdjustSummaryFloorSetPosition(x, y, top, lineHeight, firstFloorNumber);
             }
         }
 
