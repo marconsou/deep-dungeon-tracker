@@ -33,7 +33,7 @@ namespace DeepDungeonTracker
             ushort eventStart = 0;
             ushort systemLogMessage = 0;
 
-            var uri = "https://raw.githubusercontent.com/marconsou/deep-dungeon-tracker/master/DeepDungeonTracker/opcodes.json";
+            var uri = "https://raw.githubusercontent.com/marconsou/deep-dungeon-tracker/master/DeepDungeonTracker/OpCodes.json";
             var result = await NetworkStream.Load<ImmutableList<Root>>(new(uri)).ConfigureAwait(true);
             var opCodes = result?.Find(x => x.Region == "Global")?.Lists.ServerZoneIpcType;
 
