@@ -36,6 +36,8 @@ namespace DeepDungeonTracker
 
         public TextureWrap CloseButton { get; }
 
+        public TextureWrap GenericButtonOver { get; }
+
         public TextureWrap DivisorHorizontal { get; }
 
         public TextureWrap DivisorVertical { get; }
@@ -59,6 +61,7 @@ namespace DeepDungeonTracker
             this.ArrowButton = Service.PluginInterface.UiBuilder.LoadImage(Resources.ArrowButton);
             this.DoubleArrowButton = Service.PluginInterface.UiBuilder.LoadImage(Resources.DoubleArrowButton);
             this.CloseButton = Service.PluginInterface.UiBuilder.LoadImage(Resources.CloseButton);
+            this.GenericButtonOver = Service.PluginInterface.UiBuilder.LoadImage(Resources.GenericButtonOver);
             this.DivisorHorizontal = Service.PluginInterface.UiBuilder.LoadImage(Resources.DivisorHorizontal);
             this.DivisorVertical = Service.PluginInterface.UiBuilder.LoadImage(Resources.DivisorVertical);
             this.Background = Service.PluginInterface.UiBuilder.LoadImage(Resources.Background);
@@ -81,6 +84,7 @@ namespace DeepDungeonTracker
             this.ArrowButton.Dispose();
             this.DoubleArrowButton.Dispose();
             this.CloseButton.Dispose();
+            this.GenericButtonOver.Dispose();
             this.DivisorHorizontal.Dispose();
             this.DivisorVertical.Dispose();
             this.Background.Dispose();

@@ -72,6 +72,8 @@ namespace DeepDungeonTracker
 
         public void DrawCloseButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.CloseButton, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1);
 
+        public void DrawGenericButtonOver(float x, float y, float width, float height) => this.Render.DrawGenericButtonOver(this.ResourceUI.GenericButtonOver, x, y, width, height);
+
         public void DrawDivisorHorizontal(float x, float y, float width) => this.Render.DrawDivisorHorizontal(this.ResourceUI.DivisorHorizontal, x, y, width);
 
         public void DrawDivisorVertical(float x, float y, float height) => this.Render.DrawDivisorVertical(this.ResourceUI.DivisorVertical, x, y, height);

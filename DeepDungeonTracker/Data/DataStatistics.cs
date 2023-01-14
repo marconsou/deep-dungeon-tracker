@@ -12,7 +12,13 @@ namespace DeepDungeonTracker
 
         public FloorSetStatistics FloorSetStatistics { get; set; } = FloorSetStatistics.Summary;
 
-        private SaveSlot? SaveSlot { get; set; }
+        public string FloorSetTextSummary { get; private set; } = string.Empty;
+
+        public SaveSlot? SaveSlot { get; private set; }
+
+        public SaveSlot? SaveSlotSummary { get; private set; }
+
+        public Score? ScoreSummary { get; private set; }
 
         public FloorSet? FloorSet { get; private set; }
 
@@ -97,9 +103,33 @@ namespace DeepDungeonTracker
             this.DataUpdate();
         }
 
+        private void ResetSummarySelection()
+        {
+            this.FloorSetTextSummary = string.Empty;
+            this.SaveSlotSummary = null;
+            this.ScoreSummary = null;
+        }
+
+        public void FloorSetStatisticsSummarySelection(int maxFloor, string floorSetTextSummary, ScoreCalculationType scoreCalculationType)
+        {
+            if (this.FloorSetTextSummary != floorSetTextSummary)
+            {
+                this.FloorSetTextSummary = floorSetTextSummary;
+                this.SaveSlotSummary = new();
+                SaveSlot.Copy(this.SaveSlot, this.SaveSlotSummary, maxFloor);
+                this.ScoreSummary = ScoreCreator.Create(this.SaveSlotSummary, true);
+                this.ScoreSummary?.TotalScoreCalculation(ServiceUtility.IsSolo, scoreCalculationType);
+            }
+            else
+                this.ResetSummarySelection();
+
+            this.DataUpdate();
+        }
+
         public void Load(SaveSlot? saveSlot, Action openStatisticsWindow)
         {
             this.SaveSlot = saveSlot;
+            this.ResetSummarySelection();
             this.DataUpdate();
             openStatisticsWindow?.Invoke();
         }
@@ -143,13 +173,15 @@ namespace DeepDungeonTracker
             }
             else
             {
-                this.FloorSets = this.SaveSlot?.FloorSets;
+                var saveSlot = this.SaveSlotSummary ?? this.SaveSlot;
+
+                this.FloorSets = saveSlot?.FloorSets;
 
                 var floors = this.FloorSets?.SelectMany(x => x.Floors);
                 var lastFloors = floors?.Where(x => x.IsLastFloor());
 
                 this.MiscellaneousLastFloor = DataStatistics.GetMiscellaneousByFloors(lastFloors);
-                this.MiscellaneousTotal = DataStatistics.GetMiscellaneousBySaveSlot(this.SaveSlot);
+                this.MiscellaneousTotal = DataStatistics.GetMiscellaneousBySaveSlot(saveSlot);
 
                 this.CoffersTotal = floors?.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count()));
                 this.EnchantmentsTotal = floors?.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
@@ -159,10 +191,10 @@ namespace DeepDungeonTracker
                 this.PomandersTotal = floors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()));
 
                 this.TimeLastFloor = new(lastFloors?.Sum(x => x.Time.Ticks) ?? default);
-                this.TimeTotal = this.SaveSlot?.Time() ?? default;
+                this.TimeTotal = saveSlot?.Time() ?? default;
 
                 this.ScoreLastFloor = lastFloors?.Sum(x => x.Score) ?? 0;
-                this.ScoreTotal = this.SaveSlot?.Score() ?? 0;
+                this.ScoreTotal = saveSlot?.Score() ?? 0;
             }
         }
 

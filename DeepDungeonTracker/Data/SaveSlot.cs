@@ -115,5 +115,20 @@ namespace DeepDungeonTracker
             this.AetherpoolArm = Math.Max(this.AetherpoolArm, arm);
             this.AetherpoolArmor = Math.Max(this.AetherpoolArmor, armor);
         }
+
+        static public void Copy(SaveSlot? source, SaveSlot? dest, int maxFloor)
+        {
+            if (source == null || dest == null)
+                return;
+
+            dest.DeepDungeon = source.DeepDungeon;
+            dest.ContentId = source.ContentId;
+            dest.ClassJobId = source.ClassJobId;
+            dest.CurrentLevel = source.CurrentLevel;
+            dest.AetherpoolArm = source.AetherpoolArm;
+            dest.AetherpoolArmor = source.AetherpoolArmor;
+            dest.KOs = source.KOs;
+            dest.FloorSets = new(source.FloorSets.ToList().Where(x => x.FirstFloor()?.Number <= maxFloor).ToList());
+        }
     }
 }

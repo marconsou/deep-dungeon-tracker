@@ -126,6 +126,8 @@ namespace DeepDungeonTracker
             public Vector4 FloorTimeColor { get; set; } = Color.Gold;
 
             public Vector4 ScoreColor { get; set; } = Color.Green;
+
+            public Vector4 SummarySelectionColor { get; set; } = Color.Cyan;
         }
 
         public class OpCodeValues

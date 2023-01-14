@@ -179,6 +179,8 @@ namespace DeepDungeonTracker
             this.ColorEdit4(config.FloorTimeColor, x => config.FloorTimeColor = x, "Floor Time");
             ImGui.SameLine();
             this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
+            ImGui.SameLine();
+            this.ColorEdit4(config.SummarySelectionColor, x => config.SummarySelectionColor = x, "Summary Selection");
             ImGui.NewLine();
 
             var saveSlotSelection = this.Data.Common.SaveSlotSelection.GetData();

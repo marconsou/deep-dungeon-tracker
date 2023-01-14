@@ -173,6 +173,16 @@ namespace DeepDungeonTracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] GenericButtonOver {
+            get {
+                object obj = ResourceManager.GetObject("GenericButtonOver", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Job {
             get {
                 object obj = ResourceManager.GetObject("Job", resourceCulture);

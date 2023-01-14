@@ -5,20 +5,29 @@ namespace DeepDungeonTracker
 {
     public abstract class Button
     {
+        protected bool IsMouseOver { get; private set; }
+
         private bool PreviousIsMouseOver { get; set; }
 
-        protected bool IsMouseOver { get; private set; }
+        public bool Show { get; set; } = true;
 
         public Vector2 Position { get; set; }
 
-        private Vector2 Size { get; }
+        public Vector2 Size { get; set; }
 
         protected Button(Vector2 size) => this.Size = size;
 
-        public bool OnMouseLeftClick() => this.IsMouseOver && ImGui.IsMouseClicked(ImGuiMouseButton.Left);
+        public bool OnMouseLeftClick() => this.Show && this.IsMouseOver && ImGui.IsMouseClicked(ImGuiMouseButton.Left);
 
         public virtual void Draw(DataUI ui, DataAudio audio)
         {
+            if (!this.Show)
+            {
+                this.IsMouseOver = false;
+                this.PreviousIsMouseOver = false;
+                return;
+            }
+
             var scale = ui?.Scale ?? 1.0f;
             var mousePos = ImGui.GetMousePos() - ImGui.GetWindowPos();
             var pos = this.Position * scale;

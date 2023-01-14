@@ -24,6 +24,8 @@ namespace DeepDungeonTracker
 
         private Button CloseButton { get; } = new CloseButton();
 
+        private IList<Button> FloorSetSummaryButtons { get; } = new List<Button>();
+
         private IDictionary<uint, (uint, string)> ClassJobIds { get; }
 
         public StatisticsWindow(string id, Configuration configuration, Data data) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
@@ -51,6 +53,9 @@ namespace DeepDungeonTracker
                 {39, (20, "RPR")},
                 {40, (21, "SGE")}
             };
+
+            for (int i = 0; i < 20; i++)
+                this.FloorSetSummaryButtons.Add(new GenericButton());
         }
 
         public void Dispose() { }
@@ -96,6 +101,8 @@ namespace DeepDungeonTracker
         public override void OnOpen() => this.Data.Audio.PlaySound(SoundIndex.OnOpenMenu);
 
         public override void OnClose() => this.Data.Audio.PlaySound(SoundIndex.OnCloseMenu);
+
+        private Vector4 SummarySelectionColor(bool condition = true) => (this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary && this.Data.Statistics.SaveSlotSummary != null && condition) ? this.Configuration.Statistics.SummarySelectionColor : Color.White;
 
         private void DrawMiscellaneousIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, bool includeMapTotal)
         {
@@ -149,7 +156,7 @@ namespace DeepDungeonTracker
                 {
                     var total = item.Total;
                     if (total > 1)
-                        this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Right);
+                        this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
                 }
                 x += iconSize;
             }
@@ -172,7 +179,7 @@ namespace DeepDungeonTracker
             {
                 var total = item.Total;
                 if (total > 1)
-                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Right);
+                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
                 x += iconSize;
             }
         }
@@ -194,7 +201,7 @@ namespace DeepDungeonTracker
             {
                 var total = item.Total;
                 if (total > 1)
-                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Right);
+                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
                 x += iconSize;
             }
         }
@@ -215,7 +222,7 @@ namespace DeepDungeonTracker
             {
                 var total = item.Total;
                 if (total > 1)
-                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Right);
+                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
                 x += iconSize;
             }
         }
@@ -237,7 +244,7 @@ namespace DeepDungeonTracker
             {
                 var total = item.Total;
                 if (total > 1)
-                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Right);
+                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
                 x += iconSize;
             }
         }
@@ -283,7 +290,7 @@ namespace DeepDungeonTracker
                 x += ui!.GetAxisLatinProTextSize(timeBonusMissScoreText).X;
             }
 
-            ui.DrawTextAxisLatinPro(x, y, floorText, Color.White);
+            ui.DrawTextAxisLatinPro(x, y, floorText, this.SummarySelectionColor(this.Data.Statistics.FloorSetTextSummary == floorText));
 
             var space = "   ";
             floorText += space;
@@ -328,7 +335,7 @@ namespace DeepDungeonTracker
         private void DrawSummaryPageTexts(float left, float top, float iconSize)
         {
             var statistics = this.Data.Statistics;
-            var floorSets = statistics.FloorSets;
+            var floorSets = statistics.SaveSlot?.FloorSets ?? Enumerable.Empty<FloorSet>();
             var ui = this.Data.UI;
 
             var x = left;
@@ -338,7 +345,7 @@ namespace DeepDungeonTracker
             var totalScore = 0;
             var totalKills = 0;
             var lineHeight = 28.0f;
-            foreach (var item in floorSets ?? Enumerable.Empty<FloorSet>())
+            foreach (var item in floorSets)
             {
                 var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
                 totalTime += item.Time().Ticks;
@@ -360,34 +367,72 @@ namespace DeepDungeonTracker
                     y += lineHeight * 2.525f;
             }
 
-            x = floorSets?.Count() > 10 ? 700.0f : 350.0f;
+            x = left;
             y = top;
-            var score = this.Data.Common.Score;
+
+            foreach (var item in this.FloorSetSummaryButtons)
+                item.Show = false;
+
+            var buttonIndex = 0;
+            foreach (var item in floorSets)
+            {
+                var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
+                var floorSetText = $"{firstFloorNumber:D3}-{firstFloorNumber + 9:D3}:";
+
+                var button = this.FloorSetSummaryButtons[buttonIndex];
+
+                button.Show = true;
+                button.Position = new Vector2(x, y);
+                button.Size = new(245.0f, 45.0f);
+                button.Draw(ui, this.Data.Audio);
+
+                if (button.OnMouseLeftClick())
+                {
+                    this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                    statistics.FloorSetStatisticsSummarySelection(firstFloorNumber, floorSetText, this.Configuration.Score.ScoreCalculationType);
+                }
+
+                buttonIndex++;
+
+                if (firstFloorNumber == 91)
+                {
+                    x = 350.0f;
+                    y = top;
+                }
+                else
+                    y += lineHeight * 2.525f;
+            }
+
+            x = floorSets.Count() > 10 ? 700.0f : 350.0f;
+            y = top;
+            var score = statistics.ScoreSummary ?? this.Data.Common.Score;
             if (score != null)
             {
-                ui.DrawTextAxisLatinPro(x, y, $"{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")} ({score.BaseScore})", Color.White); y += lineHeight * 2.0f;
-                ui.DrawTextAxisLatinPro(x, y, $"Level: {score.CurrentLevel} (+{score.AetherpoolArm}/+{score.AetherpoolArmor})", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Floor: {score.StartingFloorNumber} to {score.CurrentFloorNumber} ({score.TotalReachedFloors})", Color.White); y += lineHeight * 2.0f;
-                ui.DrawTextAxisLatinPro(x, y, $"Character: {score.CharacterScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Floors: {score.FloorScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Maps: {score.MapScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Coffers: {score.CofferScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"NPCs: {score.NPCScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Mimicgoras: {score.MimicgoraScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Enchantments: {score.EnchantmentScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Traps: {score.TrapScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Time Bonuses: {score.TimeBonusScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Deaths: {score.DeathScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight * 2.0f;
-                ui.DrawTextAxisLatinPro(x, y, $"Non-Kills: {score.NonKillScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"Kills: {score.KillScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White); y += lineHeight * 2.0f;
-                ui.DrawTextAxisLatinPro(x, y, $"Total: {score.TotalScore.ToString("N0", CultureInfo.InvariantCulture)}", Color.White);
+                var color = this.SummarySelectionColor();
+
+                ui.DrawTextAxisLatinPro(x, y, $"{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")} ({score.BaseScore})", color); y += lineHeight * 2.0f;
+                ui.DrawTextAxisLatinPro(x, y, $"Level: {score.CurrentLevel} (+{score.AetherpoolArm}/+{score.AetherpoolArmor})", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Floor: {score.StartingFloorNumber} to {score.CurrentFloorNumber} ({score.TotalReachedFloors})", color); y += lineHeight * 2.0f;
+                ui.DrawTextAxisLatinPro(x, y, $"Character: {score.CharacterScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Floors: {score.FloorScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Maps: {score.MapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Coffers: {score.CofferScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"NPCs: {score.NPCScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Mimicgoras: {score.MimicgoraScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Enchantments: {score.EnchantmentScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Traps: {score.TrapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Time Bonuses: {score.TimeBonusScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Deaths: {score.DeathScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
+                ui.DrawTextAxisLatinPro(x, y, $"Non-Kills: {score.NonKillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+                ui.DrawTextAxisLatinPro(x, y, $"Kills: {score.KillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
+                ui.DrawTextAxisLatinPro(x, y, $"Total: {score.TotalScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
             }
         }
 
         private void DrawFloorSetKillIcons(float top, float x)
         {
             var statistics = this.Data.Statistics;
-            var floorSets = statistics.FloorSets;
+            var floorSets = statistics.SaveSlot?.FloorSets;
 
             var lineHeight = 28.0f;
             var y = top;
