@@ -126,7 +126,7 @@ namespace DeepDungeonTracker
             accurateTargetHPPercentageNode->TextColor = targetHPPercentageNode->TextColor;
             accurateTargetHPPercentageNode->EdgeColor = targetHPPercentageNode->EdgeColor;
             accurateTargetHPPercentageNode->SetText($"{(target != null ? targetHPPercentage : string.Empty):F}");
-            accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(targetHPPercentage != 100.0f && isNodeVisible && character != null);
+            accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(targetHPPercentage != 100.0f && accurateTargetHPPercentageNode->NodeText.ToString() != "100.00" && isNodeVisible && character != null);
             targetHPPercentageNode->AtkResNode.ToggleVisibility((!accurateTargetHPPercentageNode->AtkResNode.IsVisible || !isNodeVisible) && character != null);
         }
 
