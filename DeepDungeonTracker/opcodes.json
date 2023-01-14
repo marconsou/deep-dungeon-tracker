@@ -5,15 +5,15 @@
       "ServerZoneIpcType": [
         {
           "name": "ActorControl",
-          "opcode": 305
+          "opcode": 377
         },
         {
           "name": "ActorControlSelf",
-          "opcode": 424
+          "opcode": 623
         },
         {
           "name": "Effect",
-          "opcode": 486
+          "opcode": 457
         },
         {
           "name": "EventStart",
@@ -21,7 +21,7 @@
         },
         {
           "name": "SystemLogMessage",
-          "opcode": 594
+          "opcode": 154
         }
       ]
     }
