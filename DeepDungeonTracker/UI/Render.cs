@@ -154,7 +154,10 @@ namespace DeepDungeonTracker
         public void DrawGenericButtonOver(TextureWrap textureWrap, float x, float y, float width, float height)
         {
             if (textureWrap != null)
-                this.DrawObject(textureWrap, x, y, width, height, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, Color.Yellow);
+            {
+                var color = Color.Yellow;
+                this.DrawObject(textureWrap, x, y, width, height, 0.0f, 0.0f, 0.9f, 1.0f, 1.0f, new(color.X, color.Y, color.Z, 0.5f));
+            }
         }
 
         public void DrawDivisorHorizontal(TextureWrap textureWrap, float x, float y, float width)

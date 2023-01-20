@@ -390,7 +390,7 @@ namespace DeepDungeonTracker
 
                 button.Show = true;
                 button.Position = new Vector2(x, y);
-                button.Size = new(245.0f, 45.0f);
+                button.Size = new(240.0f, 48.0f);
                 button.Draw(ui, this.Data.Audio);
 
                 if (button.OnMouseLeftClick())

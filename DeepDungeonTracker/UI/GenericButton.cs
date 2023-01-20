@@ -8,7 +8,10 @@
         {
             base.Draw(ui, audio);
             if (this.IsMouseOver)
-                ui.DrawGenericButtonOver(this.Position.X - 10.0f, this.Position.Y, this.Size.X, this.Size.Y + 5.0f);
+            {
+                var padding = 5.0f;
+                ui.DrawGenericButtonOver(this.Position.X - padding, this.Position.Y - padding, this.Size.X + padding, this.Size.Y + padding);
+            }
         }
     }
 }
