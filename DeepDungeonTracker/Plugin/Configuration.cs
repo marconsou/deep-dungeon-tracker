@@ -52,6 +52,10 @@ namespace DeepDungeonTracker
 
             public bool ShowFloorEffectPomanders { get; set; } = true;
 
+            public FontType FontType { get; set; }
+
+            public bool FontEnlarge { get; set; }
+
             public float Scale { get; set; } = 1.0f;
 
             public bool IsFloorNumberVisible { get; set; } = true;
@@ -108,11 +112,15 @@ namespace DeepDungeonTracker
 
             public bool ShowTitle { get; set; } = true;
 
+            public FontType FontType { get; set; }
+
             public ScoreCalculationType ScoreCalculationType { get; set; }
 
             public float Scale { get; set; } = 1.0f;
 
             public bool IsFlyTextScoreVisible { get; set; } = true;
+
+            public Vector4 TotalScoreColor { get; set; } = Color.White;
 
             public Vector4 FlyTextScoreColor { get; set; } = new(0.0f, 0.666f, 0.0f, 1.0f);
         }

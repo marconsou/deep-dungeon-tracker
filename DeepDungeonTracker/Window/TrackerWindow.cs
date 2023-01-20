@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
+using System.Numerics;
 
 namespace DeepDungeonTracker
 {
@@ -161,6 +163,28 @@ namespace DeepDungeonTracker
 
         void DrawTextLine(float y, float columnX, float offsetX, string label, int floorValue, int setValue, int totalValue, bool floorValueAsIcon = false, bool setValueAsIcon = false)
         {
+            static void Draw(Configuration.TrackerTab config, DataUI ui, float x, float y, int number, Vector4 color)
+            {
+                var textScale = config.FontEnlarge ? 1.25f : 1.0f;
+
+                if (config.FontType == FontType.Default)
+                    ui.DrawNumber(x, y, number, false, color, Alignment.Center);
+                else if (config.FontType == FontType.AxisLatinPro)
+                {
+                    var scale = ui.Scale;
+                    ui.Scale = scale * textScale;
+                    ui.DrawTextAxisLatinPro(x / textScale, (y - 2.0f) / textScale, number.ToString(CultureInfo.InvariantCulture), color, Alignment.Center);
+                    ui.Scale = scale;
+                }
+                else if (config.FontType == FontType.Miedinger)
+                {
+                    var scale = ui.Scale;
+                    ui.Scale = scale * textScale;
+                    ui.DrawTextMiedingerMediumW00(x / textScale, y / textScale, number.ToString(CultureInfo.InvariantCulture), color, Alignment.Center);
+                    ui.Scale = scale;
+                }
+            }
+
             var config = this.Configuration.Tracker;
             var ui = this.Data.UI;
             var numberOffsetY = 7.0f;
@@ -174,7 +198,7 @@ namespace DeepDungeonTracker
                 if (floorValue >= 0)
                 {
                     if (!floorValueAsIcon)
-                        ui.DrawNumber(valueX, valueY + numberOffsetY, floorValue, false, config.FloorNumberColor, Alignment.Center);
+                        Draw(config, ui, valueX, valueY + numberOffsetY, floorValue, config.FloorNumberColor);
                     else
                         ui.DrawCheckMark(valueX, valueY + iconOffsetY, floorValue == 1);
                 }
@@ -187,7 +211,7 @@ namespace DeepDungeonTracker
                 if (setValue >= 0)
                 {
                     if (!setValueAsIcon)
-                        ui.DrawNumber(valueX, valueY + numberOffsetY, setValue, false, config.SetNumberColor, Alignment.Center);
+                        Draw(config, ui, valueX, valueY + numberOffsetY, setValue, config.SetNumberColor);
                     else
                         ui.DrawCheckMark(valueX, valueY + iconOffsetY, setValue == 1);
                 }
@@ -198,7 +222,7 @@ namespace DeepDungeonTracker
                 var valueX = x;
                 var valueY = y;
                 if (totalValue >= 0)
-                    ui.DrawNumber(valueX, valueY + numberOffsetY, totalValue, false, config.TotalNumberColor, Alignment.Center);
+                    Draw(config, ui, valueX, valueY + numberOffsetY, totalValue, config.TotalNumberColor);
             }
         }
     }

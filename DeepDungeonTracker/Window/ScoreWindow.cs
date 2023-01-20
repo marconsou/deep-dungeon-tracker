@@ -2,6 +2,7 @@
 using ImGuiNET;
 using System;
 using System.Globalization;
+using System.Numerics;
 
 namespace DeepDungeonTracker
 {
@@ -74,6 +75,22 @@ namespace DeepDungeonTracker
             var config = this.Configuration.Score;
             var ui = this.Data.UI;
             ui.Scale = config.Scale;
+            var textScale = 1.50f;
+
+            var size = Vector2.Zero;
+            if (config.FontType == FontType.Default)
+                size = this.DrawDefault(config, ui);
+            else if (config.FontType == FontType.AxisLatinPro)
+                size = this.DrawAxisLatinPro(config, ui, textScale);
+            else if (config.FontType == FontType.Miedinger)
+                size = this.DrawMiedinger(config, ui, textScale);
+
+            this.Size = new(size.X * ui.Scale, size.Y * ui.Scale);
+        }
+
+        private Vector2 DrawDefault(Configuration.ScoreTab config, DataUI ui)
+        {
+            ui.Scale = config.Scale;
             var width = 224.0f;
             var height = 84.0f + (config.ShowTitle ? 0.0f : -30.0f);
 
@@ -95,8 +112,73 @@ namespace DeepDungeonTracker
             else
                 y = 40.0f;
 
-            ui.DrawNumber(x, y, this.GradualScore, true, Color.White, Alignment.Right);
-            this.Size = new(width * ui.Scale, height * ui.Scale);
+            ui.DrawNumber(x, y, this.GradualScore, true, config.TotalScoreColor, Alignment.Right);
+
+            return new(width, height);
+        }
+
+        private Vector2 DrawAxisLatinPro(Configuration.ScoreTab config, DataUI ui, float textScale)
+        {
+            ui.Scale = config.Scale;
+            var width = 140.0f;
+            var height = 78.0f + (config.ShowTitle ? 0.0f : -30.0f);
+
+            ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
+
+            var x = width - 14.0f;
+            var y = 0.0f;
+
+            if (config.ShowTitle)
+            {
+                y += 20.0f;
+                ui.DrawTextMiedingerMediumW00(width / 2.0f, y, "Score", Color.White, Alignment.Center);
+
+                y += 14.0f;
+                ui.DrawDivisorHorizontal(14.0f, y, width - 26.0f);
+
+                y += 27.0f;
+            }
+            else
+                y = 30.0f;
+
+            var scale = ui.Scale;
+            ui.Scale = scale * textScale;
+            ui.DrawTextAxisLatinPro(x / textScale, y / textScale, this.GradualScore.ToString("N0", CultureInfo.InvariantCulture), config.TotalScoreColor, Alignment.Right);
+            ui.Scale = scale;
+
+            return new(width, height);
+        }
+
+        private Vector2 DrawMiedinger(Configuration.ScoreTab config, DataUI ui, float textScale)
+        {
+            ui.Scale = config.Scale;
+            var width = 189.0f;
+            var height = 78.0f + (config.ShowTitle ? 0.0f : -30.0f);
+
+            ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
+
+            var x = width - 14.0f;
+            var y = 0.0f;
+
+            if (config.ShowTitle)
+            {
+                y += 20.0f;
+                ui.DrawTextMiedingerMediumW00(width / 2.0f, y, "Score", Color.White, Alignment.Center);
+
+                y += 14.0f;
+                ui.DrawDivisorHorizontal(14.0f, y, width - 26.0f);
+
+                y += 27.0f;
+            }
+            else
+                y = 30.0f;
+
+            var scale = ui.Scale;
+            ui.Scale = scale * textScale;
+            ui.DrawTextMiedingerMediumW00(x / textScale, y / textScale, this.GradualScore.ToString("N0", CultureInfo.InvariantCulture), config.TotalScoreColor, Alignment.Right);
+            ui.Scale = scale;
+
+            return new(width, height);
         }
     }
 }

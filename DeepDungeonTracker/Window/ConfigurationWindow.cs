@@ -84,6 +84,12 @@ namespace DeepDungeonTracker
             this.CheckBox(config.ShowInBetweenFloors, x => config.ShowInBetweenFloors = x, "Show in between floors");
             this.CheckBox(config.ShowFloorEffectPomanders, x => config.ShowFloorEffectPomanders = x, "Show floor effect pomanders");
             WindowEx.Tooltip("Show pomander icons (at the top left of the window) representing their effect on the current floor.");
+            this.Combo(config.FontType, x => config.FontType = x, "Font");
+            if (config.FontType != FontType.Default)
+            {
+                ImGui.SameLine();
+                this.CheckBox(config.FontEnlarge, x => config.FontEnlarge = x, "Enlarge");
+            }
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.CheckBox(config.IsFloorNumberVisible, x => config.IsFloorNumberVisible = x, "##IsFloorNumberVisible");
             ImGui.SameLine();
@@ -158,6 +164,7 @@ namespace DeepDungeonTracker
             this.CheckBox(config.ShowInBetweenFloors, x => config.ShowInBetweenFloors = x, "Show in between floors");
             ImGui.SameLine();
             this.CheckBox(config.ShowTitle, x => config.ShowTitle = x, "Show title");
+            this.Combo(config.FontType, x => config.FontType = x, "Font");
             this.Combo(config.ScoreCalculationType, x => config.ScoreCalculationType = x, "Score Calculation");
             WindowEx.Tooltip(
                 "Current Floor: Include all floor completion-related score up to the current floor and current character level.\nYou can see your score progressively increasing each time you go to the next floor and level up.\n\n" +
@@ -166,6 +173,8 @@ namespace DeepDungeonTracker
             this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
             this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
             WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");
+            ImGui.SameLine();
+            this.ColorEdit4(config.TotalScoreColor, x => config.TotalScoreColor = x, "Total Score");
             ImGui.SameLine();
             this.ColorEdit4(config.FlyTextScoreColor, x => config.FlyTextScoreColor = x, "Fly Text Score");
         }
