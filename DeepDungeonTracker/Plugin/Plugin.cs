@@ -98,10 +98,15 @@ namespace DeepDungeonTracker
 
         private void OnLoadCommand(string command, string args)
         {
-            if (!this.Data.IsInsideDeepDungeon)
-                this.Data.Common.LoadDeepDungeonData(false, true);
+            if (!this.IsStatisticsWindowOpen())
+            {
+                if (!this.Data.IsInsideDeepDungeon)
+                    this.Data.Common.LoadDeepDungeonData(false, true);
 
-            this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
+                this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
+            }
+            else
+                this.CloseStatisticsWindow();
         }
 
         private void Draw() => this.WindowSystem.Draw();
@@ -128,11 +133,20 @@ namespace DeepDungeonTracker
                 this.Data.NetworkMessage(dataPtr, opCode, targetActorId, this.Configuration);
         }
 
+        public bool IsStatisticsWindowOpen() => this.WindowSystem.Windows.FirstOrDefault(x => x is StatisticsWindow)?.IsOpen ?? false;
+
         public void OpenStatisticsWindow()
         {
             var window = this.WindowSystem.Windows.FirstOrDefault(x => x is StatisticsWindow);
             if (window != null)
                 window.IsOpen = true;
+        }
+
+        public void CloseStatisticsWindow()
+        {
+            var window = this.WindowSystem.Windows.FirstOrDefault(x => x is StatisticsWindow);
+            if (window != null)
+                window.IsOpen = false;
         }
     }
 }

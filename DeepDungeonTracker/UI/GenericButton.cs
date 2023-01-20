@@ -10,7 +10,7 @@
             if (this.IsMouseOver)
             {
                 var padding = 5.0f;
-                ui.DrawGenericButtonOver(this.Position.X - padding, this.Position.Y - padding, this.Size.X + padding, this.Size.Y + padding);
+                ui.DrawGenericButtonOver(this.Position.X - padding, this.Position.Y - padding, this.Size.X + padding * 2.0f, this.Size.Y + padding * 2.0f);
             }
         }
     }
