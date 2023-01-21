@@ -174,9 +174,9 @@ namespace DeepDungeonTracker
             this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
             WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");
             ImGui.SameLine();
-            this.ColorEdit4(config.TotalScoreColor, x => config.TotalScoreColor = x, "Total Score");
-            ImGui.SameLine();
             this.ColorEdit4(config.FlyTextScoreColor, x => config.FlyTextScoreColor = x, "Fly Text Score");
+            ImGui.SameLine();
+            this.ColorEdit4(config.TotalScoreColor, x => config.TotalScoreColor = x, "Total Score");
         }
 
         private void Statistics()

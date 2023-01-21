@@ -120,9 +120,9 @@ namespace DeepDungeonTracker
 
             public bool IsFlyTextScoreVisible { get; set; } = true;
 
-            public Vector4 TotalScoreColor { get; set; } = Color.White;
-
             public Vector4 FlyTextScoreColor { get; set; } = new(0.0f, 0.666f, 0.0f, 1.0f);
+
+            public Vector4 TotalScoreColor { get; set; } = Color.White;
         }
 
         public class StatisticsTab
