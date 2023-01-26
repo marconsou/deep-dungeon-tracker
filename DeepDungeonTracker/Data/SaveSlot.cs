@@ -86,9 +86,6 @@ namespace DeepDungeonTracker
 
         public void AddFloorSet(int floorNumber)
         {
-            if (this.CurrentFloorNumber() + 1 != floorNumber)
-                this.FloorSets.Clear();
-
             var floorSet = new FloorSet();
             this.FloorSets.Add(floorSet);
             floorSet.AddFloor(floorNumber);

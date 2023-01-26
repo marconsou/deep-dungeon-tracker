@@ -407,7 +407,12 @@ namespace DeepDungeonTracker
                     {
                         this.LoadDeepDungeonData(true);
                         if (this.CurrentSaveSlot?.ContentId != contentId)
-                            this.CurrentSaveSlot?.AddFloorSet(floorNumber);
+                        {
+                            if (this.CurrentSaveSlot?.CurrentFloorNumber() + 1 == floorNumber)
+                                this.CurrentSaveSlot?.AddFloorSet(floorNumber);
+                            else
+                                CreateSaveSlot(floorNumber);
+                        }
                         else
                             this.CurrentSaveSlot.ResetFloorSet();
                         this.CurrentSaveSlot?.ContentIdUpdate(contentId);
