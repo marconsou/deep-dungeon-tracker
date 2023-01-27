@@ -1,3 +1,2 @@
 ﻿NodeUtility.CreateTextNode.Malloc.
 Map = false clear MapData (.net 7).
-Coffer texture icon/enum reorder (will break silver/bronze coffer data).

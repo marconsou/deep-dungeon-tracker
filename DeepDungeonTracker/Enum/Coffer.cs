@@ -21,12 +21,19 @@
         PomanderOfFrailty,
         PomanderOfConcealment,
         PomanderOfPetrification,
-        InfernoMagicite,
+        DeprecatedInfernoMagicite,
+        DeprecatedCragMagicite,
+        DeprecatedVortexMagicite,
+        DeprecatedElderMagicite,
+        DeprecatedAetherpool,
+        DeprecatedPotsherd,
+        DeprecatedMedicine,
+        Potsherd = 50,
+        Medicine,
+        Aetherpool,
+        InfernoMagicite = 60,
         CragMagicite,
         VortexMagicite,
-        ElderMagicite,
-        Aetherpool,
-        Potsherd,
-        Medicine
+        ElderMagicite
     }
 }

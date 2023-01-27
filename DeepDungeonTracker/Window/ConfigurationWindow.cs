@@ -280,7 +280,7 @@ namespace DeepDungeonTracker
                 ImGui.Dummy(new(0.0f, 4.0f));
                 WindowEx.Child(() =>
                 {
-                    var deleteDialog = "Delete Dialog";
+                    var deleteDialog = "Delete Dialog##Deep Dungeon Tracker";
                     foreach (var fileName in fileNames)
                     {
                         var id = LocalStream.FormatFileName(fileName, true);
@@ -318,6 +318,102 @@ namespace DeepDungeonTracker
             }
             else
                 ImGui.TextColored(Color.Gray, "No backups!");
+
+            this.ConvertSaveUtility();
+        }
+
+        private void ConvertSaveUtility()
+        {
+            var statistics = this.Data.Statistics;
+
+            if (ImGui.CollapsingHeader("Convert Save Utility"))
+            {
+                ImGui.TextWrapped(
+                    "Any treasure you get from coffers (pomanders, magicites, potsherds, etc.) has a specific Id (Pomander of Safety = 0, Pomander of Sight = 1, etc.), " +
+                    "and due to the new pomanders coming in the new Deep Dungeon: Eureka Orthos, some of those Ids need to be shifted to new values to free up space for the new pomanders." +
+                    "\n\nThis will only affect treasures that you got from Silver Coffers (magicites and aetherpool upgrades) and Bronze Coffers (potsherds and medicines), for all save files up to this update. " +
+                    "This will not affect the score or anything else." +
+                    "\n\nSo, for old save files, the Id for Inferno Magicite is 19. When you use this utility, the new id for Inferno Magicite will be 60, and when Eureka Orthos becomes available, " +
+                    "the first newly added pomander will take the Id of 19, and so on. This utility will help convert those Ids, and it will be available until Eureka Orthos's release. " +
+                    "This utility is not needed for Eureka Orthos; it's just to fix old save file Ids." +
+                    "\n\nIf you open an old or ongoing save file to analyze some data before converting it, some coffer-related icons will be shown improperly (grayed icon)." +
+                    "\nFresh save files will not be affected by this issue." +
+                    "\nYou need to backup your file before using this utility.");
+                ImGui.Dummy(new(0.0f, 4.0f));
+                ImGui.TextColored(Color.Yellow, "TL;DR: If you see a grayed icon while analyzing some data, you need to convert your saved file.");
+
+                var fileNames = LocalStream.GetFileNamesFromDirectory(Directories.Backups).Where(x => LocalStream.IsExtension(x, ".json")).ToArray();
+                if (fileNames.Length > 0)
+                {
+                    ImGui.Dummy(new(0.0f, 4.0f));
+                    WindowEx.Child(() =>
+                    {
+                        foreach (var fileName in fileNames)
+                        {
+                            var id = LocalStream.FormatFileName(fileName, true);
+                            var formattedFileName = $"{LocalStream.FormatFileName(fileName, false)}";
+                            WindowEx.Disabled(() =>
+                            {
+                                this.Button(() =>
+                                {
+                                    var saveSlot = LocalStream.Load<SaveSlot>(Directories.Backups, id);
+
+                                    foreach (var floorSet in saveSlot?.FloorSets ?? Enumerable.Empty<FloorSet>())
+                                    {
+                                        foreach (var floor in floorSet.Floors)
+                                        {
+                                            var coffers = floor.Coffers.ToList();
+                                            floor.Coffers.Clear();
+
+                                            foreach (var coffer in coffers)
+                                            {
+                                                if (coffer == Coffer.DeprecatedInfernoMagicite)
+                                                    floor.Coffers.Add(Coffer.InfernoMagicite);
+                                                else if (coffer == Coffer.DeprecatedCragMagicite)
+                                                    floor.Coffers.Add(Coffer.CragMagicite);
+                                                else if (coffer == Coffer.DeprecatedVortexMagicite)
+                                                    floor.Coffers.Add(Coffer.VortexMagicite);
+                                                else if (coffer == Coffer.DeprecatedElderMagicite)
+                                                    floor.Coffers.Add(Coffer.ElderMagicite);
+                                                else if (coffer == Coffer.DeprecatedAetherpool)
+                                                    floor.Coffers.Add(Coffer.Aetherpool);
+                                                else if (coffer == Coffer.DeprecatedPotsherd)
+                                                    floor.Coffers.Add(Coffer.Potsherd);
+                                                else if (coffer == Coffer.DeprecatedMedicine)
+                                                    floor.Coffers.Add(Coffer.Medicine);
+                                                else
+                                                    floor.Coffers.Add(coffer);
+                                            }
+
+                                            var pomanders = floor.Pomanders.ToList();
+                                            floor.Pomanders.Clear();
+
+                                            foreach (var pomander in pomanders)
+                                            {
+                                                if (pomander == Pomander.DeprecatedInfernoMagicite)
+                                                    floor.Pomanders.Add(Pomander.InfernoMagicite);
+                                                else if (pomander == Pomander.DeprecatedCragMagicite)
+                                                    floor.Pomanders.Add(Pomander.CragMagicite);
+                                                else if (pomander == Pomander.DeprecatedVortexMagicite)
+                                                    floor.Pomanders.Add(Pomander.VortexMagicite);
+                                                else if (pomander == Pomander.DeprecatedElderMagicite)
+                                                    floor.Pomanders.Add(Pomander.ElderMagicite);
+                                                else
+                                                    floor.Pomanders.Add(pomander);
+                                            }
+                                        }
+                                    }
+
+                                    LocalStream.Save(Directories.Backups, $"{formattedFileName} (Converted).json", saveSlot).ConfigureAwait(true);
+
+                                }, formattedFileName);
+                            }, this.Data.IsInsideDeepDungeon);
+                        }
+                    }, "Convert Save Utility", 364.0f, (fileNames.Length + 1) * 27.0f);
+                }
+                else
+                    ImGui.TextColored(Color.Gray, "No backups!");
+            }
         }
 
         private void Information()

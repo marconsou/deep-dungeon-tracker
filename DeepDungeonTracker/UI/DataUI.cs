@@ -52,13 +52,13 @@ namespace DeepDungeonTracker
 
         public void DrawMiscellaneous(float x, float y, Miscellaneous miscellaneous) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.5f, (int)miscellaneous, 4, 3);
 
-        public void DrawCoffer(float x, float y, Coffer coffer) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)coffer, 6, 5);
+        public void DrawCoffer(float x, float y, Coffer coffer) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)coffer, 10, 7);
 
         public void DrawEnchantment(float x, float y, Enchantment enchantment, bool isEnchantmentSerenized) => this.Render.DrawUIElement(this.ResourceUI.Enchantment, x, y, 0.5f, (int)enchantment, 4, 4, !isEnchantmentSerenized ? Color.White : new(1.0f, 1.0f, 1.0f, 0.25f));
 
         public void DrawTrap(float x, float y, Trap trap) => this.Render.DrawUIElement(this.ResourceUI.Trap, x, y, 0.5f, (int)trap, 3, 2, Color.Red);
 
-        public void DrawPomander(float x, float y, Pomander pomander) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)pomander, 6, 5);
+        public void DrawPomander(float x, float y, Pomander pomander) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)pomander, 10, 7);
 
         public void DrawMapNormal(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapNormal, x, y, 1.0f / 8.0f, id, 4, 4);
 

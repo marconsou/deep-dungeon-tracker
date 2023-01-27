@@ -21,7 +21,11 @@
         Frailty,
         Concealment,
         Petrification,
-        InfernoMagicite,
+        DeprecatedInfernoMagicite,
+        DeprecatedCragMagicite,
+        DeprecatedVortexMagicite,
+        DeprecatedElderMagicite,
+        InfernoMagicite = 60,
         CragMagicite,
         VortexMagicite,
         ElderMagicite
