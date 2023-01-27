@@ -183,12 +183,12 @@ namespace DeepDungeonTracker
                 this.MiscellaneousLastFloor = DataStatistics.GetMiscellaneousByFloors(lastFloors);
                 this.MiscellaneousTotal = DataStatistics.GetMiscellaneousBySaveSlot(saveSlot);
 
-                this.CoffersTotal = floors?.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count()));
+                this.CoffersTotal = floors?.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(27).OrderBy(x => x.Value);
                 this.EnchantmentsTotal = floors?.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
                 this.TrapsTotal = floors?.SelectMany(x => x.Traps).GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count()));
 
                 this.PomandersLastFloor = lastFloors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9 - (this.MiscellaneousLastFloor?.Count() ?? 0));
-                this.PomandersTotal = floors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()));
+                this.PomandersTotal = floors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(27).OrderBy(x => x.Value);
 
                 this.TimeLastFloor = new(lastFloors?.Sum(x => x.Time.Ticks) ?? default);
                 this.TimeTotal = saveSlot?.Time() ?? default;
