@@ -1,6 +1,7 @@
 ﻿using Dalamud.Interface;
 using ImGuiNET;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 
@@ -13,6 +14,8 @@ namespace DeepDungeonTracker
         private Action OpenStatisticsWindow { get; }
 
         private string[] FieldNames { get; }
+
+        private string SelectedBackupFileName { get; set; } = null!;
 
         public ConfigurationWindow(string id, Configuration configuration, Data data, Action openStatisticsWindow) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
         {
@@ -239,7 +242,10 @@ namespace DeepDungeonTracker
 
                                     WindowEx.Disabled(() =>
                                     {
-                                        this.IconButton(() => { LocalStream.Copy(ServiceUtility.ConfigDirectory, Directories.Backups, fileName); }, FontAwesomeIcon.Clone, $"{fileName}Clone");
+                                        this.IconButton(() =>
+                                        {
+                                            LocalStream.Copy(ServiceUtility.ConfigDirectory, Directories.Backups, fileName, $"{LocalStream.FormatFileName(fileName, false)} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.json".Trim());
+                                        }, FontAwesomeIcon.Clone, $"{fileName}Clone");
                                         ImGui.SameLine();
                                         this.Button(() =>
                                         {
@@ -262,7 +268,6 @@ namespace DeepDungeonTracker
 
             ImGui.NewLine();
 
-
             this.IconButton(() => { LocalStream.OpenFolder(Directories.Backups); }, FontAwesomeIcon.FolderOpen, "BackupsFolderOpen");
             ImGui.SameLine();
             ImGui.Text("Backups");
@@ -275,12 +280,18 @@ namespace DeepDungeonTracker
                 ImGui.Dummy(new(0.0f, 4.0f));
                 WindowEx.Child(() =>
                 {
+                    var deleteDialog = "Delete Dialog";
                     foreach (var fileName in fileNames)
                     {
                         var id = LocalStream.FormatFileName(fileName, true);
+                        var formattedFileName = $"{LocalStream.FormatFileName(fileName, false)}";
                         WindowEx.Disabled(() =>
                         {
-                            this.IconButton(() => { LocalStream.Delete(Directories.Backups, id); }, FontAwesomeIcon.Trash, $"{id}Trash");
+                            this.IconButton(() =>
+                            {
+                                ImGui.OpenPopup(deleteDialog);
+                                this.SelectedBackupFileName = formattedFileName;
+                            }, FontAwesomeIcon.Trash, $"{id}Trash");
                             ImGui.SameLine();
                             this.Button(() =>
                             {
@@ -288,8 +299,20 @@ namespace DeepDungeonTracker
                                     this.Data.Common.LoadDeepDungeonData(false, fileName);
 
                                 statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
-                            }, $"{LocalStream.FormatFileName(fileName, false)}");
+                            }, formattedFileName);
                         }, this.Data.IsInsideDeepDungeon);
+                    }
+
+                    var visibility = true;
+                    if (ImGui.BeginPopupModal(deleteDialog, ref visibility, ImGuiWindowFlags.AlwaysAutoResize))
+                    {
+                        ImGui.Text("Are you sure you want to delete this item?");
+                        ImGui.Text($"{this.SelectedBackupFileName}");
+                        ImGui.Separator();
+                        this.Button(() => { LocalStream.Delete(Directories.Backups, $"{this.SelectedBackupFileName}.json"); ImGui.CloseCurrentPopup(); }, "Confirm");
+                        ImGui.SameLine();
+                        this.Button(() => { ImGui.CloseCurrentPopup(); }, "Cancel");
+                        ImGui.EndPopup();
                     }
                 }, "Backups", 364.0f, (fileNames.Length + 1) * 27.0f);
             }

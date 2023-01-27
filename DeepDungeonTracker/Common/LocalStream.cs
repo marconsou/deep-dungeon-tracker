@@ -40,7 +40,7 @@ namespace DeepDungeonTracker
 
         public static bool Exists(string directory, string fileName) => File.Exists(Path.Combine(directory, fileName));
 
-        public static void Copy(string sourceDirectory, string destDirectory, string fileName)
+        public static void Copy(string sourceDirectory, string destDirectory, string sourceFileName, string destFileName)
         {
             if (!LocalStream.Exists(sourceDirectory))
                 Directory.CreateDirectory(sourceDirectory);
@@ -48,7 +48,7 @@ namespace DeepDungeonTracker
             if (!LocalStream.Exists(destDirectory))
                 Directory.CreateDirectory(destDirectory);
 
-            File.Copy(Path.Combine(sourceDirectory, fileName), Path.Combine(destDirectory, fileName), true);
+            File.Copy(Path.Combine(sourceDirectory, sourceFileName), Path.Combine(destDirectory, destFileName), true);
         }
 
         public static string[] GetFileNamesFromDirectory(string directory) => LocalStream.Exists(directory) ? Directory.EnumerateFiles(directory).ToArray() : Array.Empty<string>();
