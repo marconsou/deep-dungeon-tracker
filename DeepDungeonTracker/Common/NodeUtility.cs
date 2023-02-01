@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.ClientState.Objects;
+using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Gui;
 using Dalamud.Utility;
@@ -123,11 +124,13 @@ namespace DeepDungeonTracker
             if (character != null)
                 targetHPPercentage = character.CurrentHp * 100.0f / character.MaxHp;
 
+            var isValidCharacter = character != null && character.ObjectKind != ObjectKind.EventNpc;
+
             accurateTargetHPPercentageNode->TextColor = targetHPPercentageNode->TextColor;
             accurateTargetHPPercentageNode->EdgeColor = targetHPPercentageNode->EdgeColor;
             accurateTargetHPPercentageNode->SetText($"{(target != null ? targetHPPercentage : string.Empty):F}");
-            accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(targetHPPercentage != 100.0f && accurateTargetHPPercentageNode->NodeText.ToString() != "100.00" && isNodeVisible && character != null);
-            targetHPPercentageNode->AtkResNode.ToggleVisibility((!accurateTargetHPPercentageNode->AtkResNode.IsVisible || !isNodeVisible) && character != null);
+            accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(targetHPPercentage != 100.0f && accurateTargetHPPercentageNode->NodeText.ToString() != "100.00" && isNodeVisible && isValidCharacter);
+            targetHPPercentageNode->AtkResNode.ToggleVisibility((!accurateTargetHPPercentageNode->AtkResNode.IsVisible || !isNodeVisible) && isValidCharacter);
         }
 
         private static int Aetherpool(AtkUnitBase* addon, int index)
