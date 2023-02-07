@@ -18,6 +18,8 @@ namespace DeepDungeonTracker
 
         private WindowSystem WindowSystem { get; }
 
+        private ConfigurationWindow ConfigurationWindow { get; }
+
         private Configuration Configuration { get; }
 
         private Data Data { get; }
@@ -34,7 +36,8 @@ namespace DeepDungeonTracker
 
             this.WindowSystem = new(this.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
-            this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data, this.OpenStatisticsWindow));
+            this.ConfigurationWindow = new ConfigurationWindow(this.Name, this.Configuration, this.Data, this.OpenStatisticsWindow);
+            this.WindowSystem.AddWindow(this.ConfigurationWindow);
             this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
             this.WindowSystem.AddWindow(new ScoreWindow(this.Name, this.Configuration, this.Data));
@@ -111,7 +114,7 @@ namespace DeepDungeonTracker
 
         private void Draw() => this.WindowSystem.Draw();
 
-        private void OpenConfigUi() => this.WindowSystem.GetWindow(WindowEx.GetWindowId(this.Name, nameof(ConfigurationWindow)))!.Toggle();
+        private void OpenConfigUi() => this.ConfigurationWindow.Toggle();
 
         private void Update(Framework framework)
         {
