@@ -228,7 +228,7 @@ namespace DeepDungeonTracker
                     new (Miscellaneous.DreadBeast, floor?.DreadBeasts ?? 0),
                     new (Miscellaneous.Death, floor?.Deaths ?? 0),
                     new (Miscellaneous.RegenPotion, floor?.RegenPotions ?? 0),
-                    new (Miscellaneous.Map, Convert.ToInt32(floor?.Map, CultureInfo.InvariantCulture)),
+                    new (Miscellaneous.Map, Convert.ToInt32(floor?.Map, CultureInfo.InvariantCulture))
                 }).RemoveAll(x => x.Total == 0);
             }
             return floors?.SelectMany(x => ImmutableArray.Create(GetStatisticsCommonFloor(x))).ToImmutableList();

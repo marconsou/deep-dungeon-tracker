@@ -321,7 +321,7 @@ namespace DeepDungeonTracker
             {
                 if (floorNumber >= 1 && floorNumber <= 29)
                     return TimeSpan.FromMinutes(1);
-                else if (floorNumber >= 31 && floorNumber <= 99)
+                else if (floorNumber >= 31 && floorNumber <= 98)
                     return TimeSpan.FromMinutes(10);
             }
             return default;

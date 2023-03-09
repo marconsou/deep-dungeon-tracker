@@ -117,7 +117,7 @@ namespace DeepDungeonTracker
 
         private void NPCScoreCalculation() => this.NPCScore = this.BaseScore == 0 ? this.SaveSlot.NPCs() * this.Duty * 20 : 0;
 
-        private void DreadBeastScoreCalculation() => this.DreadBeastScore = this.BaseScore == 0 ? this.SaveSlot.DreadBeasts() * this.Duty * 0 : 0;
+        private void DreadBeastScoreCalculation() => this.DreadBeastScore = this.BaseScore == 0 ? this.SaveSlot.DreadBeasts() * this.Duty * 5 : 0;
 
         private void MimicgoraScoreCalculation() => this.MimicgoraScore = this.BaseScore == 0 ? (this.SaveSlot.Mimics() + this.SaveSlot.Mandragoras()) * this.Duty * 5 : 0;
 

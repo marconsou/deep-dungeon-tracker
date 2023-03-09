@@ -295,7 +295,7 @@ namespace DeepDungeonTracker
             var pomanderObtained = new[] { 7220, 7221 };
             var aetherpoolObtained = new[] { 7250, 7251, 7252, 7253 };
             var magiciteObtained = new[] { 9206, 9207 };
-            var demicloneObtained = new[] { 10285, 10285 };
+            var demicloneObtained = new[] { 10285, 10286 };
             var pomanderObtainedId = NetworkData.ExtractNumber(dataPtr, 12, 1);
             var pomanderUsedId = NetworkData.ExtractNumber(dataPtr, 16, 1);
             var pomanderUsed = 7254;
