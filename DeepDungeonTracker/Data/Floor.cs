@@ -32,6 +32,9 @@ namespace DeepDungeonTracker
         [JsonInclude]
         public int NPCs { get; private set; }
 
+        [JsonInclude]
+        public int DreadBeasts { get; private set; }
+
         [JsonIgnore]
         public Collection<Coffer> Coffers { get; private set; } = new();
 
@@ -98,6 +101,8 @@ namespace DeepDungeonTracker
         public void MandragoraKilled() => this.Mandragoras++;
 
         public void NPCKilled() => this.NPCs++;
+
+        public void DreadBeastKilled() => this.DreadBeasts++;
 
         public void CofferOpened(Coffer coffer) => this.Coffers.Add(coffer);
 

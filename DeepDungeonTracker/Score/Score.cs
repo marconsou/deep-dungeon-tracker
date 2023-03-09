@@ -29,6 +29,8 @@ namespace DeepDungeonTracker
 
         public int NPCScore { get; private set; }
 
+        public int DreadBeastScore { get; private set; }
+
         public int MimicgoraScore { get; private set; }
 
         public int EnchantmentScore { get; private set; }
@@ -115,6 +117,8 @@ namespace DeepDungeonTracker
 
         private void NPCScoreCalculation() => this.NPCScore = this.BaseScore == 0 ? this.SaveSlot.NPCs() * this.Duty * 20 : 0;
 
+        private void DreadBeastScoreCalculation() => this.DreadBeastScore = this.BaseScore == 0 ? this.SaveSlot.DreadBeasts() * this.Duty * 0 : 0;
+
         private void MimicgoraScoreCalculation() => this.MimicgoraScore = this.BaseScore == 0 ? (this.SaveSlot.Mimics() + this.SaveSlot.Mandragoras()) * this.Duty * 5 : 0;
 
         private void EnchantmentScoreCalculation() => this.EnchantmentScore = this.BaseScore == 0 ? this.SaveSlot.Enchantments() * this.Duty * 5 : 0;
@@ -141,7 +145,7 @@ namespace DeepDungeonTracker
             var normalFloors = floors.Where(x => x.Number >= 1 && x.Number <= this.LastNormalFloorNumber()).ToList();
             var bonusFloors = floors.Where(x => x.Number >= this.LastNormalFloorNumber() + 1 && x.Number <= this.LastBonusFloorNumber()).ToList();
 
-            var killsBonusException = bonusFloors.Sum(x => x.Mimics + x.Mandragoras) + bonusFloors.Sum(x => x.NPCs) + bonusFloors.Where(x => x.IsLastFloor()).Sum(x => x.Kills);
+            var killsBonusException = bonusFloors.Sum(x => x.Mimics + x.Mandragoras) + bonusFloors.Sum(x => x.NPCs) + bonusFloors.Sum(x => x.DreadBeasts) + bonusFloors.Where(x => x.IsLastFloor()).Sum(x => x.Kills);
             var kills = normalFloors.Sum(x => x.Kills) + killsBonusException;
             var killsBonus = bonusFloors.Sum(x => x.Kills) - killsBonusException;
 
@@ -177,6 +181,7 @@ namespace DeepDungeonTracker
             this.MapScoreCalculation();
             this.CofferScoreCalculation();
             this.NPCScoreCalculation();
+            this.DreadBeastScoreCalculation();
             this.MimicgoraScoreCalculation();
             this.EnchantmentScoreCalculation();
             this.TrapScoreCalculation();

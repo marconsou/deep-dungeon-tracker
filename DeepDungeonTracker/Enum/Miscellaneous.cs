@@ -7,6 +7,7 @@
         Mimic,
         Mandragora,
         NPC,
+        DreadBeast,
         Death,
         RegenPotion,
         Map,

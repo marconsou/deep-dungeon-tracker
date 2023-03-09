@@ -39,6 +39,9 @@ namespace DeepDungeonTracker
             void NPCs(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
                 => DrawTextLine(y, columnX, offsetX, "NPCs:", floor.NPCs, floorSet.NPCs(), saveSlot.NPCs());
 
+            void DreadBeasts(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
+                => DrawTextLine(y, columnX, offsetX, "Dread Beasts:", floor.DreadBeasts, floorSet.DreadBeasts(), saveSlot.DreadBeasts());
+
             void Coffers(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
                 => DrawTextLine(y, columnX, offsetX, "Coffers:", floor.Coffers.Count, floorSet.Coffers(), saveSlot.Coffers());
 
@@ -73,11 +76,15 @@ namespace DeepDungeonTracker
             var top = 50.0f;
             var lineHeight = 30.0f;
             var NPCindex = 4;
-            var ShowNPC = (config.Fields?[NPCindex].Show ?? false) &&
-                ((this.Data.Common.CurrentSaveSlot?.DeepDungeon == DeepDungeon.PalaceOfTheDead) ||
-                ((this.Data.Common.CurrentSaveSlot == null || this.Data.Common.CurrentSaveSlot.DeepDungeon == DeepDungeon.None) && this.Data.Common.DeepDungeon == DeepDungeon.PalaceOfTheDead));
 
-            var numberOfLines = (config.Fields?.Where((x, Index) => Index != NPCindex).Count(x => x.Show) ?? 0) + (ShowNPC ? 1 : 0);
+            bool ShowSpecial(DeepDungeon deepDungeon) => (config?.Fields?[NPCindex].Show ?? false) &&
+                ((this.Data.Common.CurrentSaveSlot?.DeepDungeon == deepDungeon) ||
+                ((this.Data.Common.CurrentSaveSlot == null || this.Data.Common.CurrentSaveSlot.DeepDungeon == DeepDungeon.None) && this.Data.Common.DeepDungeon == deepDungeon));
+
+            var ShowNPCs = ShowSpecial(DeepDungeon.PalaceOfTheDead);
+            var ShowDreadBeasts = ShowSpecial(DeepDungeon.EurekaOrthos);
+
+            var numberOfLines = (config.Fields?.Where((x, Index) => Index != NPCindex).Count(x => x.Show) ?? 0) + (ShowNPCs || ShowDreadBeasts ? 1 : 0);
             var width = 380.0f;
             var height = (top + (lineHeight * numberOfLines) - 3.0f);
             var columnX = 170;
@@ -85,7 +92,7 @@ namespace DeepDungeonTracker
             var offsetX = 76.0f + spacing;
             width = columnX - 27.0f + (Convert.ToInt32(config.IsFloorNumberVisible) + Convert.ToInt32(config.IsSetNumberVisible) + Convert.ToInt32(config.IsTotalNumberVisible)) * offsetX;
 
-            this.FieldCalls = new[] { Kills, Mimics, Mandragoras, Mimicgoras, ShowNPC ? NPCs : null, Coffers, Enchantments, Traps, Deaths, RegenPotions, Potsherds, Lurings, Maps, TimeBonuses };
+            this.FieldCalls = new[] { Kills, Mimics, Mandragoras, Mimicgoras, ShowNPCs ? NPCs : ShowDreadBeasts ? DreadBeasts : null, Coffers, Enchantments, Traps, Deaths, RegenPotions, Potsherds, Lurings, Maps, TimeBonuses };
 
             ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 

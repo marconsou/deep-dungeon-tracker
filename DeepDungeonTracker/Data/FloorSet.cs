@@ -27,6 +27,8 @@ namespace DeepDungeonTracker
 
         public int NPCs() => this.Floors.Sum(x => x.NPCs);
 
+        public int DreadBeasts() => this.Floors.Sum(x => x.DreadBeasts);
+
         public int Coffers() => this.Floors.Sum(x => x.Coffers.Count);
 
         public int Enchantments() => this.Floors.Sum(x => x.Enchantments.Count);

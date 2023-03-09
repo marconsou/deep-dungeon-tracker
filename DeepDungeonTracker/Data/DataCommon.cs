@@ -50,6 +50,8 @@ namespace DeepDungeonTracker
 
         public int TotalScore => this.Score?.TotalScore ?? 0;
 
+        private static Pomander[] SharedPomanders => new[] { Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising };
+
         public void ResetCharacterData()
         {
             this.CharacterName = string.Empty;
@@ -207,7 +209,7 @@ namespace DeepDungeonTracker
         {
             var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
 
-            if (this.IsLastFloor || (currentFloor?.Map ?? false))
+            if (this.IsLastFloor || (currentFloor?.Map ?? false) || (this.CurrentSaveSlot?.DeepDungeon == DeepDungeon.EurekaOrthos && currentFloor?.Number == 99))
                 return;
 
             if (MapUtility.IsMapFullyRevealed(currentFloor?.MapData ?? new()))
@@ -350,6 +352,8 @@ namespace DeepDungeonTracker
                 currentFloor?.MandragoraKilled();
             else if (dataText?.IsNPC(name).Item1 ?? false)
                 currentFloor?.NPCKilled();
+            else if (dataText?.IsDreadBeast(name).Item1 ?? false)
+                currentFloor?.DreadBeastKilled();
         }
 
         public void CheckForPlayerKilled(Character character)
@@ -471,23 +475,43 @@ namespace DeepDungeonTracker
 
         public void RegenPotionConsumed() => this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
 
-        public void GoldCofferPomander(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened((Coffer)(itemId - 1));
+        public void PomanderObtained(int itemId)
+        {
+            Coffer pomander = default;
+            if (this.DeepDungeon == DeepDungeon.PalaceOfTheDead || this.DeepDungeon == DeepDungeon.HeavenOnHigh)
+            {
+                pomander = (Coffer)(itemId - 1);
+            }
+            else if (this.DeepDungeon == DeepDungeon.EurekaOrthos)
+            {
+                var totalProtomanders = (int)(Pomander.Dread + 1);
+                var index = itemId - totalProtomanders - 1;
+                pomander = index >= 0 ? (Coffer)DataCommon.SharedPomanders[itemId - totalProtomanders - 1] : (Coffer)itemId - 1;
+            }
+            this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(pomander);
+        }
 
-        public void SilverCofferPomander(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
-
-        public void SilverCofferAetherpool()
+        public void AetherpoolObtained()
         {
             if (!this.IsLastFloor)
                 this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Aetherpool);
         }
 
+        public void MagiciteObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
+
+        public void DemicloneObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.UneiDemiclone);
+
         public void PomanderUsed(int itemId)
         {
             itemId--;
-            if (!Enum.IsDefined(typeof(Pomander), itemId))
-                return;
-
             var pomander = (Pomander)itemId;
+
+            if (this.DeepDungeon == DeepDungeon.EurekaOrthos)
+            {
+                var totalProtomanders = (int)(Pomander.Dread + 1);
+                var index = itemId - totalProtomanders;
+                pomander = index >= 0 ? DataCommon.SharedPomanders[itemId - totalProtomanders] : (Pomander)itemId;
+            }
 
             if (pomander == Pomander.Safety)
                 this.FloorEffect.ShowPomanderOfSafety = true;
@@ -501,11 +525,13 @@ namespace DeepDungeonTracker
             this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);
         }
 
-        public void MagiciteUsed(int itemId)
+        public void MagiciteUsed(int itemId) => this.SpecialPomanderUsed(Coffer.InfernoMagicite, itemId);
+
+        public void DemicloneUsed(int itemId) => this.SpecialPomanderUsed(Coffer.UneiDemiclone, itemId);
+
+        private void SpecialPomanderUsed(Coffer baseSpecialPomander, int itemId)
         {
-            itemId = itemId - 1 + (int)Coffer.InfernoMagicite;
-            if (!Enum.IsDefined(typeof(Pomander), itemId))
-                return;
+            itemId = itemId - 1 + (int)baseSpecialPomander;
 
             var pomander = (Pomander)itemId;
             this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);

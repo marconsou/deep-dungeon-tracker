@@ -64,6 +64,12 @@
                 ScoreDataTest.SaveSlot.FloorSets[!bonus ? 0 : ^1].Floors[0].NPCKilled();
         }
 
+        private static void DreadBeasts(int total, bool bonus)
+        {
+            for (var i = 0; i < total; i++)
+                ScoreDataTest.SaveSlot.FloorSets[!bonus ? 0 : ^1].Floors[0].DreadBeastKilled();
+        }
+
         private static void Coffers(int total)
         {
             for (var i = 0; i < total; i++)

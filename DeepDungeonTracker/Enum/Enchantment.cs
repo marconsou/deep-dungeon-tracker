@@ -15,5 +15,6 @@
         Gloom,
         Sprint,
         MagicitePenalty,
+        DemiclonePenalty
     }
 }

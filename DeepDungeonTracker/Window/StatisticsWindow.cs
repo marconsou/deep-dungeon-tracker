@@ -342,7 +342,7 @@ namespace DeepDungeonTracker
         {
             var statistics = this.Data.Statistics;
             this.DrawFloorText(lastFloorX, y - 20.0f, "Last Floor:", statistics!.TimeLastFloor, null, statistics.ScoreLastFloor, null, forceShowHours, isTimeBonusMissScore);
-            this.DrawFloorText(totalX, y - 20.0f, "Total:", statistics!.TimeTotal, null, statistics.ScoreTotal, null, forceShowHours, isTimeBonusMissScore);
+            this.DrawFloorText(totalX, y - 20.0f, "Total:", statistics!.TimeTotal, null, statistics.ScoreTotal, null, forceShowHours, false);
         }
 
         private void DrawSummaryPageTexts(float left, float top, float iconSize)
@@ -418,7 +418,19 @@ namespace DeepDungeonTracker
                 ui.DrawTextAxisLatinPro(x, y, $"Floors: {score.FloorScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
                 ui.DrawTextAxisLatinPro(x, y, $"Maps: {score.MapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
                 ui.DrawTextAxisLatinPro(x, y, $"Coffers: {score.CofferScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-                ui.DrawTextAxisLatinPro(x, y, $"NPCs: {score.NPCScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+
+                if (statistics?.SaveSlot?.DeepDungeon == DeepDungeon.PalaceOfTheDead)
+                {
+                    ui.DrawTextAxisLatinPro(x, y, $"NPCs: {score.NPCScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
+                    y += lineHeight;
+                }
+
+                if (statistics?.SaveSlot?.DeepDungeon == DeepDungeon.EurekaOrthos)
+                {
+                    ui.DrawTextAxisLatinPro(x, y, $"Dread Beasts: {score.DreadBeastScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
+                    y += lineHeight;
+                }
+
                 ui.DrawTextAxisLatinPro(x, y, $"Mimicgoras: {score.MimicgoraScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
                 ui.DrawTextAxisLatinPro(x, y, $"Enchantments: {score.EnchantmentScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
                 ui.DrawTextAxisLatinPro(x, y, $"Traps: {score.TrapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
@@ -553,6 +565,7 @@ namespace DeepDungeonTracker
                 this.DrawFloorText(x, y, $"Floor {floor.Number}:", floor.Time, null, floor.Score, null, false, isTimeBonusMissScore);
             }, floors, left, x, y - 20.0f, iconSize, floorWidth, floorHeight);
 
+            CheckForTimeBonusMissScore(ref timeBonusMissScoreTotal, ref isTimeBonusMissScore, statistics?.FloorSet?.LastFloor()?.Time ?? default);
             this.DrawLastFloorAndTotal(x2, x, y3, false, isTimeBonusMissScore);
 
             FloorLoop((floor, index, x, y) => { this.DrawMiscellaneousText(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false); }, floors, left, x, y, iconSize, floorWidth, floorHeight);

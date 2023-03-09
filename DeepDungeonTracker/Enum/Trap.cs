@@ -7,6 +7,7 @@
         Enfeebling,
         Impeding,
         Toading,
-        Odder
+        Odder,
+        Owlet
     }
 }

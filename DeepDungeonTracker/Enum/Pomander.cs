@@ -21,13 +21,15 @@
         Frailty,
         Concealment,
         Petrification,
-        DeprecatedInfernoMagicite,
-        DeprecatedCragMagicite,
-        DeprecatedVortexMagicite,
-        DeprecatedElderMagicite,
+        Lethargy,
+        Storms,
+        Dread,
         InfernoMagicite = 60,
         CragMagicite,
         VortexMagicite,
-        ElderMagicite
+        ElderMagicite,
+        UneiDemiclone,
+        DogaDemiclone,
+        OnionKnightDemiclone
     }
 }

@@ -207,6 +207,7 @@ namespace DeepDungeonTracker
                 new (Miscellaneous.Mimic, floors?.Sum(x=> x.Mimics) ?? 0),
                 new (Miscellaneous.Mandragora, floors?.Sum(x=> x.Mandragoras) ?? 0),
                 new (Miscellaneous.NPC, floors?.Sum(x=> x.NPCs) ?? 0),
+                new (Miscellaneous.DreadBeast, floors?.Sum(x=> x.DreadBeasts) ?? 0),
                 new (Miscellaneous.Death, floors?.Sum(x=> x.Deaths) ?? 0),
                 new (Miscellaneous.RegenPotion, floors?.Sum(x=> x.RegenPotions) ?? 0),
                 new (Miscellaneous.Map, floors?.Sum(x => Convert.ToInt32(x.Map)) ?? 0)
@@ -224,9 +225,10 @@ namespace DeepDungeonTracker
                     new (Miscellaneous.Mimic, floor?.Mimics ?? 0),
                     new (Miscellaneous.Mandragora, floor?.Mandragoras ?? 0),
                     new (Miscellaneous.NPC, floor?.NPCs ?? 0),
+                    new (Miscellaneous.DreadBeast, floor?.DreadBeasts ?? 0),
                     new (Miscellaneous.Death, floor?.Deaths ?? 0),
                     new (Miscellaneous.RegenPotion, floor?.RegenPotions ?? 0),
-                    new (Miscellaneous.Map, Convert.ToInt32(floor?.Map, CultureInfo.InvariantCulture))
+                    new (Miscellaneous.Map, Convert.ToInt32(floor?.Map, CultureInfo.InvariantCulture)),
                 }).RemoveAll(x => x.Total == 0);
             }
             return floors?.SelectMany(x => ImmutableArray.Create(GetStatisticsCommonFloor(x))).ToImmutableList();
@@ -241,6 +243,7 @@ namespace DeepDungeonTracker
                 new (Miscellaneous.Mimic, floorSet?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, floorSet?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, floorSet?.NPCs() ?? 0),
+                new (Miscellaneous.DreadBeast, floorSet?.DreadBeasts() ?? 0),
                 new (Miscellaneous.Death, floorSet?.Deaths() ?? 0),
                 new (Miscellaneous.RegenPotion, floorSet?.RegenPotions() ?? 0),
                 new (Miscellaneous.Map, floorSet?.Maps() ?? 0),
@@ -257,6 +260,7 @@ namespace DeepDungeonTracker
                 new (Miscellaneous.Mimic, saveSlot?.Mimics() ?? 0),
                 new (Miscellaneous.Mandragora, saveSlot?.Mandragoras() ?? 0),
                 new (Miscellaneous.NPC, saveSlot?.NPCs() ?? 0),
+                new (Miscellaneous.DreadBeast, saveSlot?.DreadBeasts() ?? 0),
                 new (Miscellaneous.Death, saveSlot?.Deaths() ?? 0),
                 new (Miscellaneous.RegenPotion, saveSlot?.RegenPotions() ?? 0),
                 new (Miscellaneous.Map, saveSlot?.Maps() ?? 0),

@@ -21,19 +21,18 @@
         PomanderOfFrailty,
         PomanderOfConcealment,
         PomanderOfPetrification,
-        DeprecatedInfernoMagicite,
-        DeprecatedCragMagicite,
-        DeprecatedVortexMagicite,
-        DeprecatedElderMagicite,
-        DeprecatedAetherpool,
-        DeprecatedPotsherd,
-        DeprecatedMedicine,
+        ProtomanderOfLethargy,
+        ProtomanderOfStorms,
+        ProtomanderOfDread,
         Potsherd = 50,
         Medicine,
         Aetherpool,
         InfernoMagicite = 60,
         CragMagicite,
         VortexMagicite,
-        ElderMagicite
+        ElderMagicite,
+        UneiDemiclone,
+        DogaDemiclone,
+        OnionKnightDemiclone
     }
 }
