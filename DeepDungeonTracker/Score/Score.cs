@@ -131,10 +131,10 @@ namespace DeepDungeonTracker
 
         private void NonKillScoreCalculation()
         {
-            this.NonKillScore = (this.MapScore + this.CofferScore + this.NPCScore + this.MimicgoraScore + this.EnchantmentScore + this.TrapScore + this.TimeBonusScore + this.DeathScore) / this.Duty;
+            this.NonKillScore = (this.MapScore + this.CofferScore + this.NPCScore + this.DreadBeastScore + this.MimicgoraScore + this.EnchantmentScore + this.TrapScore + this.TimeBonusScore + this.DeathScore) / this.Duty;
 
             if (this.NonKillScore > 0)
-                this.NonKillScore = this.CharacterScore + this.FloorScore + this.MapScore + this.CofferScore + this.NPCScore + this.MimicgoraScore + this.EnchantmentScore + this.TrapScore + this.TimeBonusScore + this.DeathScore;
+                this.NonKillScore = this.CharacterScore + this.FloorScore + this.MapScore + this.CofferScore + this.NPCScore + this.DreadBeastScore + this.MimicgoraScore + this.EnchantmentScore + this.TrapScore + this.TimeBonusScore + this.DeathScore;
             else
                 this.NonKillScore = this.CharacterScore + this.FloorScore + this.BaseScore;
         }
