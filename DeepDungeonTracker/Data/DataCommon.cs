@@ -209,7 +209,7 @@ namespace DeepDungeonTracker
         {
             var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
 
-            if (this.IsLastFloor || (currentFloor?.Map ?? false) || (this.CurrentSaveSlot?.DeepDungeon == DeepDungeon.EurekaOrthos && currentFloor?.Number == 99))
+            if (this.IsLastFloor || (currentFloor?.Map ?? false))
                 return;
 
             if (MapUtility.IsMapFullyRevealed(currentFloor?.MapData ?? new()))
