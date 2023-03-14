@@ -131,7 +131,7 @@ namespace DeepDungeonTracker
                 }
             }
 
-            if (config.ShowFloorEffectPomanders && !floor.IsLastFloor() && !(saveSlot.DeepDungeon == DeepDungeon.EurekaOrthos && floor.Number == 99))
+            if (config.ShowFloorEffectPomanders && !floor.IsLastFloor() && !this.Data.Common.IsSpecialBossFloor)
             {
                 var floorEffectPomandersScale = 0.60f;
                 ui.Scale *= floorEffectPomandersScale;

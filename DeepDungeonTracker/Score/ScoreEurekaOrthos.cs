@@ -26,7 +26,7 @@ namespace DeepDungeonTracker
                 total += -50 * this.Duty;
 
             if (this.CurrentFloorNumber == 100)
-                total += 550 * this.Duty;
+                total += (550 * this.Duty) - 101;//F99 Boss remove bonus fix
 
             if (this.TotalReachedFloors == 30 && this.IsDutyComplete)
                 total += -1000;

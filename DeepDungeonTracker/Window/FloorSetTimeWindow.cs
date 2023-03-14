@@ -100,8 +100,8 @@ namespace DeepDungeonTracker
                 currentFloorTime = currentFloorTime.Add(new(0, 0, 0, 0, -600));
 
             var respawnTime = dataCommon.GetRespawnTime();
-            var value = respawnTime - TimeSpan.FromTicks((currentFloorTime.Ticks) % (respawnTime.Ticks + 1));
-            DrawTextLine(x, y, "Respawn:", (!currentFloor?.IsLastFloor() ?? false) && this.Data.IsInsideDeepDungeon && dataCommon.ShowFloorSetTimeValues ? value : null, Color.White, config.RespawnTimeColor);
+            var value = respawnTime != default ? (respawnTime - TimeSpan.FromTicks((currentFloorTime.Ticks) % (respawnTime.Ticks + 1))) : default;
+            DrawTextLine(x, y, "Respawn:", (respawnTime != default && this.Data.IsInsideDeepDungeon && dataCommon.ShowFloorSetTimeValues) ? value : null, Color.White, config.RespawnTimeColor);
 
             this.Size = new(width * ui.Scale, height * ui.Scale);
         }

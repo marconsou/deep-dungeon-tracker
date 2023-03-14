@@ -247,7 +247,7 @@ namespace DeepDungeonTracker
                 var name = character?.Name.TextValue ?? string.Empty;
                 if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || this.Text.IsMandragora(name).Item1))
                 {
-                    if (!this.Common.IsLastFloor)
+                    if (!this.Common.IsLastFloor && !this.Common.IsSpecialBossFloor)
                         this.Common.CheckForEnemyKilled(this.Text, name);
                 }
                 else if (character?.ObjectKind == ObjectKind.Player)

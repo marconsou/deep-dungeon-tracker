@@ -24,6 +24,8 @@ namespace DeepDungeonTracker
 
         public bool ShowFloorSetTimeValues { get; private set; }
 
+        private bool IsBossDead { get; set; }
+
         private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
 
         public DeepDungeon DeepDungeon { get; private set; }
@@ -50,6 +52,10 @@ namespace DeepDungeonTracker
 
         public int TotalScore => this.Score?.TotalScore ?? 0;
 
+        private bool IsEurekaOrthosFloor99 => this.DeepDungeon == DeepDungeon.EurekaOrthos && this.CurrentSaveSlot?.CurrentFloorNumber() == 99;
+
+        public bool IsSpecialBossFloor => this.IsEurekaOrthosFloor99;
+
         private static Pomander[] SharedPomanders => new[] { Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising };
 
         public void ResetCharacterData()
@@ -67,6 +73,7 @@ namespace DeepDungeonTracker
             this.IsSoloSaveSlot = true;
             this.EnableFlyTextScore = false;
             this.IsCairnOfPassageActivated = false;
+            this.IsBossDead = false;
             this.CairnOfPassageKillIds = new();
             this.DutyStatus = DutyStatus.None;
             this.CurrentSaveSlot?.ContentIdUpdate(0);
@@ -184,22 +191,24 @@ namespace DeepDungeonTracker
 
         public void CheckForBossKilled(DataText dataText)
         {
-            if (!this.IsLastFloor || this.DutyStatus != DutyStatus.None)
-                return;
-
-            foreach (var enemy in Service.ObjectTable)
+            if ((this.IsLastFloor || this.IsSpecialBossFloor) && !this.IsBossDead)
             {
-                var character = enemy as Character;
-                if (character == null)
-                    continue;
-
-                if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && character.StatusFlags.HasFlag(StatusFlags.Hostile))
+                foreach (var enemy in Service.ObjectTable)
                 {
-                    if (dataText?.IsBoss(character.Name.TextValue).Item1 ?? false)
+                    var character = enemy as Character;
+                    if (character == null)
+                        continue;
+
+                    if (character.IsDead && character.ObjectKind == ObjectKind.BattleNpc && character.StatusFlags.HasFlag(StatusFlags.Hostile))
                     {
-                        this.CurrentSaveSlot?.CurrentFloor()?.EnemyKilled();
-                        this.DutyCompleted();
-                        break;
+                        if (dataText?.IsBoss(character.Name.TextValue).Item1 ?? false)
+                        {
+                            this.IsBossDead = true;
+                            this.CurrentSaveSlot?.CurrentFloor()?.EnemyKilled();
+                            if (this.IsLastFloor)
+                                this.DutyCompleted();
+                            break;
+                        }
                     }
                 }
             }
@@ -290,7 +299,7 @@ namespace DeepDungeonTracker
         {
             var floorNumber = this.CurrentSaveSlot?.CurrentFloorNumber();
 
-            if (this.IsLastFloor)
+            if (this.IsLastFloor || this.IsSpecialBossFloor)
                 return default;
 
             if (this.DeepDungeon == DeepDungeon.PalaceOfTheDead)
