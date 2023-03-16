@@ -441,6 +441,7 @@ namespace DeepDungeonTracker
         {
             if (this.ContentId != 0 && this.IsTransferenceInitiated)
             {
+                this.SpecificFloors();
                 this.IsTransferenceInitiated = false;
                 this.IsCairnOfPassageActivated = false;
                 this.CairnOfPassageKillIds = new();
@@ -456,6 +457,18 @@ namespace DeepDungeonTracker
                     ShowPomanderOfAlteration = this.FloorEffect.IsPomanderOfAlterationUsed
                 };
                 this.FloorEffect = floorEffect;
+            }
+        }
+
+        private void SpecificFloors()
+        {
+            if (this.IsEurekaOrthosFloor99)
+            {
+                var floor = this.CurrentSaveSlot?.CurrentFloor();
+                if (floor?.Kills == 0)
+                    floor.EnemyKilled();
+                if (floor?.CairnOfPassageKills == 0)
+                    floor.CairnOfPassageShines();
             }
         }
 
