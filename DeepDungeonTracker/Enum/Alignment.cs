@@ -1,9 +1,8 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum Alignment
 {
-    public enum Alignment
-    {
-        Left,
-        Center,
-        Right
-    }
+    Left,
+    Center,
+    Right
 }

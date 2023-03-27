@@ -1,9 +1,8 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum FontType
 {
-    public enum FontType
-    {
-        Default,
-        AxisLatinPro,
-        Miedinger,
-    }
+    Default,
+    AxisLatinPro,
+    Miedinger,
 }

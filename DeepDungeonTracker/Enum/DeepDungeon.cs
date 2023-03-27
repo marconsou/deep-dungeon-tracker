@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel;
 
-namespace DeepDungeonTracker
+namespace DeepDungeonTracker;
+
+public enum DeepDungeon
 {
-    public enum DeepDungeon
-    {
-        None,
-        [Description("Palace of the Dead")]
-        PalaceOfTheDead,
-        [Description("Heaven-on-High")]
-        HeavenOnHigh,
-        [Description("Eureka Orthos")]
-        EurekaOrthos
-    }
+    None,
+    [Description("Palace of the Dead")]
+    PalaceOfTheDead,
+    [Description("Heaven-on-High")]
+    HeavenOnHigh,
+    [Description("Eureka Orthos")]
+    EurekaOrthos
 }

@@ -1,9 +1,8 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum DutyStatus
 {
-    public enum DutyStatus
-    {
-        None,
-        Failed,
-        Complete
-    }
+    None,
+    Failed,
+    Complete
 }

@@ -1,37 +1,36 @@
 ﻿using System;
 
-namespace DeepDungeonTracker
+namespace DeepDungeonTracker;
+
+public class ConditionEvent
 {
-    public class ConditionEvent
+    private bool Current { get; set; }
+
+    private bool Previous { get; set; }
+
+    public bool IsActivated => this.Current;
+
+    private event Action? Activating;
+
+    private event Action? Deactivating;
+
+    public void AddActivating(Action? action) => this.Activating += action;
+
+    public void RemoveActivating(Action? action) => this.Activating -= action;
+
+    public void AddDeactivating(Action? action) => this.Deactivating += action;
+
+    public void RemoveDeactivating(Action? action) => this.Deactivating -= action;
+
+    public void Update(bool value)
     {
-        private bool Current { get; set; }
+        this.Current = value;
 
-        private bool Previous { get; set; }
+        if (!this.Previous && this.Current)
+            this.Activating?.Invoke();
+        else if (this.Previous && !this.Current)
+            this.Deactivating?.Invoke();
 
-        public bool IsActivated => this.Current;
-
-        private event Action? Activating;
-
-        private event Action? Deactivating;
-
-        public void AddActivating(Action? action) => this.Activating += action;
-
-        public void RemoveActivating(Action? action) => this.Activating -= action;
-
-        public void AddDeactivating(Action? action) => this.Deactivating += action;
-
-        public void RemoveDeactivating(Action? action) => this.Deactivating -= action;
-
-        public void Update(bool value)
-        {
-            this.Current = value;
-
-            if (!this.Previous && this.Current)
-                this.Activating?.Invoke();
-            else if (this.Previous && !this.Current)
-                this.Deactivating?.Invoke();
-
-            this.Previous = this.Current;
-        }
+        this.Previous = this.Current;
     }
 }

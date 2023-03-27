@@ -1,12 +1,11 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum SoundIndex
 {
-    public enum SoundIndex
-    {
-        None,
-        OnClick = 1,
-        OnOpenMenu = 23,
-        OnCloseMenu = 24,
-        Screenshot = 33,
-        OnMouseOver = 254,
-    }
+    None,
+    OnClick = 1,
+    OnOpenMenu = 23,
+    OnCloseMenu = 24,
+    Screenshot = 33,
+    OnMouseOver = 254,
 }

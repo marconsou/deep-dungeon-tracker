@@ -1,13 +1,12 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum Trap
 {
-    public enum Trap
-    {
-        Landmine,
-        Luring,
-        Enfeebling,
-        Impeding,
-        Toading,
-        Odder,
-        Owlet
-    }
+    Landmine,
+    Luring,
+    Enfeebling,
+    Impeding,
+    Toading,
+    Odder,
+    Owlet
 }

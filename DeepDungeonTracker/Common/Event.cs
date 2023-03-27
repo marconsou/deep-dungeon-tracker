@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace DeepDungeonTracker
+namespace DeepDungeonTracker;
+
+public class Event<T>
 {
-    public class Event<T>
-    {
-        private event Action<T>? Action;
+    private event Action<T>? Action;
 
-        public void Add(Action<T>? action) => this.Action += action;
+    public void Add(Action<T>? action) => this.Action += action;
 
-        public void Remove(Action<T>? action) => this.Action -= action;
+    public void Remove(Action<T>? action) => this.Action -= action;
 
-        public void Execute(T data) => this.Action?.Invoke(data);
-    }
+    public void Execute(T data) => this.Action?.Invoke(data);
 }

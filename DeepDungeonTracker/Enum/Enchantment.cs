@@ -1,20 +1,19 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum Enchantment
 {
-    public enum Enchantment
-    {
-        Blindness,
-        HPPenalty,
-        DamagePenalty,
-        Inability,
-        Haste,
-        HPMPBoost,
-        ItemPenalty,
-        SprintPenalty,
-        KnockbackPenalty,
-        AutohealPenalty,
-        Gloom,
-        Sprint,
-        MagicitePenalty,
-        DemiclonePenalty
-    }
+    Blindness,
+    HPPenalty,
+    DamagePenalty,
+    Inability,
+    Haste,
+    HPMPBoost,
+    ItemPenalty,
+    SprintPenalty,
+    KnockbackPenalty,
+    AutohealPenalty,
+    Gloom,
+    Sprint,
+    MagicitePenalty,
+    DemiclonePenalty
 }

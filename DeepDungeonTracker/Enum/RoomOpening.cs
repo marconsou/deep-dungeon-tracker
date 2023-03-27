@@ -1,22 +1,21 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum RoomOpening
 {
-    public enum RoomOpening
-    {
-        Special,
-        Top,
-        Bottom,
-        TopBottom,
-        Left,
-        TopLeft,
-        BottomLeft,
-        TopBottomLeft,
-        Right,
-        TopRight,
-        RightBottom,
-        TopRightBottom,
-        RightLeft,
-        TopRightLeft,
-        RightBottomLeft,
-        TopRightBottomLeft
-    }
+    Special,
+    Top,
+    Bottom,
+    TopBottom,
+    Left,
+    TopLeft,
+    BottomLeft,
+    TopBottomLeft,
+    Right,
+    TopRight,
+    RightBottom,
+    TopRightBottom,
+    RightLeft,
+    TopRightLeft,
+    RightBottomLeft,
+    TopRightBottomLeft
 }

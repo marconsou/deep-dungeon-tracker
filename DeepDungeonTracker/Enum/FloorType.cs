@@ -1,9 +1,8 @@
-﻿namespace DeepDungeonTracker
+﻿namespace DeepDungeonTracker;
+
+public enum FloorType
 {
-    public enum FloorType
-    {
-        None,
-        Normal,
-        HallOfFallacies
-    }
+    None,
+    Normal,
+    HallOfFallacies
 }

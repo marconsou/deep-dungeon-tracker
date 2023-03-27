@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel;
 
-namespace DeepDungeonTracker
+namespace DeepDungeonTracker;
+
+public enum ScoreCalculationType
 {
-    public enum ScoreCalculationType
-    {
-        [Description("Current Floor")]
-        CurrentFloor,
-        [Description("Score Window Floor")]
-        ScoreWindowFloor,
-        [Description("Last Floor")]
-        LastFloor
-    }
+    [Description("Current Floor")]
+    CurrentFloor,
+    [Description("Score Window Floor")]
+    ScoreWindowFloor,
+    [Description("Last Floor")]
+    LastFloor
 }
