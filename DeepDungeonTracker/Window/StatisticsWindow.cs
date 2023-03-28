@@ -93,7 +93,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             this.Data.Audio.PlaySound(SoundIndex.Screenshot);
             var classJobName = this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId) ? classJobId.Item2 : string.Empty;
             var fileName = $"{classJobName} {statistics.FloorSetStatistics.GetDescription()} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.png".Trim();
-            var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), this.Size ?? Vector2.One, Directories.Screenshots, fileName);
+            var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), this.GetSizeScaled(), Directories.Screenshots, fileName);
             Service.ChatGui.Print(result.Item1 ? $"{result.Item2} ({fileName})" : result.Item2);
         }
     }
@@ -641,7 +641,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
         ui.DrawTextTrumpGothic(15.0f, 8.0f, "Statistics", new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Left);
 
-        this.Size = new(width * ui.Scale, height * ui.Scale);
+        this.WindowSizeUpdate(width, height, ui.Scale);
         this.CheckForEvents();
     }
 }

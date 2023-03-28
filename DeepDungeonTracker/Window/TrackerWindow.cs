@@ -165,7 +165,7 @@ public sealed class TrackerWindow : WindowEx, IDisposable
             ui.Scale /= floorEffectPomandersScale;
         }
 
-        this.Size = new(width * ui.Scale, height * ui.Scale);
+        this.WindowSizeUpdate(width, height, ui.Scale);
     }
 
     void DrawTextLine(float y, float columnX, float offsetX, string label, int floorValue, int setValue, int totalValue, bool floorValueAsIcon = false, bool setValueAsIcon = false)

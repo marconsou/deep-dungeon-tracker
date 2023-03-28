@@ -103,6 +103,6 @@ public sealed class FloorSetTimeWindow : WindowEx, IDisposable
         var value = respawnTime != default ? (respawnTime - TimeSpan.FromTicks((currentFloorTime.Ticks) % (respawnTime.Ticks + 1))) : default;
         DrawTextLine(x, y, "Respawn:", (respawnTime != default && this.Data.IsInsideDeepDungeon && dataCommon.ShowFloorSetTimeValues) ? value : null, Color.White, config.RespawnTimeColor);
 
-        this.Size = new(width * ui.Scale, height * ui.Scale);
+        this.WindowSizeUpdate(width, height, ui.Scale);
     }
 }

@@ -85,7 +85,7 @@ public sealed class ScoreWindow : WindowEx, IDisposable
         else if (config.FontType == FontType.Miedinger)
             size = this.DrawTextMiedingerMid(config, ui, textScale);
 
-        this.Size = new(size.X * ui.Scale, size.Y * ui.Scale);
+        this.WindowSizeUpdate(size.X, size.Y, ui.Scale);
     }
 
     private Vector2 DrawDefault(Configuration.ScoreTab config, DataUI ui)
