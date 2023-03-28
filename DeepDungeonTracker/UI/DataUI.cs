@@ -36,13 +36,17 @@ public sealed class DataUI : IDisposable
             (ServiceUtility.IsSolo || (!ServiceUtility.IsSolo && isInDeepDungeonRegion && !isInsideDeepDungeon));
     }
 
-    public void DrawTextMiedingerMediumW00(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.MiedingerMediumW00, x, y, text?.ToUpperInvariant() ?? string.Empty, color, align);
+    public void BuildFonts() => this.ResourceUI.BuildFonts();
 
-    public void DrawTextAxisLatinPro(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.AxisLatinPro, x, y, text, color, align);
+    public void DrawTextAxis(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.Axis, x, y, text, color, align);
 
-    public Vector2 GetMiedingerMediumW00TextSize(string text) => Render.GetTextSize(this.ResourceUI.MiedingerMediumW00.FontLayout, text);
+    public void DrawTextMiedingerMid(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.MiedingerMid, x, y, text, color, align);
 
-    public Vector2 GetAxisLatinProTextSize(string text) => Render.GetTextSize(this.ResourceUI.AxisLatinPro.FontLayout, text);
+    public void DrawTextMiedingerMidLarge(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.MiedingerMidLarge, x, y, text, color, align);
+
+    public void DrawTextTrumpGothic(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.TrumpGothic, x, y, text, color, align);
+
+    public Vector2 GetAxisTextSize(string text) => Render.GetTextSize(this.ResourceUI.Axis, text);
 
     public void DrawNumber(float x, float y, int number, bool isLargeNumber = false, Vector4? color = null, Alignment align = Alignment.Left) => this.Render.DrawNumber(this.ResourceUI.Number, x, y, 1.0f / (!isLargeNumber ? 3.0f : 2.0f), number, color, align);
 

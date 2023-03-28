@@ -3,6 +3,6 @@
 public enum FontType
 {
     Default,
-    AxisLatinPro,
+    Axis,
     Miedinger,
 }

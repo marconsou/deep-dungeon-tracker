@@ -72,7 +72,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         var config = this.Configuration.General;
         this.CheckBox(config.ShowAccurateTargetHPPercentage, x => config.ShowAccurateTargetHPPercentage = x, "Show accurate target HP %");
         WindowEx.Tooltip("It doesn't apply to Focus Target.");
-        this.CheckBox(config.UseInGameCursor, x => config.UseInGameCursor = x, "Use in game cursor");
     }
 
     private void Tracker()
@@ -88,11 +87,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.CheckBox(config.ShowFloorEffectPomanders, x => config.ShowFloorEffectPomanders = x, "Show floor effect pomanders");
         WindowEx.Tooltip("Show pomander icons (at the top left of the window) representing their effect on the current floor.");
         this.Combo(config.FontType, x => config.FontType = x, "Font");
-        if (config.FontType != FontType.Default)
-        {
-            ImGui.SameLine();
-            this.CheckBox(config.FontEnlarge, x => config.FontEnlarge = x, "Enlarge");
-        }
         this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
         this.CheckBox(config.IsFloorNumberVisible, x => config.IsFloorNumberVisible = x, "##IsFloorNumberVisible");
         ImGui.SameLine();

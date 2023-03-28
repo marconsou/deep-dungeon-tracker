@@ -51,6 +51,7 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.PluginInterface.UiBuilder.Draw += this.Draw;
         Service.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
+        Service.PluginInterface.UiBuilder.BuildFonts += this.BuildFonts;
 
         Service.Framework.Update += this.Update;
         Service.ClientState.Login += this.Login;
@@ -58,12 +59,15 @@ public sealed class Plugin : IDalamudPlugin
         Service.Condition.ConditionChange += this.ConditionChange;
         Service.ChatGui.ChatMessage += this.ChatMessage;
         Service.GameNetwork.NetworkMessage += this.NetworkMessage;
+
+        this.BuildFonts();
     }
 
     public void Dispose()
     {
         Service.PluginInterface.UiBuilder.Draw -= this.Draw;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
+        Service.PluginInterface.UiBuilder.BuildFonts -= this.BuildFonts;
 
         Service.Framework.Update -= this.Update;
         Service.ClientState.Login -= this.Login;
@@ -116,11 +120,9 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OpenConfigUi() => this.ConfigurationWindow.Toggle();
 
-    private void Update(Framework framework)
-    {
-        Service.PluginInterface.UiBuilder.OverrideGameCursor = !this.Configuration.General.UseInGameCursor;
-        this.Data.Update(this.Configuration);
-    }
+    private void BuildFonts() => this.Data.UI.BuildFonts();
+
+    private void Update(Framework framework) => this.Data.Update(this.Configuration);
 
     private void Login(object? sender, EventArgs e) => this.Data.Login();
 

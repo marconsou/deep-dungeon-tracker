@@ -73,26 +73,6 @@ namespace DeepDungeonTracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] AxisLatinProFont {
-            get {
-                object obj = ResourceManager.GetObject("AxisLatinProFont", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] AxisLatinProLayout {
-            get {
-                object obj = ResourceManager.GetObject("AxisLatinProLayout", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Background {
             get {
                 object obj = ResourceManager.GetObject("Background", resourceCulture);
@@ -206,26 +186,6 @@ namespace DeepDungeonTracker.Properties {
         internal static byte[] MapNormal {
             get {
                 object obj = ResourceManager.GetObject("MapNormal", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] MiedingerMediumW00Font {
-            get {
-                object obj = ResourceManager.GetObject("MiedingerMediumW00Font", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] MiedingerMediumW00Layout {
-            get {
-                object obj = ResourceManager.GetObject("MiedingerMediumW00Layout", resourceCulture);
                 return ((byte[])(obj));
             }
         }

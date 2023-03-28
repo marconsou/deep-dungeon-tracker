@@ -2,7 +2,6 @@
 using ImGuiScene;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Numerics;
 
 namespace DeepDungeonTracker;
@@ -19,67 +18,31 @@ public class Render
         ImGui.Image(textureWrap.ImGuiHandle, new(width * finalScale, height * finalScale), new(x1, y1), new(x2, y2), color ?? Color.White);
     }
 
-    public void DrawText(Font font, float x, float y, string text, Vector4 color, Alignment align)
+    public void DrawText(ImFontPtr imFontPtr, float x, float y, string text, Vector4 color, Alignment align)
     {
-        var fontLayout = font?.FontLayout;
-        var textSize = (align != Alignment.Left) ? Render.GetTextSize(fontLayout!, text) : Vector2.Zero;
+        ImGui.PushFont(imFontPtr);
 
-        var atlasWidth = fontLayout!.Atlas!.Width;
-        var atlasHeight = fontLayout.Atlas.Height;
-        var atlasSize = fontLayout.Atlas.Size;
-        var advance = 0.0;
-
+        var size = (align != Alignment.Left) ? ImGui.CalcTextSize(text) : Vector2.Zero * this.Scale;
         var alignFactor = (align == Alignment.Center) ? 2.0f : 1.0f;
+        var distanceX = (align == Alignment.Center) ? (size.X / 2.0f) : (align == Alignment.Right) ? size.X : 0.0f;
+        var distanceY = (align == Alignment.Center) ? (size.Y / 2.0f) : (align == Alignment.Right) ? size.Y : 0.0f;
+        x = (x - (size.X / alignFactor)) * this.Scale;
+        y = (y - (size.Y / alignFactor)) * this.Scale;
+        x += distanceX * (this.Scale - 1.0f);
+        y += distanceY * (this.Scale - 1.0f);
 
-        var baseX = x + (-textSize.X / alignFactor);
-        var baseY = y + 1.0f + ((fontLayout.Metrics!.Ascender + fontLayout.Metrics.Descender) * atlasSize) - (textSize.Y / alignFactor);
-
-        foreach (var item in text ?? string.Empty)
-        {
-            var glyph = fontLayout.Glyphs!.FirstOrDefault(x => x.Unicode == item);
-            if (glyph == null)
-                continue;
-
-            if (!char.IsWhiteSpace(item))
-            {
-                var ab = glyph.AtlasBounds!;
-                var pb = glyph.PlaneBounds!;
-
-                x = (float)(baseX + (pb.Left * atlasSize) + advance);
-                y = (float)(baseY + (-pb.Top * atlasSize));
-
-                var width = (float)(ab.Right - ab.Left);
-                var height = (float)(ab.Top - ab.Bottom);
-
-                var x1 = (float)(ab.Left / atlasWidth);
-                var y1 = (float)((atlasHeight - ab.Top) / atlasHeight);
-                var x2 = (float)(ab.Right / atlasWidth);
-                var y2 = (float)((atlasHeight - ab.Bottom) / atlasHeight);
-
-                this.DrawObject(font!.TextureAtlas, x, y, width, height, x1, y1, x2, y2, 1.0f, color);
-            }
-            advance += glyph.Advance * atlasSize;
-        }
+        ImGui.SetWindowFontScale(this.Scale);
+        ImGui.SetCursorPos(new Vector2(x, y));
+        ImGui.TextColored(color, text);
+        ImGui.PopFont();
     }
 
-    public static Vector2 GetTextSize(FontLayout fontLayout, string text)
+    public Vector2 GetTextSize(ImFontPtr imFontPtr, string text)
     {
-        if (fontLayout == null)
-            return new();
-
-        var atlasSize = fontLayout.Atlas!.Size;
-        var advance = 0.0;
-        var maxHeight = (fontLayout.Metrics!.Ascender + fontLayout.Metrics.Descender) * atlasSize;
-
-        foreach (var item in text ?? string.Empty)
-        {
-            var glyph = fontLayout.Glyphs!.FirstOrDefault(x => x.Unicode == item);
-            if (glyph == null)
-                continue;
-
-            advance += glyph.Advance * atlasSize;
-        }
-        return new((float)advance, (float)maxHeight);
+        ImGui.PushFont(imFontPtr);
+        var size = ImGui.CalcTextSize(text) / this.Scale;
+        ImGui.PopFont();
+        return size;
     }
 
     public void DrawUIElement(TextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector4? color = null, Alignment align = Alignment.Left, bool mirrorHorizontal = false)

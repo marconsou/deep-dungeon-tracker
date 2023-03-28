@@ -102,16 +102,16 @@ public sealed class TrackerWindow : WindowEx, IDisposable
 
         if (config.IsFloorNumberVisible)
         {
-            ui.DrawTextMiedingerMediumW00(x, 20.0f, "Floor", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid(x, 20.0f, "Floor", Color.White, Alignment.Center);
             x += offsetX;
         }
         if (config.IsSetNumberVisible)
         {
-            ui.DrawTextMiedingerMediumW00(x, 20.0f, "Set", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid(x, 20.0f, "Set", Color.White, Alignment.Center);
             x += offsetX;
         }
         if (config.IsTotalNumberVisible)
-            ui.DrawTextMiedingerMediumW00(x, 20.0f, "Total", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid(x, 20.0f, "Total", Color.White, Alignment.Center);
 
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
 
@@ -172,32 +172,20 @@ public sealed class TrackerWindow : WindowEx, IDisposable
     {
         static void Draw(Configuration.TrackerTab config, DataUI ui, float x, float y, int number, Vector4 color)
         {
-            var textScale = config.FontEnlarge ? 1.25f : 1.0f;
-
             if (config.FontType == FontType.Default)
                 ui.DrawNumber(x, y, number, false, color, Alignment.Center);
-            else if (config.FontType == FontType.AxisLatinPro)
-            {
-                var scale = ui.Scale;
-                ui.Scale = scale * textScale;
-                ui.DrawTextAxisLatinPro(x / textScale, (y - 2.0f) / textScale, number.ToString(CultureInfo.InvariantCulture), color, Alignment.Center);
-                ui.Scale = scale;
-            }
+            else if (config.FontType == FontType.Axis)
+                ui.DrawTextAxis(x, y + 1.0f, number.ToString(CultureInfo.InvariantCulture), color, Alignment.Center);
             else if (config.FontType == FontType.Miedinger)
-            {
-                var scale = ui.Scale;
-                ui.Scale = scale * textScale;
-                ui.DrawTextMiedingerMediumW00(x / textScale, y / textScale, number.ToString(CultureInfo.InvariantCulture), color, Alignment.Center);
-                ui.Scale = scale;
-            }
+                ui.DrawTextMiedingerMidLarge(x, y + 2.0f, number.ToString(CultureInfo.InvariantCulture), color, Alignment.Center);
         }
 
         var config = this.Configuration.Tracker;
         var ui = this.Data.UI;
-        var numberOffsetY = 7.0f;
+        var numberOffsetY = 5.0f;
         var iconOffsetY = 7.0f;
         var x = columnX;
-        ui.DrawTextAxisLatinPro(15.0f, y, label, Color.White, Alignment.Left);
+        ui.DrawTextAxis(15.0f, y - 5.0f, label, Color.White, Alignment.Left);
         if (config.IsFloorNumberVisible)
         {
             var valueX = x;

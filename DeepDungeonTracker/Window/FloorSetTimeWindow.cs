@@ -34,19 +34,19 @@ public sealed class FloorSetTimeWindow : WindowEx, IDisposable
 
         void DrawTextLine(float x, float y, string label, TimeSpan? value, Vector4 labelColor, Vector4 valueColor)
         {
-            ui.DrawTextAxisLatinPro(x, y, label, labelColor, Alignment.Left);
+            ui.DrawTextAxis(x, y, label, labelColor, Alignment.Left);
 
-            var size = ui.GetAxisLatinProTextSize(label + " ");
+            var size = ui.GetAxisTextSize(label + " ");
 
             if (value != null)
-                ui.DrawTextAxisLatinPro(x + size.X, y, $"{value:mm\\:ss}", valueColor, Alignment.Left);
+                ui.DrawTextAxis(x + size.X, y, $"{value:mm\\:ss}", valueColor, Alignment.Left);
         }
 
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
         if (config.ShowTitle)
         {
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Floor Set Time", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid(width / 2.0f, 20.0f, "Floor Set Time", Color.White, Alignment.Center);
             ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
         }
 
@@ -81,12 +81,12 @@ public sealed class FloorSetTimeWindow : WindowEx, IDisposable
             x = left;
             y -= 8.0f;
             ui.DrawDivisorHorizontal(14.0f, y, width - 26.0f);
-            y += 15.0f;
+            y += 10.0f;
         }
 
         if (!config.ShowFloorTime && !config.ShowTitle)
         {
-            y += 1.0f;
+            y -= 3.0f;
             height += 7.0f;
         }
 

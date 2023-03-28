@@ -29,8 +29,6 @@ public class Configuration : IPluginConfiguration
     public class GeneralTab
     {
         public bool ShowAccurateTargetHPPercentage { get; set; }
-
-        public bool UseInGameCursor { get; set; }
     }
 
     public class TrackerTab
@@ -53,8 +51,6 @@ public class Configuration : IPluginConfiguration
         public bool ShowFloorEffectPomanders { get; set; } = true;
 
         public FontType FontType { get; set; }
-
-        public bool FontEnlarge { get; set; }
 
         public float Scale { get; set; } = 1.0f;
 

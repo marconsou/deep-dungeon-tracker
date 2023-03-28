@@ -65,10 +65,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Resources\Fonts\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Include="..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
 

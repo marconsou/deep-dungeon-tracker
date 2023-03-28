@@ -75,15 +75,15 @@ public sealed class ScoreWindow : WindowEx, IDisposable
         var config = this.Configuration.Score;
         var ui = this.Data.UI;
         ui.Scale = config.Scale;
-        var textScale = 1.50f;
+        var textScale = 1.00f;
 
         var size = Vector2.Zero;
         if (config.FontType == FontType.Default)
             size = this.DrawDefault(config, ui);
-        else if (config.FontType == FontType.AxisLatinPro)
-            size = this.DrawAxisLatinPro(config, ui, textScale);
+        else if (config.FontType == FontType.Axis)
+            size = this.DrawTextAxis(config, ui, textScale);
         else if (config.FontType == FontType.Miedinger)
-            size = this.DrawMiedinger(config, ui, textScale);
+            size = this.DrawTextMiedingerMid(config, ui, textScale);
 
         this.Size = new(size.X * ui.Scale, size.Y * ui.Scale);
     }
@@ -102,7 +102,7 @@ public sealed class ScoreWindow : WindowEx, IDisposable
         if (config.ShowTitle)
         {
             y += 20.0f;
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, y, "Score", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid(width / 2.0f, y, "Score", Color.White, Alignment.Center);
 
             y += 14.0f;
             ui.DrawDivisorHorizontal(14.0f, y, width - 26.0f);
@@ -117,7 +117,7 @@ public sealed class ScoreWindow : WindowEx, IDisposable
         return new(width, height);
     }
 
-    private Vector2 DrawAxisLatinPro(Configuration.ScoreTab config, DataUI ui, float textScale)
+    private Vector2 DrawTextAxis(Configuration.ScoreTab config, DataUI ui, float textScale)
     {
         ui.Scale = config.Scale;
         var width = 140.0f;
@@ -131,25 +131,25 @@ public sealed class ScoreWindow : WindowEx, IDisposable
         if (config.ShowTitle)
         {
             y += 20.0f;
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, y, "Score", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid(width / 2.0f, y, "Score", Color.White, Alignment.Center);
 
             y += 14.0f;
             ui.DrawDivisorHorizontal(14.0f, y, width - 26.0f);
 
-            y += 27.0f;
+            y += 30.0f;
         }
         else
-            y = 30.0f;
+            y = 33.0f;
 
         var scale = ui.Scale;
         ui.Scale = scale * textScale;
-        ui.DrawTextAxisLatinPro(x / textScale, y / textScale, this.GradualScore.ToString("N0", CultureInfo.InvariantCulture), config.TotalScoreColor, Alignment.Right);
+        ui.DrawTextAxis(x / textScale, y / textScale, this.GradualScore.ToString("N0", CultureInfo.InvariantCulture), config.TotalScoreColor, Alignment.Right);
         ui.Scale = scale;
 
         return new(width, height);
     }
 
-    private Vector2 DrawMiedinger(Configuration.ScoreTab config, DataUI ui, float textScale)
+    private Vector2 DrawTextMiedingerMid(Configuration.ScoreTab config, DataUI ui, float textScale)
     {
         ui.Scale = config.Scale;
         var width = 189.0f;
@@ -163,19 +163,19 @@ public sealed class ScoreWindow : WindowEx, IDisposable
         if (config.ShowTitle)
         {
             y += 20.0f;
-            ui.DrawTextMiedingerMediumW00(width / 2.0f, y, "Score", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid(width / 2.0f, y, "Score", Color.White, Alignment.Center);
 
             y += 14.0f;
             ui.DrawDivisorHorizontal(14.0f, y, width - 26.0f);
 
-            y += 27.0f;
+            y += 32.0f;
         }
         else
-            y = 30.0f;
+            y = 36.0f;
 
         var scale = ui.Scale;
         ui.Scale = scale * textScale;
-        ui.DrawTextMiedingerMediumW00(x / textScale, y / textScale, this.GradualScore.ToString("N0", CultureInfo.InvariantCulture), config.TotalScoreColor, Alignment.Right);
+        ui.DrawTextMiedingerMidLarge(x / textScale, y / textScale, this.GradualScore.ToString("N0", CultureInfo.InvariantCulture), config.TotalScoreColor, Alignment.Right);
         ui.Scale = scale;
 
         return new(width, height);

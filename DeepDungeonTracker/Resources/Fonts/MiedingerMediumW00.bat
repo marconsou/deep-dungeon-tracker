@@ -1,1 +1,0 @@
-msdf-atlas-gen -type softmask -font MiedingerMediumW00.ttf -charset MiedingerMediumW00.txt -format png -imageout MiedingerMediumW00Font.png -json MiedingerMediumW00Layout.json -size 14

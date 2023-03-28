@@ -161,7 +161,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawMiscellaneousText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, bool includeMapTotal)
     {
-        var offset = -4.0f;
+        var offset = 0.0f;
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Miscellaneous>>())
         {
             var value = (Miscellaneous)(Enum)item.Value;
@@ -169,7 +169,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             {
                 var total = item.Total;
                 if (total > 1)
-                    this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
+                    this.Data.UI.DrawTextAxis(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
             }
             x += iconSize;
         }
@@ -187,12 +187,12 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawCofferText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Coffer>>? data)
     {
-        var offset = -4.0f;
+        var offset = 0.0f;
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Coffer>>())
         {
             var total = item.Total;
             if (total > 1)
-                this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
+                this.Data.UI.DrawTextAxis(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
             x += iconSize;
         }
     }
@@ -209,12 +209,12 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawPomanderText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data)
     {
-        var offset = -4.0f;
+        var offset = 0.0f;
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
         {
             var total = item.Total;
             if (total > 1)
-                this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
+                this.Data.UI.DrawTextAxis(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
             x += iconSize;
         }
     }
@@ -230,12 +230,12 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawEnchantmentText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Enchantment>>? data)
     {
-        var offset = -4.0f;
+        var offset = 0.0f;
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Enchantment>>())
         {
             var total = item.Total;
             if (total > 1)
-                this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
+                this.Data.UI.DrawTextAxis(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
             x += iconSize;
         }
     }
@@ -252,12 +252,12 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawTrapText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Trap>>? data)
     {
-        var offset = -4.0f;
+        var offset = 0.0f;
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Trap>>())
         {
             var total = item.Total;
             if (total > 1)
-                this.Data.UI.DrawTextAxisLatinPro(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
+                this.Data.UI.DrawTextAxis(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
             x += iconSize;
         }
     }
@@ -269,10 +269,10 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var offset = 4.0f;
         var adjustY = -4.0f;
         if (cofferData?.Count() > 0)
-            this.Data.UI.DrawTextMiedingerMediumW00(x + offset, y + offset + adjustY, "Got", color);
+            this.Data.UI.DrawTextMiedingerMid(x + offset, y + offset + adjustY, "Got", color);
 
         if (pomanderData?.Count() > 0)
-            this.Data.UI.DrawTextMiedingerMediumW00(x + offset, y + offset + iconSize + adjustY, "Used", color);
+            this.Data.UI.DrawTextMiedingerMid(x + offset, y + offset + iconSize + adjustY, "Used", color);
     }
 
     private void DrawFloorText(float x, float y, string floorText, TimeSpan totalTime, TimeSpan? previousTime, int totalScore, int? previousScore, bool forceShowHours = false, bool isTimeBonusMissScore = false)
@@ -286,11 +286,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         {
             if (totalScore != 0)
             {
-                ui.DrawTextAxisLatinPro(x, y, $"{totalScore.ToString("N0", CultureInfo.InvariantCulture)}", totalScore > 0 ? config!.ScoreColor : totalScore < 0 ? Color.Red : Color.White);
+                ui.DrawTextAxis(x, y, $"{totalScore.ToString("N0", CultureInfo.InvariantCulture)}", totalScore > 0 ? config!.ScoreColor : totalScore < 0 ? Color.Red : Color.White);
                 if (previousScore != null && previousScore.Value != totalScore && previousScore != 0)
                 {
                     var previousScoreText = $"{(previousScore > 0 ? "+" : string.Empty)}{previousScore.Value.ToString("N0", CultureInfo.InvariantCulture)}";
-                    ui.DrawTextAxisLatinPro(x, y + lineHeight, previousScoreText, previousScore > 0 ? config!.ScoreColor : previousScore < 0 ? Color.Red : Color.White);
+                    ui.DrawTextAxis(x, y + lineHeight, previousScoreText, previousScore > 0 ? config!.ScoreColor : previousScore < 0 ? Color.Red : Color.White);
                 }
             }
         }
@@ -299,11 +299,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         {
             var timeBonusMissScore = totalScore + (101 * 150);
             var timeBonusMissScoreText = $"{timeBonusMissScore.ToString("N0", CultureInfo.InvariantCulture)}";
-            ui.DrawTextAxisLatinPro(x, y, timeBonusMissScoreText, timeBonusMissScore > 0 ? config!.ScoreColor : timeBonusMissScore < 0 ? Color.Red : Color.White);
-            x += ui!.GetAxisLatinProTextSize(timeBonusMissScoreText).X;
+            ui.DrawTextAxis(x, y, timeBonusMissScoreText, timeBonusMissScore > 0 ? config!.ScoreColor : timeBonusMissScore < 0 ? Color.Red : Color.White);
+            x += ui!.GetAxisTextSize(timeBonusMissScoreText).X;
         }
 
-        ui.DrawTextAxisLatinPro(x, y, floorText, this.SummarySelectionColor(this.Data.Statistics.FloorSetTextSummary == floorText));
+        ui.DrawTextAxis(x, y, floorText, this.SummarySelectionColor(this.Data.Statistics.FloorSetTextSummary == floorText));
 
         var space = "   ";
         floorText += space;
@@ -312,15 +312,15 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
         if (totalTime != default)
         {
-            x += ui.GetAxisLatinProTextSize(floorText).X;
-            ui.DrawTextAxisLatinPro(x, y, totalTimeText, config.FloorTimeColor);
+            x += ui.GetAxisTextSize(floorText).X;
+            ui.DrawTextAxis(x, y, totalTimeText, config.FloorTimeColor);
             if (previousTime != null && previousTime.Value != totalTime && previousTime.Value != default)
             {
                 var previousTimeText = "+";
                 previousTimeText += previousTime.Value.Hours > 0 ? $"{previousTime}" : $"{previousTime:mm\\:ss}";
-                ui.DrawTextAxisLatinPro(x, y + lineHeight, previousTimeText, config.FloorTimeColor);
+                ui.DrawTextAxis(x, y + lineHeight, previousTimeText, config.FloorTimeColor);
             }
-            x += ui!.GetAxisLatinProTextSize(totalTimeText).X;
+            x += ui!.GetAxisTextSize(totalTimeText).X;
         }
 
         var timeBonusX = 0.0f;
@@ -368,8 +368,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
             var kills = item.Kills();
             if (kills != totalKills && kills > 0)
-                this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 35.0f, $"+{kills.ToString(CultureInfo.InvariantCulture)}", Color.Yellow, Alignment.Left);
-            this.Data.UI.DrawTextAxisLatinPro(x + iconSize - 16.0f, y + 21.0f + (kills == totalKills || kills == 0 ? 8.0f : 0.0f), totalKills.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Left);
+                this.Data.UI.DrawTextAxis(x + iconSize - 16.0f, y + 35.0f, $"+{kills.ToString(CultureInfo.InvariantCulture)}", Color.Yellow, Alignment.Left);
+            this.Data.UI.DrawTextAxis(x + iconSize - 16.0f, y + 21.0f + (kills == totalKills || kills == 0 ? 8.0f : 0.0f), totalKills.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Left);
 
             (x, y) = StatisticsWindow.AdjustSummaryFloorSetPosition(x, y, top, lineHeight, firstFloorNumber);
         }
@@ -411,34 +411,34 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         {
             var color = this.SummarySelectionColor();
 
-            ui.DrawTextAxisLatinPro(x, y, $"{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")} ({score.BaseScore})", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxisLatinPro(x, y, $"Level: {score.CurrentLevel} (+{score.AetherpoolArm}/+{score.AetherpoolArmor})", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Floor: {score.StartingFloorNumber} to {score.CurrentFloorNumber} ({score.TotalReachedFloors})", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxisLatinPro(x, y, $"Character: {score.CharacterScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Floors: {score.FloorScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Maps: {score.MapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Coffers: {score.CofferScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")} ({score.BaseScore})", color); y += lineHeight * 2.0f;
+            ui.DrawTextAxis(x, y, $"Level: {score.CurrentLevel} (+{score.AetherpoolArm}/+{score.AetherpoolArmor})", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Floor: {score.StartingFloorNumber} to {score.CurrentFloorNumber} ({score.TotalReachedFloors})", color); y += lineHeight * 2.0f;
+            ui.DrawTextAxis(x, y, $"Character: {score.CharacterScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Floors: {score.FloorScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Maps: {score.MapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Coffers: {score.CofferScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
 
             if (statistics?.SaveSlot?.DeepDungeon == DeepDungeon.PalaceOfTheDead)
             {
-                ui.DrawTextAxisLatinPro(x, y, $"NPCs: {score.NPCScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
+                ui.DrawTextAxis(x, y, $"NPCs: {score.NPCScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
                 y += lineHeight;
             }
 
             if (statistics?.SaveSlot?.DeepDungeon == DeepDungeon.EurekaOrthos)
             {
-                ui.DrawTextAxisLatinPro(x, y, $"Dread Beasts: {score.DreadBeastScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
+                ui.DrawTextAxis(x, y, $"Dread Beasts: {score.DreadBeastScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
                 y += lineHeight;
             }
 
-            ui.DrawTextAxisLatinPro(x, y, $"Mimicgoras: {score.MimicgoraScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Enchantments: {score.EnchantmentScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Traps: {score.TrapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Time Bonuses: {score.TimeBonusScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Deaths: {score.DeathScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxisLatinPro(x, y, $"Non-Kills: {score.NonKillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxisLatinPro(x, y, $"Kills: {score.KillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxisLatinPro(x, y, $"Total: {score.TotalScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
+            ui.DrawTextAxis(x, y, $"Mimicgoras: {score.MimicgoraScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Enchantments: {score.EnchantmentScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Traps: {score.TrapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Time Bonuses: {score.TimeBonusScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Deaths: {score.DeathScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
+            ui.DrawTextAxis(x, y, $"Non-Kills: {score.NonKillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            ui.DrawTextAxis(x, y, $"Kills: {score.KillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
+            ui.DrawTextAxis(x, y, $"Total: {score.TotalScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
         }
     }
 
@@ -602,15 +602,15 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
         if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
-            ui.DrawJob(14.0f, 7.0f, classJobId.Item1);
+            ui.DrawJob(80.0f, 7.0f, classJobId.Item1);
         else
-            ui.DrawTextAxisLatinPro(16.0f, 15.0f, "???", Color.White, Alignment.Left);
+            ui.DrawTextAxis(82.0f, 15.0f, "???", Color.White, Alignment.Left);
 
-        this.ScreenshotButton.Position = new Vector2(45.0f, 7.0f);
-        this.DoubleArrowButtonSummary.Position = new((width / 2.0f) - 145.0f, 8.0f);
-        this.DoubleArrowButtonCurrent.Position = new((width / 2.0f) + 112.0f, 8.0f);
-        this.ArrowButtonPrevious.Position = new((width / 2.0f) - 108.0f, 7.0f);
-        this.ArrowButtonNext.Position = new((width / 2.0f) + 72.0f, 7.0f);
+        this.ScreenshotButton.Position = new Vector2(110.0f, 7.0f);
+        this.DoubleArrowButtonSummary.Position = new((width / 2.0f) - 75.0f, 8.0f);
+        this.DoubleArrowButtonCurrent.Position = new((width / 2.0f) + 42.0f, 8.0f);
+        this.ArrowButtonPrevious.Position = new((width / 2.0f) - 38.0f, 7.0f);
+        this.ArrowButtonNext.Position = new((width / 2.0f) + 2.0f, 7.0f);
         this.CloseButton.Position = new(width - 35.0f, 7.0f);
         this.ScreenshotButton.Draw(ui, audio);
         this.DoubleArrowButtonSummary.Draw(ui, audio);
@@ -637,9 +637,9 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
                 this.SummaryPage(left, top, iconSize, floorWidth, floorHeight);
         }
         else
-            ui.DrawTextAxisLatinPro(width / 2.0f, (height / 2.0f) + 15.0f, $"No data on {statistics.FloorSetStatistics.GetDescription()}", Color.White, Alignment.Center);
+            ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, $"No data on {statistics.FloorSetStatistics.GetDescription()}", Color.White, Alignment.Center);
 
-        ui.DrawTextMiedingerMediumW00(width / 2.0f, 20.0f, "Statistics", Color.White, Alignment.Center);
+        ui.DrawTextTrumpGothic(15.0f, 8.0f, "Statistics", new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Left);
 
         this.Size = new(width * ui.Scale, height * ui.Scale);
         this.CheckForEvents();
