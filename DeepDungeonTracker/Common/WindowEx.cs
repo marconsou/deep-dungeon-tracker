@@ -72,11 +72,7 @@ public abstract class WindowEx : Window
         return this.Size * (fontGlobalScale >= 1.0f ? 1.0f : fontGlobalScale) ?? Vector2.One;
     }
 
-    protected void WindowSizeUpdate(float width, float height, float scale)
-    {
-        var fontGlobalScale = ImGui.GetIO().FontGlobalScale;
-        this.Size = new Vector2(width * scale, height * scale) / (fontGlobalScale >= 1.0f ? 1.0f : fontGlobalScale);
-    }
+    protected void WindowSizeUpdate(float width, float height, float scale) => this.Size = new Vector2(width * scale, height * scale) / ImGui.GetIO().FontGlobalScale;
 
     protected static void Tooltip(string message, float width = 420.0f)
     {

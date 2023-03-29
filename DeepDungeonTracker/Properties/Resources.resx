@@ -118,35 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="ArrowButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ArrowButton.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Background" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Background.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="CheckMark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CheckMark.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="CloseButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CloseButton.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Coffer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Coffer.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="DivisorHorizontal" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DivisorHorizontal.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="DivisorVertical" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DivisorVertical.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="DoubleArrowButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DoubleArrowButton.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Enchantment" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Enchantment.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GenericButtonOver" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GenericButtonOver.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Job" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Job.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -160,13 +136,10 @@
   <data name="Miscellaneous" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Miscellaneous.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Number" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Number.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="ScreenshotButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ScreenshotButton.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Trap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Trap.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="UI" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UI.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

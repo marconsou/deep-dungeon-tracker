@@ -63,46 +63,6 @@ namespace DeepDungeonTracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] ArrowButton {
-            get {
-                object obj = ResourceManager.GetObject("ArrowButton", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Background {
-            get {
-                object obj = ResourceManager.GetObject("Background", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] CheckMark {
-            get {
-                object obj = ResourceManager.GetObject("CheckMark", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] CloseButton {
-            get {
-                object obj = ResourceManager.GetObject("CloseButton", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Coffer {
             get {
                 object obj = ResourceManager.GetObject("Coffer", resourceCulture);
@@ -113,49 +73,9 @@ namespace DeepDungeonTracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] DivisorHorizontal {
-            get {
-                object obj = ResourceManager.GetObject("DivisorHorizontal", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] DivisorVertical {
-            get {
-                object obj = ResourceManager.GetObject("DivisorVertical", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] DoubleArrowButton {
-            get {
-                object obj = ResourceManager.GetObject("DoubleArrowButton", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Enchantment {
             get {
                 object obj = ResourceManager.GetObject("Enchantment", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] GenericButtonOver {
-            get {
-                object obj = ResourceManager.GetObject("GenericButtonOver", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -203,29 +123,19 @@ namespace DeepDungeonTracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Number {
-            get {
-                object obj = ResourceManager.GetObject("Number", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] ScreenshotButton {
-            get {
-                object obj = ResourceManager.GetObject("ScreenshotButton", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Trap {
             get {
                 object obj = ResourceManager.GetObject("Trap", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] UI {
+            get {
+                object obj = ResourceManager.GetObject("UI", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -93,7 +93,9 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             this.Data.Audio.PlaySound(SoundIndex.Screenshot);
             var classJobName = this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId) ? classJobId.Item2 : string.Empty;
             var fileName = $"{classJobName} {statistics.FloorSetStatistics.GetDescription()} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.png".Trim();
-            var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), this.GetSizeScaled(), Directories.Screenshots, fileName);
+            var fontGlobalScale = ImGui.GetIO().FontGlobalScale;
+            var size = this.GetSizeScaled() * (fontGlobalScale > 1.0f ? fontGlobalScale : 1.0f);
+            var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), size, Directories.Screenshots, fileName);
             Service.ChatGui.Print(result.Item1 ? $"{result.Item2} ({fileName})" : result.Item2);
         }
     }
