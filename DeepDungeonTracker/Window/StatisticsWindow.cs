@@ -256,6 +256,46 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         }
     }
 
+    private void DrawInventoryIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data, int itemsPerLine)
+    {
+        var offset = 4.0f;
+        var baseX = x;
+        var index = 0;
+        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        {
+            this.Data.UI.DrawPomander(x + offset, y + offset, (Pomander)(Enum)item.Value);
+            x += iconSize;
+
+            if (index % itemsPerLine == itemsPerLine - 1)
+            {
+                x = baseX;
+                y += iconSize;
+            }
+            index++;
+        }
+    }
+
+    private void DrawInventoryText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data, int itemsPerLine)
+    {
+        var offset = 0.0f;
+        var baseX = x;
+        var index = 0;
+        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        {
+            var total = item.Total;
+            if (total > 1)
+                this.Data.UI.DrawTextAxis(x + offset + iconSize, y + offset + iconSize, total.ToString(CultureInfo.InvariantCulture), this.SummarySelectionColor(), Alignment.Right);
+            x += iconSize;
+
+            if (index % itemsPerLine == itemsPerLine - 1)
+            {
+                x = baseX;
+                y += iconSize;
+            }
+            index++;
+        }
+    }
+
     private void DrawEnchantmentIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Enchantment>>? data, bool isEnchantmentSerenized)
     {
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Enchantment>>())
@@ -621,6 +661,22 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.DrawGotUsedText(x - leftPanelAdjust, y3 + iconSize, iconSize, statistics?.CoffersTotal, statistics?.PomandersTotal);
     }
 
+    public void InventoryPanel(float leftPanelAdjust, float iconSize)
+    {
+        var ui = this.Data.UI;
+        var inventory = this.Data.Statistics.Inventory;
+        var x = 15.0f;
+        var y = 267.0f;
+        
+        this.DrawInventoryIcon(x, y + 40.0f, iconSize, inventory, 3);
+        this.DrawInventoryText(x, y + 40.0f, iconSize, inventory, 3);
+        if (inventory?.Count() > 0)
+        {
+            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 20.0f, "Inventory", new Vector4(1.0f, 1.0f, 1.0f, 0.7f), Alignment.Center);
+            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 33.0f, this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary ? "At the End" : "At the Start", new Vector4(1.0f, 1.0f, 1.0f, 0.7f), Alignment.Center);
+        }
+    }
+
     public void PageNavigation()
     {
         var ui = this.Data.UI;
@@ -670,9 +726,9 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
         if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
-            ui.DrawJob(leftPanelAdjust / 2.0f, 110.0f, classJobId.Item1);
+            ui.DrawJob(leftPanelAdjust / 2.0f, 160.0f, classJobId.Item1);
         else
-            ui.DrawJob(leftPanelAdjust / 2.0f, 110.0f, 17);
+            ui.DrawJob(leftPanelAdjust / 2.0f, 160.0f, 17);
 
         if (statistics.DeepDungeon != DeepDungeon.None)
             ui.DrawDeepDungeon(width - 446.0f, 6.0f, statistics.DeepDungeon);
@@ -693,6 +749,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.CloseButton.Draw(ui, audio);
 
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
+        ui.DrawDivisorHorizontal(14, 271.0f, 159.0f);
 
         this.PageNavigation();
 
@@ -715,6 +772,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             }
             else
                 this.FloorSetPage(leftPanelAdjust, left, top, iconSize, floorWidth, floorHeight, width);
+
+            this.InventoryPanel(leftPanelAdjust, iconSize);
         }
         else
         {

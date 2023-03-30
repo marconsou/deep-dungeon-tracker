@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using Action = System.Action;
 
 namespace DeepDungeonTracker;
 
@@ -47,6 +48,8 @@ public class DataStatistics
     public IEnumerable<StatisticsItem<Pomander>>? PomandersLastFloor { get; private set; }
 
     public IEnumerable<StatisticsItem<Pomander>>? PomandersTotal { get; private set; }
+
+    public IEnumerable<StatisticsItem<Pomander>>? Inventory { get; private set; }
 
     public TimeSpan TimeLastFloor { get; private set; }
 
@@ -167,6 +170,13 @@ public class DataStatistics
             this.PomandersLastFloor = this.FloorSet?.LastFloor()?.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9);
             this.PomandersTotal = this.FloorSet?.Floors.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).OrderBy(x => x.Value).Take(22);
 
+            var floorSetsExceptLast = this.SaveSlot?.FloorSets.Where(x => x.FirstFloor()?.Number < ((int)this.FloorSetStatistics * 10) - 9);
+            var floorsExceptLast = floorSetsExceptLast?.SelectMany(x => x.Floors);
+            var coffersTotalExceptLast = floorsExceptLast?.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).OrderByDescending(x => x.Value != Coffer.Potsherd && x.Value != Coffer.Medicine && x.Value != Coffer.Aetherpool).ThenBy(x => x.Value);
+            var pomandersTotalExceptLast = floorsExceptLast?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).OrderBy(x => x.Value);
+
+            this.Inventory = DataStatistics.BuildInventory(coffersTotalExceptLast, pomandersTotalExceptLast);
+
             this.TimeLastFloor = new(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
             this.TimeTotal = new(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);
 
@@ -192,12 +202,20 @@ public class DataStatistics
             this.PomandersLastFloor = lastFloors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9);
             this.PomandersTotal = floors?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).OrderBy(x => x.Value).Take(22);
 
+            this.Inventory = DataStatistics.BuildInventory(CoffersTotal, PomandersTotal);
+
             this.TimeLastFloor = new(lastFloors?.Sum(x => x.Time.Ticks) ?? default);
             this.TimeTotal = saveSlot?.Time() ?? default;
 
             this.ScoreLastFloor = lastFloors?.Sum(x => x.Score) ?? 0;
             this.ScoreTotal = saveSlot?.Score() ?? 0;
         }
+    }
+
+    private static IEnumerable<StatisticsItem<Pomander>>? BuildInventory(IEnumerable<StatisticsItem<Coffer>>? coffers, IEnumerable<StatisticsItem<Pomander>>? pomanders)
+    {
+        var coffersToPomanders = coffers?.Where(x => x.Value != Coffer.Potsherd && x.Value != Coffer.Medicine && x.Value != Coffer.Aetherpool).Select(x => new StatisticsItem<Pomander>((Pomander)x.Value, x.Total));
+        return coffersToPomanders?.Select(x => new StatisticsItem<Pomander>(x.Value, x.Total - (pomanders?.FirstOrDefault(y => y.Value == x.Value)?.Total ?? 0))).Where(x => x.Total > 0);
     }
 
     private static IEnumerable<StatisticsItem<Miscellaneous>>? GetMiscellaneousByFloors(IEnumerable<Floor>? floors)
