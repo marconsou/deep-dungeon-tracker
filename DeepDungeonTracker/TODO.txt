@@ -1,2 +1,0 @@
-﻿NodeUtility.CreateTextNode.Malloc.
-Map = false clear MapData (.net 7).

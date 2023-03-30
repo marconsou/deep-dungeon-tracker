@@ -187,26 +187,10 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
         ImGui.SameLine();
         this.ColorEdit4(config.SummarySelectionColor, x => config.SummarySelectionColor = x, "Summary Selection");
-        ImGui.NewLine();
 
         var saveSlotSelection = this.Data.Common.SaveSlotSelection.GetData();
         if (saveSlotSelection?.Count > 0)
         {
-            this.IconButton(statistics.FloorSetStatisticsSummary, FontAwesomeIcon.AngleDoubleLeft, "Summary");
-
-            ImGui.SameLine();
-            this.IconButton(statistics.FloorSetStatisticsPrevious, FontAwesomeIcon.AngleLeft, "Left");
-
-            ImGui.SameLine();
-            this.IconButton(statistics.FloorSetStatisticsNext, FontAwesomeIcon.AngleRight, "Right");
-
-            ImGui.SameLine();
-            this.IconButton(statistics.FloorSetStatisticsCurrent, FontAwesomeIcon.AngleDoubleRight, "Current");
-
-            ImGui.SameLine();
-            if (this.Combo(statistics.FloorSetStatistics, x => statistics.FloorSetStatistics = x, "##FloorSetStatistics").Item1)
-                statistics.DataUpdate();
-
             foreach (var saveSlot in saveSlotSelection)
             {
                 ImGui.NewLine();
@@ -265,9 +249,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.IconButton(() => { LocalStream.OpenFolder(Directories.Backups); }, FontAwesomeIcon.FolderOpen, "BackupsFolderOpen");
         ImGui.SameLine();
         ImGui.Text("Backups");
-        this.IconButton(() => { LocalStream.OpenFolder(Directories.Screenshots); }, FontAwesomeIcon.FolderOpen, "ScreenshotsFolderOpen");
-        ImGui.SameLine();
-        ImGui.Text("Screenshots");
         var fileNames = LocalStream.GetFileNamesFromDirectory(Directories.Backups).Where(x => LocalStream.IsExtension(x, ".json")).ToArray();
         if (fileNames.Length > 0)
         {

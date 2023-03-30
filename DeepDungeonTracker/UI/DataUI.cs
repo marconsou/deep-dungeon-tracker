@@ -48,11 +48,13 @@ public sealed class DataUI : IDisposable
 
     public Vector2 GetAxisTextSize(string text) => Render.GetTextSize(this.ResourceUI.Axis, text);
 
+    public Vector2 GetMiedingerMidLargeTextSize(string text) => Render.GetTextSize(this.ResourceUI.MiedingerMidLarge, text);
+
     public void DrawNumber(float x, float y, int number, bool isLargeNumber = false, Vector4? color = null, Alignment align = Alignment.Left) => this.Render.DrawNumber(this.ResourceUI.UI, x, y, 1.0f / (!isLargeNumber ? 3.0f : 2.0f), number, color, align);
 
     public void DrawCheckMark(float x, float y, bool checkMark) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, Convert.ToInt32(checkMark), 2, 1, new(346.0f, 33.0f), new(108.0f, 54.0f), null, Alignment.Center);
 
-    public void DrawDeepDungeon(float x, float y, DeepDungeon deepDungeon) => this.Render.DrawUIElement(this.ResourceUI.DeepDungeon, x, y, 0.75f, (int)deepDungeon - 1, 1, 3, align: Alignment.Center);
+    public void DrawDeepDungeon(float x, float y, DeepDungeon deepDungeon) => this.Render.DrawUIElement(this.ResourceUI.DeepDungeon, x, y, 0.75f, (int)deepDungeon - 1, 1, 3, align: Alignment.Left);
 
     public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 0.5f, (int)jobId, 4, 6, align: Alignment.Center);
 
@@ -72,6 +74,8 @@ public sealed class DataUI : IDisposable
 
     public void DrawScreenshotButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, new(156.0f, 61.0f), new(72.0f, 36.0f), null, Alignment.Left);
 
+    public void DrawScreenshotFolderButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, new(2.0f, 236.0f), new(72.0f, 36.0f), null, Alignment.Left);
+
     public void DrawArrowButton(float x, float y, bool isMouseOver, bool mirrorHorizontal = false) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1, new(65.0f, 2.0f), new(144.0f, 56.0f), null, Alignment.Left, mirrorHorizontal);
 
     public void DrawDoubleArrowButton(float x, float y, bool isMouseOver, bool mirrorHorizontal = false) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, new(65.0f, 61.0f), new(88.0f, 34.0f), null, Alignment.Left, mirrorHorizontal);
@@ -79,6 +83,8 @@ public sealed class DataUI : IDisposable
     public void DrawCloseButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1, new(231.0f, 33.0f), new(112.0f, 56.0f), null, Alignment.Left);
 
     public void DrawGenericButtonOver(float x, float y, float width, float height) => this.Render.DrawGenericButtonOver(this.ResourceUI.UI, x, y, width, height);
+
+    public void DrawNumberButtonActive(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, 0, 1, 1, new(464.0f, 53.0f), new(77.0f, 44.0f));
 
     public void DrawDivisorHorizontal(float x, float y, float width) => this.Render.DrawDivisorHorizontal(this.ResourceUI.UI, x, y, width);
 

@@ -14,6 +14,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private Button ScreenshotButton { get; } = new ScreenshotButton();
 
+    private Button ScreenshotFolderButton { get; } = new ScreenshotFolderButton();
+
     private Button DoubleArrowButtonSummary { get; } = new DoubleArrowButton(false);
 
     private Button DoubleArrowButtonCurrent { get; } = new DoubleArrowButton(true);
@@ -25,6 +27,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private Button CloseButton { get; } = new CloseButton();
 
     private IList<Button> FloorSetSummaryButtons { get; } = new List<Button>();
+
+    private IList<Button> PageNavigationButtons { get; } = new List<Button>();
 
     private IDictionary<uint, (uint, string)> ClassJobIds { get; }
 
@@ -55,7 +59,10 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         };
 
         for (int i = 0; i < 20; i++)
+        {
             this.FloorSetSummaryButtons.Add(new GenericButton());
+            this.PageNavigationButtons.Add(new NumberButton(i + 1));
+        }
     }
 
     public void Dispose() { }
@@ -97,6 +104,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             var size = this.GetSizeScaled() * (fontGlobalScale > 1.0f ? fontGlobalScale : 1.0f);
             var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), size, Directories.Screenshots, fileName);
             Service.ChatGui.Print(result.Item1 ? $"{result.Item2} ({fileName})" : result.Item2);
+        }
+        else if (this.ScreenshotFolderButton.OnMouseLeftClick())
+        {
+            this.Data.Audio.PlaySound(SoundIndex.OnClick);
+            LocalStream.OpenFolder(Directories.Screenshots);
         }
     }
 
@@ -609,6 +621,37 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.DrawGotUsedText(x - leftPanelAdjust, y3 + iconSize, iconSize, statistics?.CoffersTotal, statistics?.PomandersTotal);
     }
 
+    public void PageNavigation()
+    {
+        var ui = this.Data.UI;
+        var x = 247.0f;
+        var y = 11.0f;
+
+        for (var i = 0; i < 20; i++)
+        {
+            if (this.PageNavigationButtons[i] is not NumberButton button)
+                continue;
+
+            button.Position = new(x + (i * 42.0f), y);
+            button.Color = Color.White;
+
+            if ((int)this.Data.Statistics.FloorSetStatistics == button.Number)
+            {
+                button.Color = Color.Yellow;
+                ui.DrawNumberButtonActive(button.Position.X - 2.0f, button.Position.Y - 2.0f);
+            }
+
+            if (button.OnMouseLeftClick())
+            {
+                this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                this.Data.Statistics.FloorSetStatistics = (FloorSetStatistics)button.Number;
+                this.Data.Statistics.DataUpdate();
+            }
+
+            button.Draw(ui, this.Data.Audio);
+        }
+    }
+
     public override void Draw()
     {
         var statistics = this.Data.Statistics;
@@ -627,20 +670,22 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
         if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
-            ui.DrawJob(leftPanelAdjust / 2.0f, 100.0f, classJobId.Item1);
+            ui.DrawJob(leftPanelAdjust / 2.0f, 110.0f, classJobId.Item1);
         else
-            ui.DrawJob(leftPanelAdjust / 2.0f, 100.0f, 17);
+            ui.DrawJob(leftPanelAdjust / 2.0f, 110.0f, 17);
 
         if (statistics.DeepDungeon != DeepDungeon.None)
-            ui.DrawDeepDungeon(width / 2.0f, 20.0f, statistics.DeepDungeon);
+            ui.DrawDeepDungeon(width - 446.0f, 6.0f, statistics.DeepDungeon);
 
-        this.ScreenshotButton.Position = new Vector2(15.0f, 160.0f);
-        this.DoubleArrowButtonSummary.Position = new(15.0f, 200.0f);
-        this.DoubleArrowButtonCurrent.Position = new(129.0f, 200.0f);
-        this.ArrowButtonPrevious.Position = new(51.0f, 200.0f);
-        this.ArrowButtonNext.Position = new(91.0f, 200.0f);
+        this.ScreenshotButton.Position = new Vector2(15.0f, 40.0f);
+        this.ScreenshotFolderButton.Position = new Vector2(45.0f, 40.0f);
+        this.DoubleArrowButtonSummary.Position = new(90.0f, 8.0f);
+        this.DoubleArrowButtonCurrent.Position = new(210.0f, 8.0f);
+        this.ArrowButtonPrevious.Position = new(130.0f, 7.0f);
+        this.ArrowButtonNext.Position = new(170.0f, 7.0f);
         this.CloseButton.Position = new(width - 35.0f, 7.0f);
         this.ScreenshotButton.Draw(ui, audio);
+        this.ScreenshotFolderButton.Draw(ui, audio);
         this.DoubleArrowButtonSummary.Draw(ui, audio);
         this.DoubleArrowButtonCurrent.Draw(ui, audio);
         this.ArrowButtonPrevious.Draw(ui, audio);
@@ -648,6 +693,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.CloseButton.Draw(ui, audio);
 
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
+
+        this.PageNavigation();
 
         if (floorSet != null || floorSets?.Count() > 0)
         {
