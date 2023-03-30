@@ -121,6 +121,9 @@
   <data name="Coffer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Coffer.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="DeepDungeon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DeepDungeon.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Enchantment" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Enchantment.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

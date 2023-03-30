@@ -52,7 +52,9 @@ public sealed class DataUI : IDisposable
 
     public void DrawCheckMark(float x, float y, bool checkMark) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, Convert.ToInt32(checkMark), 2, 1, new(346.0f, 33.0f), new(108.0f, 54.0f), null, Alignment.Center);
 
-    public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 0.15f, (int)jobId, 4, 6);
+    public void DrawDeepDungeon(float x, float y, DeepDungeon deepDungeon) => this.Render.DrawUIElement(this.ResourceUI.DeepDungeon, x, y, 0.75f, (int)deepDungeon - 1, 1, 3, align: Alignment.Center);
+
+    public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 0.5f, (int)jobId, 4, 6, align: Alignment.Center);
 
     public void DrawMiscellaneous(float x, float y, Miscellaneous miscellaneous) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.5f, (int)miscellaneous, 4, 3);
 
@@ -83,4 +85,6 @@ public sealed class DataUI : IDisposable
     public void DrawDivisorVertical(float x, float y, float height) => this.Render.DrawDivisorVertical(this.ResourceUI.UI, x, y, height);
 
     public void DrawBackground(float width, float height, bool isFocused) => this.Render.DrawBackground(this.ResourceUI.UI, width, height, isFocused);
+
+    public void DrawPotsherdRegenPotion(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, id, 3, 1, new(2.0f, 153.0f), new(240.0f, 80.0f));
 }

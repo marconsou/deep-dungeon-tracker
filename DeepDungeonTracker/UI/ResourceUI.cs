@@ -18,6 +18,8 @@ public sealed class ResourceUI : IDisposable
 
     public TextureWrap UI { get; }
 
+    public TextureWrap DeepDungeon { get; }
+
     public TextureWrap Job { get; }
 
     public TextureWrap Miscellaneous { get; }
@@ -35,6 +37,7 @@ public sealed class ResourceUI : IDisposable
     public ResourceUI()
     {
         this.UI = Service.PluginInterface.UiBuilder.LoadImage(Resources.UI);
+        this.DeepDungeon = Service.PluginInterface.UiBuilder.LoadImage(Resources.DeepDungeon);
         this.Job = Service.PluginInterface.UiBuilder.LoadImage(Resources.Job);
         this.Miscellaneous = Service.PluginInterface.UiBuilder.LoadImage(Resources.Miscellaneous);
         this.Coffer = Service.PluginInterface.UiBuilder.LoadImage(Resources.Coffer);
@@ -56,6 +59,7 @@ public sealed class ResourceUI : IDisposable
     public void Dispose()
     {
         this.UI.Dispose();
+        this.DeepDungeon.Dispose();
         this.Job.Dispose();
         this.Miscellaneous.Dispose();
         this.Coffer.Dispose();

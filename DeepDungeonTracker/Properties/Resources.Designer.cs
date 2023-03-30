@@ -73,6 +73,16 @@ namespace DeepDungeonTracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] DeepDungeon {
+            get {
+                object obj = ResourceManager.GetObject("DeepDungeon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Enchantment {
             get {
                 object obj = ResourceManager.GetObject("Enchantment", resourceCulture);
