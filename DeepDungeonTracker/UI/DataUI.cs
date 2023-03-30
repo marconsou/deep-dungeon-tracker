@@ -56,7 +56,7 @@ public sealed class DataUI : IDisposable
 
     public void DrawDeepDungeon(float x, float y, DeepDungeon deepDungeon) => this.Render.DrawUIElement(this.ResourceUI.DeepDungeon, x, y, 0.75f, (int)deepDungeon - 1, 1, 3, align: Alignment.Left);
 
-    public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 1.0f, (int)jobId, 4, 6, align: Alignment.Center);
+    public void DrawJob(float x, float y, uint jobId) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, 0.75f, (int)jobId, 4, 6, align: Alignment.Center);
 
     public void DrawMiscellaneous(float x, float y, Miscellaneous miscellaneous) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.5f, (int)miscellaneous, 4, 3);
 

@@ -667,7 +667,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var inventory = this.Data.Statistics.Inventory;
         var x = 15.0f;
         var y = 267.0f;
-        
+
         this.DrawInventoryIcon(x, y + 40.0f, iconSize, inventory, 3);
         this.DrawInventoryText(x, y + 40.0f, iconSize, inventory, 3);
         if (inventory?.Count() > 0)
