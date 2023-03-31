@@ -673,7 +673,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         if (inventory?.Count() > 0)
         {
             ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 20.0f, "Inventory", new Vector4(1.0f, 1.0f, 1.0f, 0.7f), Alignment.Center);
-            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 33.0f, this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary ? "At the End" : "At the Start", new Vector4(1.0f, 1.0f, 1.0f, 0.7f), Alignment.Center);
+            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 33.0f, this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary ? "Currently" : "At the Start", new Vector4(1.0f, 1.0f, 1.0f, 0.7f), Alignment.Center);
         }
     }
 

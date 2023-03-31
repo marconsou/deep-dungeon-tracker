@@ -149,6 +149,7 @@ public class DataStatistics
         this.EnchantmentsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty;
         this.TrapsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty;
         this.PomandersByFloor = ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty;
+        this.Inventory = new List<StatisticsItem<Pomander>>();
 
         if (this.FloorSetStatistics != FloorSetStatistics.Summary)
         {
