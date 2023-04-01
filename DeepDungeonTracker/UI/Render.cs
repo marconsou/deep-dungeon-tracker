@@ -144,6 +144,35 @@ public class Render
         }
     }
 
+    public void DrawTextButtonOver(TextureWrap textureWrap, float x, float y, float width, float height)
+    {
+        if (textureWrap != null)
+        {
+            void Draw(float x, float y, float width, float height, float tX, float tY, float tW, float tH)
+            {
+                var color = Color.White;
+
+                var tWidth = (float)textureWrap.Width;
+                var tHeight = (float)textureWrap.Height;
+
+                var tOffsetX = tX;
+                var tOffsetY = tY;
+
+                var x1 = tOffsetX / tWidth;
+                var y1 = tOffsetY / tHeight;
+                var x2 = (tOffsetX + tW) / tWidth;
+                var y2 = (tOffsetY + tH) / tHeight;
+
+                this.DrawObject(textureWrap, x, y, width, height, x1, y1, x2, y2, 1.0f, new(color.X, color.Y, color.Z, 0.25f));
+            }
+
+            var offsetX = 23.0f;
+            width *= 1.025f;
+            Draw(x, y, offsetX, height, 77.0f, 236.0f, offsetX, 48.0f);
+            Draw(x + offsetX, y, width - offsetX, height, 77.0f + offsetX, 236.0f, 134.0f - offsetX, 48.0f);
+        }
+    }
+
     public void DrawDivisorHorizontal(TextureWrap textureWrap, float x, float y, float width)
     {
         if (textureWrap == null)

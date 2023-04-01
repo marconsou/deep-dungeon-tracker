@@ -12,19 +12,23 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 {
     private Data Data { get; }
 
-    private Button ScreenshotButton { get; } = new ScreenshotButton();
+    private Action OpenMainWindow { get; }
 
-    private Button ScreenshotFolderButton { get; } = new ScreenshotFolderButton();
+    private DoubleArrowButton DoubleArrowButtonSummary { get; } = new(false);
 
-    private Button DoubleArrowButtonSummary { get; } = new DoubleArrowButton(false);
+    private DoubleArrowButton DoubleArrowButtonCurrent { get; } = new(true);
 
-    private Button DoubleArrowButtonCurrent { get; } = new DoubleArrowButton(true);
+    private ArrowButton ArrowButtonPrevious { get; } = new(false);
 
-    private Button ArrowButtonPrevious { get; } = new ArrowButton(false);
+    private ArrowButton ArrowButtonNext { get; } = new(true);
 
-    private Button ArrowButtonNext { get; } = new ArrowButton(true);
+    private MainWindowButton MainWindowButton { get; } = new();
 
-    private Button CloseButton { get; } = new CloseButton();
+    private ScreenshotButton ScreenshotButton { get; } = new();
+
+    private OpenFolderButton ScreenshotFolderButton { get; } = new();
+
+    private CloseButton CloseButton { get; } = new();
 
     private IList<Button> FloorSetSummaryButtons { get; } = new List<Button>();
 
@@ -32,9 +36,10 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private IDictionary<uint, (uint, string)> ClassJobIds { get; }
 
-    public StatisticsWindow(string id, Configuration configuration, Data data) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
+    public StatisticsWindow(string id, Configuration configuration, Data data, Action openMainWindow) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
     {
         this.Data = data;
+        this.OpenMainWindow = openMainWindow;
         this.ClassJobIds = new Dictionary<uint, (uint, string)>()
         {
             { 1, ( 0, "GLA")}, {19, ( 0, "PLD")},
@@ -91,9 +96,10 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
             statistics.FloorSetStatisticsCurrent();
         }
-        else if (this.CloseButton.OnMouseLeftClick())
+        else if (this.MainWindowButton.OnMouseLeftClick())
         {
-            this.IsOpen = false;
+            this.Data.Audio.PlaySound(SoundIndex.OnClick);
+            this.OpenMainWindow();
         }
         else if (this.ScreenshotButton.OnMouseLeftClick())
         {
@@ -105,11 +111,13 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), size, Directories.Screenshots, fileName);
             Service.ChatGui.Print(result.Item1 ? $"{result.Item2} ({fileName})" : result.Item2);
         }
-        else if (this.ScreenshotFolderButton.OnMouseLeftClick())
+        else if (this.ScreenshotFolderButton.OnMouseLeftClickRelease())
         {
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
             LocalStream.OpenFolder(Directories.Screenshots);
         }
+        else if (this.CloseButton.OnMouseLeftClick())
+            this.IsOpen = false;
     }
 
     public override void OnOpen() => this.Data.Audio.PlaySound(SoundIndex.OnOpenMenu);
@@ -733,19 +741,23 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         if (statistics.DeepDungeon != DeepDungeon.None)
             ui.DrawDeepDungeon(width - 446.0f, 6.0f, statistics.DeepDungeon);
 
-        this.ScreenshotButton.Position = new Vector2(15.0f, 40.0f);
-        this.ScreenshotFolderButton.Position = new Vector2(45.0f, 40.0f);
+
         this.DoubleArrowButtonSummary.Position = new(90.0f, 8.0f);
         this.DoubleArrowButtonCurrent.Position = new(210.0f, 8.0f);
         this.ArrowButtonPrevious.Position = new(130.0f, 7.0f);
         this.ArrowButtonNext.Position = new(170.0f, 7.0f);
+        this.MainWindowButton.Position = new Vector2(15.0f, 40.0f);
+        this.ScreenshotButton.Position = new Vector2(50.0f, 40.0f);
+        this.ScreenshotFolderButton.Position = new Vector2(85.0f, 40.0f);
         this.CloseButton.Position = new(width - 35.0f, 7.0f);
-        this.ScreenshotButton.Draw(ui, audio);
-        this.ScreenshotFolderButton.Draw(ui, audio);
+
         this.DoubleArrowButtonSummary.Draw(ui, audio);
         this.DoubleArrowButtonCurrent.Draw(ui, audio);
         this.ArrowButtonPrevious.Draw(ui, audio);
         this.ArrowButtonNext.Draw(ui, audio);
+        this.MainWindowButton.Draw(ui, audio);
+        this.ScreenshotButton.Draw(ui, audio);
+        this.ScreenshotFolderButton.Draw(ui, audio);
         this.CloseButton.Draw(ui, audio);
 
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
@@ -781,7 +793,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, $"No data on {statistics.FloorSetStatistics.GetDescription()}", Color.White, Alignment.Center);
         }
 
-        ui.DrawTextTrumpGothic(15.0f, 8.0f, "Statistics", new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Left);
+        ui.DrawTextTrumpGothic(15.0f, 5.0f, "Statistics", new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Left);
 
         this.WindowSizeUpdate(width, height, ui.Scale);
         this.CheckForEvents();

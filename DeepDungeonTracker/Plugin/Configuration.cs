@@ -29,6 +29,10 @@ public class Configuration : IPluginConfiguration
     public class GeneralTab
     {
         public bool ShowAccurateTargetHPPercentage { get; set; }
+
+        public bool MainWindowSolidBackground { get; set; }
+
+        public float MainWindowScale { get; set; } = 1.0f;
     }
 
     public class TrackerTab

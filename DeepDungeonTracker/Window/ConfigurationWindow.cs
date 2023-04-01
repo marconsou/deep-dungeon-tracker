@@ -1,8 +1,5 @@
-﻿using Dalamud.Interface;
-using ImGuiNET;
+﻿using ImGuiNET;
 using System;
-using System.Globalization;
-using System.Linq;
 using System.Text.Json;
 
 namespace DeepDungeonTracker;
@@ -11,16 +8,11 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
 {
     private Data Data { get; }
 
-    private Action OpenStatisticsWindow { get; }
-
     private string[] FieldNames { get; }
 
-    private string SelectedBackupFileName { get; set; } = null!;
-
-    public ConfigurationWindow(string id, Configuration configuration, Data data, Action openStatisticsWindow) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
+    public ConfigurationWindow(string id, Configuration configuration, Data data) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
     {
         this.Data = data;
-        this.OpenStatisticsWindow = openStatisticsWindow;
         this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds", "Lurings", "Maps", "Time Bonuses" };
         this.SizeConstraints = new() { MaximumSize = new(600.0f, 600.0f) };
     }
@@ -56,11 +48,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
                 this.Statistics();
                 ImGui.EndTabItem();
             }
-            if (ImGui.BeginTabItem("Information"))
-            {
-                this.Information();
-                ImGui.EndTabItem();
-            }
             ImGui.EndTabBar();
         }
         ImGui.Separator();
@@ -72,6 +59,38 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         var config = this.Configuration.General;
         this.CheckBox(config.ShowAccurateTargetHPPercentage, x => config.ShowAccurateTargetHPPercentage = x, "Show accurate target HP %");
         WindowEx.Tooltip("It doesn't apply to Focus Target.");
+
+        if (ImGui.CollapsingHeader("Main Window"))
+        {
+            this.CheckBox(config.MainWindowSolidBackground, x => config.MainWindowSolidBackground = x, "Solid Background");
+            this.DragFloat(config.MainWindowScale, x => config.MainWindowScale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
+        }
+
+        if (ImGui.CollapsingHeader("Information"))
+        {
+            ImGui.TextColored(Color.Green, "Kills:");
+            ImGui.TextWrapped(
+                "All enemies killed from a distance of more than two rooms cannot be counted." +
+                "\nIf you use a magicite, do so in the center of the floor, covering all enemies killed (as much as possible).");
+            ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
+            ImGui.TextWrapped("Keep your map menu open to verify the Cairn of Passage key status. The value can be inaccurate if you kill too many enemies at the same time.");
+            ImGui.TextColored(Color.Green, "Maps:");
+            ImGui.TextWrapped("Keep your map menu open to verify the map reveal.");
+            ImGui.TextColored(Color.Green, "Potsherds:");
+            ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
+            ImGui.TextColored(Color.Green, "Score:");
+            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
+            ImGui.TextColored(Color.Green, "Save Files:");
+            ImGui.TextWrapped(
+                "Save files are automatically created once you enter a Deep Dungeon. They are deleted once you delete an in-game Save Slot and reopen the in-game Save Slot menu. These files cannot be renamed." +
+                "\nYou can backup your saved files, open the Backup folder, and rename them as you want.");
+        }
+
+        if (ImGui.CollapsingHeader("OpCodes"))
+        {
+            ImGui.TextWrapped("Values in this section should not be zero.");
+            ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, new JsonSerializerOptions() { WriteIndented = true, })}");
+        }
     }
 
     private void Tracker()
@@ -188,135 +207,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         ImGui.SameLine();
         this.ColorEdit4(config.SummarySelectionColor, x => config.SummarySelectionColor = x, "Summary Selection");
 
-        var saveSlotSelection = this.Data.Common.SaveSlotSelection.GetData();
-        if (saveSlotSelection?.Count > 0)
-        {
-            foreach (var saveSlot in saveSlotSelection)
-            {
-                ImGui.NewLine();
-                WindowEx.Child(() =>
-                {
-                    saveSlotSelection.TryGetValue(saveSlot.Key, out var saveSlotSelectionData);
-                    ImGui.Text($"{saveSlot.Key.Replace("-", "@", StringComparison.InvariantCultureIgnoreCase)}");
-                    ImGui.Dummy(new(0.0f, 4.0f));
-                    foreach (var deepDungeon in Enum.GetValues<DeepDungeon>())
-                    {
-                        if (deepDungeon == DeepDungeon.None)
-                            continue;
-
-                        if (ImGui.BeginTable($"{saveSlot.Key}Table", 3))
-                        {
-                            ImGui.TableNextRow();
-                            ImGui.TableNextColumn();
-                            ImGui.Text($"{deepDungeon.GetDescription()}:");
-                            for (var saveSlotNumber = 1; saveSlotNumber <= 2; saveSlotNumber++)
-                            {
-                                var fileName = DataCommon.GetSaveSlotFileName(saveSlot.Key, new(deepDungeon, saveSlotNumber));
-
-                                ImGui.TableNextColumn();
-                                var enableButtons =
-                                    (!this.Data.IsInsideDeepDungeon && LocalStream.Exists(ServiceUtility.ConfigDirectory, fileName)) ||
-                                    (this.Data.IsInsideDeepDungeon && this.Data.Common.GetSaveSlotFileName(saveSlotSelectionData ?? new()) == fileName);
-
-                                WindowEx.Disabled(() =>
-                                {
-                                    this.IconButton(() =>
-                                    {
-                                        LocalStream.Copy(ServiceUtility.ConfigDirectory, Directories.Backups, fileName, $"{LocalStream.FormatFileName(fileName, false)} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.json".Trim());
-                                    }, FontAwesomeIcon.Clone, $"{fileName}Clone");
-                                    ImGui.SameLine();
-                                    this.Button(() =>
-                                    {
-                                        if (!this.Data.IsInsideDeepDungeon)
-                                            this.Data.Common.LoadDeepDungeonData(false, saveSlot.Key, new(deepDungeon, saveSlotNumber));
-
-                                        statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
-                                    }, $"Save Slot {saveSlotNumber}##{fileName}");
-                                }, !enableButtons);
-                            }
-                            ImGui.EndTable();
-                        }
-                    }
-                }, $"{saveSlot.Key}Child", 364.0f, 135.0f);
-                ImGui.Separator();
-            }
-        }
-        else
-            ImGui.TextColored(Color.Gray, "No save slots!");
-
-        ImGui.NewLine();
-
-        this.IconButton(() => { LocalStream.OpenFolder(Directories.Backups); }, FontAwesomeIcon.FolderOpen, "BackupsFolderOpen");
-        ImGui.SameLine();
-        ImGui.Text("Backups");
-        var fileNames = LocalStream.GetFileNamesFromDirectory(Directories.Backups).Where(x => LocalStream.IsExtension(x, ".json")).ToArray();
-        if (fileNames.Length > 0)
-        {
-            ImGui.Dummy(new(0.0f, 4.0f));
-            WindowEx.Child(() =>
-            {
-                var deleteDialog = "Delete Dialog##Deep Dungeon Tracker";
-                foreach (var fileName in fileNames)
-                {
-                    var id = LocalStream.FormatFileName(fileName, true);
-                    var formattedFileName = $"{LocalStream.FormatFileName(fileName, false)}";
-                    WindowEx.Disabled(() =>
-                    {
-                        this.IconButton(() =>
-                        {
-                            ImGui.OpenPopup(deleteDialog);
-                            this.SelectedBackupFileName = formattedFileName;
-                        }, FontAwesomeIcon.Trash, $"{id}Trash");
-                        ImGui.SameLine();
-                        this.Button(() =>
-                        {
-                            if (!this.Data.IsInsideDeepDungeon)
-                                this.Data.Common.LoadDeepDungeonData(false, fileName);
-
-                            statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
-                        }, formattedFileName);
-                    }, this.Data.IsInsideDeepDungeon);
-                }
-
-                var visibility = true;
-                if (ImGui.BeginPopupModal(deleteDialog, ref visibility, ImGuiWindowFlags.AlwaysAutoResize))
-                {
-                    ImGui.Text("Are you sure you want to delete this item?");
-                    ImGui.Text($"{this.SelectedBackupFileName}");
-                    ImGui.Separator();
-                    this.Button(() => { LocalStream.Delete(Directories.Backups, $"{this.SelectedBackupFileName}.json"); ImGui.CloseCurrentPopup(); }, "Confirm");
-                    ImGui.SameLine();
-                    this.Button(() => { ImGui.CloseCurrentPopup(); }, "Cancel");
-                    ImGui.EndPopup();
-                }
-            }, "Backups", 364.0f, (fileNames.Length + 1) * 27.0f);
-        }
-        else
-            ImGui.TextColored(Color.Gray, "No backups!");
-    }
-
-    private void Information()
-    {
-        ImGui.TextColored(Color.Green, "Kills:");
-        ImGui.TextWrapped(
-            "All enemies killed from a distance of more than two rooms cannot be counted." +
-            "\nIf you use a magicite, do so in the center of the floor, covering all enemies killed (as much as possible).");
-        ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
-        ImGui.TextWrapped("Keep your map menu open to verify the Cairn of Passage key status. The value can be inaccurate if you kill too many enemies at the same time.");
-        ImGui.TextColored(Color.Green, "Maps:");
-        ImGui.TextWrapped("Keep your map menu open to verify the map reveal.");
-        ImGui.TextColored(Color.Green, "Potsherds:");
-        ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
-        ImGui.TextColored(Color.Green, "Score:");
-        ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
-        ImGui.TextColored(Color.Green, "Save Files:");
-        ImGui.TextWrapped(
-            "Save files are automatically created once you enter a Deep Dungeon. They are deleted once you delete an in-game Save Slot and reopen the in-game Save Slot menu. These files cannot be renamed." +
-            "\nYou can backup your saved files, open the Backup folder, and rename them as you want.");
-        if (ImGui.CollapsingHeader("OpCodes"))
-        {
-            ImGui.TextWrapped("Values in this section should not be zero.");
-            ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, new JsonSerializerOptions() { WriteIndented = true, })}");
-        }
+        ImGui.Text("Type /ddtmain to open the Main Window");
     }
 }

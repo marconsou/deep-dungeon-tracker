@@ -18,8 +18,6 @@ public sealed class Plugin : IDalamudPlugin
 
     private WindowSystem WindowSystem { get; }
 
-    private ConfigurationWindow ConfigurationWindow { get; }
-
     private Configuration Configuration { get; }
 
     private Data Data { get; }
@@ -32,16 +30,16 @@ public sealed class Plugin : IDalamudPlugin
         this.Configuration.Initialize(Service.PluginInterface);
 
         this.Data = new(this.Configuration);
-        this.Commands = new(this.Name, this.OnConfigCommand, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
+        this.Commands = new(this.Name, this.OnConfigCommand, this.OnMainCommandd, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
 
         this.WindowSystem = new(this.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
-        this.ConfigurationWindow = new ConfigurationWindow(this.Name, this.Configuration, this.Data, this.OpenStatisticsWindow);
-        this.WindowSystem.AddWindow(this.ConfigurationWindow);
+        this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data));
+        this.WindowSystem.AddWindow(new MainWindow(this.Name, this.Configuration, this.Data, this.OpenWindow<StatisticsWindow>));
         this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
         this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
         this.WindowSystem.AddWindow(new ScoreWindow(this.Name, this.Configuration, this.Data));
-        this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data));
+        this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data, this.OpenWindow<MainWindow>));
 #pragma warning restore CA2000
 
         Service.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
@@ -85,6 +83,14 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
 
+    private void OnMainCommandd(string command, string args)
+    {
+        if (!this.IsWindowOpen<MainWindow>())
+            this.OpenWindow<MainWindow>();
+        else
+            this.CloseWindow<MainWindow>();
+    }
+
     private void OnTrackerCommand(string command, string args)
     {
         this.Configuration.Tracker.Show = !this.Configuration.Tracker.Show;
@@ -105,20 +111,20 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnLoadCommand(string command, string args)
     {
-        if (!this.IsStatisticsWindowOpen())
+        if (!this.IsWindowOpen<StatisticsWindow>())
         {
             if (!this.Data.IsInsideDeepDungeon)
                 this.Data.Common.LoadDeepDungeonData(false, true);
 
-            this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
+            this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenWindow<StatisticsWindow>);
         }
         else
-            this.CloseStatisticsWindow();
+            this.CloseWindow<StatisticsWindow>();
     }
 
     private void Draw() => this.WindowSystem.Draw();
 
-    private void OpenConfigUi() => this.ConfigurationWindow.Toggle();
+    private void OpenConfigUi() => this.WindowSystem.Windows.FirstOrDefault(x => x is ConfigurationWindow)!.Toggle();
 
     private void BuildFonts() => this.Data.UI.BuildFonts();
 
@@ -138,19 +144,9 @@ public sealed class Plugin : IDalamudPlugin
             this.Data.NetworkMessage(dataPtr, opCode, targetActorId, this.Configuration);
     }
 
-    private bool IsStatisticsWindowOpen() => this.WindowSystem.Windows.FirstOrDefault(x => x is StatisticsWindow)?.IsOpen ?? false;
+    private void OpenWindow<T>() where T : Window => this.WindowSystem.Windows.FirstOrDefault(x => x is T)!.IsOpen = true;
 
-    private void OpenStatisticsWindow()
-    {
-        var window = this.WindowSystem.Windows.FirstOrDefault(x => x is StatisticsWindow);
-        if (window != null)
-            window.IsOpen = true;
-    }
+    private void CloseWindow<T>() where T : Window => this.WindowSystem.Windows.FirstOrDefault(x => x is T)!.IsOpen = false;
 
-    private void CloseStatisticsWindow()
-    {
-        var window = this.WindowSystem.Windows.FirstOrDefault(x => x is StatisticsWindow);
-        if (window != null)
-            window.IsOpen = false;
-    }
+    private bool IsWindowOpen<T>() where T : Window => this.WindowSystem.Windows.FirstOrDefault(x => x is T)!.IsOpen;
 }

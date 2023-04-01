@@ -40,7 +40,7 @@ public static class LocalStream
 
     public static bool Exists(string directory, string fileName) => File.Exists(Path.Combine(directory, fileName));
 
-    public static void Copy(string sourceDirectory, string destDirectory, string sourceFileName, string destFileName)
+    public static bool Copy(string sourceDirectory, string destDirectory, string sourceFileName, string destFileName)
     {
         if (!LocalStream.Exists(sourceDirectory))
             Directory.CreateDirectory(sourceDirectory);
@@ -48,7 +48,12 @@ public static class LocalStream
         if (!LocalStream.Exists(destDirectory))
             Directory.CreateDirectory(destDirectory);
 
-        File.Copy(Path.Combine(sourceDirectory, sourceFileName), Path.Combine(destDirectory, destFileName), true);
+        if (LocalStream.Exists(sourceDirectory, sourceFileName))
+        {
+            File.Copy(Path.Combine(sourceDirectory, sourceFileName), Path.Combine(destDirectory, destFileName), true);
+            return true;
+        }
+        return false;
     }
 
     public static string[] GetFileNamesFromDirectory(string directory) => LocalStream.Exists(directory) ? Directory.EnumerateFiles(directory).ToArray() : Array.Empty<string>();

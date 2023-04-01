@@ -19,6 +19,8 @@ public abstract class Button
 
     public bool OnMouseLeftClick() => this.Show && this.IsMouseOver && ImGui.IsMouseClicked(ImGuiMouseButton.Left);
 
+    public bool OnMouseLeftClickRelease() => this.Show && this.IsMouseOver && ImGui.IsMouseReleased(ImGuiMouseButton.Left);
+
     public virtual void Draw(DataUI ui, DataAudio audio)
     {
         if (!this.Show)
