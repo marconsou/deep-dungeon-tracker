@@ -68,12 +68,7 @@ public sealed class MainWindow : WindowEx, IDisposable
 
     public void CheckForEvents()
     {
-        if (this.BackupFolderButton.OnMouseLeftClickRelease())
-        {
-            this.Data.Audio.PlaySound(SoundIndex.OnClick);
-            LocalStream.OpenFolder(Directories.Backups);
-        }
-        else if (this.SaveSlotArrowButtonPrevious.OnMouseLeftClick())
+        if (this.SaveSlotArrowButtonPrevious.OnMouseLeftClick())
         {
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
             this.SaveSlotIndex--;
@@ -101,6 +96,11 @@ public sealed class MainWindow : WindowEx, IDisposable
             var max = MainWindow.BackupFileNames.Length - MainWindow.BackupFilesPerPage;
             if (this.BackupIndex > max)
                 this.BackupIndex = max;
+        }
+        else if (this.BackupFolderButton.OnMouseLeftClickRelease())
+        {
+            this.Data.Audio.PlaySound(SoundIndex.OnClick);
+            LocalStream.OpenFolder(Directories.Backups);
         }
         else if (this.CloseButton.OnMouseLeftClick())
             this.IsOpen = false;
@@ -284,8 +284,11 @@ public sealed class MainWindow : WindowEx, IDisposable
                 buttonIndex++;
             }
 
-            this.BackupArrowButtonPrevious.Draw(ui, audio);
-            this.BackupSlotArrowButtonNext.Draw(ui, audio);
+            if (fileNames.Length > MainWindow.BackupFilesPerPage)
+            {
+                this.BackupArrowButtonPrevious.Draw(ui, audio);
+                this.BackupSlotArrowButtonNext.Draw(ui, audio);
+            }
 
             this.ModalWindow(deleteDialog);
         }
@@ -306,13 +309,18 @@ public sealed class MainWindow : WindowEx, IDisposable
             ImGui.Separator();
             this.Button(() =>
             {
+                this.Data.Audio.PlaySound(SoundIndex.OnClick);
                 var deletedFileName = $"{this.SelectedBackupFileName}.json";
                 LocalStream.Delete(Directories.Backups, deletedFileName);
                 Service.ChatGui.Print($"A file has been deleted! ({deletedFileName})");
                 ImGui.CloseCurrentPopup();
             }, "Confirm");
             ImGui.SameLine();
-            this.Button(() => { ImGui.CloseCurrentPopup(); }, "Cancel");
+            this.Button(() =>
+            {
+                this.Data.Audio.PlaySound(SoundIndex.OnCloseMenu);
+                ImGui.CloseCurrentPopup();
+            }, "Cancel");
             ImGui.EndPopup();
         }
         style.WindowPadding = padding;
