@@ -5,7 +5,7 @@ A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to tra
 
 Type `/ddt` to open the configuration menu.
 
-Type `/ddtmain` to open the Main Window showing save files and backups.
+Type `/ddtmain` to open the Main Window showing saved files and backups.
 
 Type `/ddttracker` to toggle the Tracker Window visibility.
 
