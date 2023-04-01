@@ -39,7 +39,7 @@ public sealed class Plugin : IDalamudPlugin
         this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
         this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
         this.WindowSystem.AddWindow(new ScoreWindow(this.Name, this.Configuration, this.Data));
-        this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data, this.OpenWindow<MainWindow>));
+        this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data, this.MainWindowToggleVisibility));
 #pragma warning restore CA2000
 
         Service.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
@@ -83,13 +83,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
 
-    private void OnMainCommandd(string command, string args)
-    {
-        if (!this.IsWindowOpen<MainWindow>())
-            this.OpenWindow<MainWindow>();
-        else
-            this.CloseWindow<MainWindow>();
-    }
+    private void OnMainCommandd(string command, string args) => this.MainWindowToggleVisibility();
 
     private void OnTrackerCommand(string command, string args)
     {
@@ -120,6 +114,14 @@ public sealed class Plugin : IDalamudPlugin
         }
         else
             this.CloseWindow<StatisticsWindow>();
+    }
+
+    private void MainWindowToggleVisibility()
+    {
+        if (!this.IsWindowOpen<MainWindow>())
+            this.OpenWindow<MainWindow>();
+        else
+            this.CloseWindow<MainWindow>();
     }
 
     private void Draw() => this.WindowSystem.Draw();

@@ -250,7 +250,6 @@ public sealed class MainWindow : WindowEx, IDisposable
                 ui.DrawTextAxis(x, y, uiFileName, enableButtons ? Color.White : Color.Gray);
 
                 var backupFileButton = this.BackupFileButtons[buttonIndex];
-                var backupDeleteButton = this.BackupDeleteButtons[buttonIndex];
 
                 if (enableButtons)
                 {
@@ -258,10 +257,6 @@ public sealed class MainWindow : WindowEx, IDisposable
                     backupFileButton.Position = new(x, y);
                     backupFileButton.Size = ui.GetAxisTextSize(uiFileName);
                     backupFileButton.Draw(ui, audio);
-
-                    backupDeleteButton.Show = true;
-                    backupDeleteButton.Position = new(x - backupDeleteButton.Size.X - 15.0f, y + (backupFileButton.Size.Y / 2.0f) - (backupDeleteButton.Size.Y / 2.0f));
-                    backupDeleteButton.Draw(ui, audio);
 
                     if (backupFileButton.OnMouseLeftClick())
                     {
@@ -272,12 +267,19 @@ public sealed class MainWindow : WindowEx, IDisposable
 
                         this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
                     }
-                    else if (backupDeleteButton.OnMouseLeftClick())
-                    {
-                        this.Data.Audio.PlaySound(SoundIndex.OnClick);
-                        this.SelectedBackupFileName = formattedFileName;
-                        ImGui.OpenPopup(deleteDialog);
-                    }
+                }
+
+                var backupDeleteButton = this.BackupDeleteButtons[buttonIndex];
+
+                backupDeleteButton.Show = true;
+                backupDeleteButton.Position = new(x - backupDeleteButton.Size.X - 15.0f, y + (backupFileButton.Size.Y / 2.0f) - (backupDeleteButton.Size.Y / 2.0f));
+                backupDeleteButton.Draw(ui, audio);
+
+                if (backupDeleteButton.OnMouseLeftClick())
+                {
+                    this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                    this.SelectedBackupFileName = formattedFileName;
+                    ImGui.OpenPopup(deleteDialog);
                 }
 
                 y += 34.0f;
@@ -355,7 +357,6 @@ public sealed class MainWindow : WindowEx, IDisposable
 
         this.CloseButton.Position = new(width - 35.0f, 7.0f);
         this.CloseButton.Draw(ui, audio);
-
 
         this.SaveSlots(ui, audio, width, height);
         this.Backups(ui, audio, width, height);

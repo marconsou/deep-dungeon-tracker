@@ -82,12 +82,17 @@ public sealed class FloorSetTimeWindow : WindowEx, IDisposable
             y -= 8.0f;
             ui.DrawDivisorHorizontal(14.0f, y, width - 26.0f);
             y += 10.0f;
-        }
 
-        if (!config.ShowFloorTime && !config.ShowTitle)
+        }
+        else
         {
-            y -= 3.0f;
-            height += 7.0f;
+            if (!config.ShowTitle)
+            {
+                y -= 3.0f;
+                height += 7.0f;
+            }
+            else
+                y -= 6.0f;
         }
 
         DrawTextLine(x, y, "Average:", showValue ? dataCommon.FloorSetTime.Average : null, Color.White, config.AverageTimeColor);

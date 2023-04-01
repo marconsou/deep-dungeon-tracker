@@ -12,7 +12,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 {
     private Data Data { get; }
 
-    private Action OpenMainWindow { get; }
+    private Action MainWindowToggleVisibility { get; }
 
     private DoubleArrowButton DoubleArrowButtonSummary { get; } = new(false);
 
@@ -36,10 +36,10 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private IDictionary<uint, (uint, string)> ClassJobIds { get; }
 
-    public StatisticsWindow(string id, Configuration configuration, Data data, Action openMainWindow) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
+    public StatisticsWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
     {
         this.Data = data;
-        this.OpenMainWindow = openMainWindow;
+        this.MainWindowToggleVisibility = mainWindowToggleVisibility;
         this.ClassJobIds = new Dictionary<uint, (uint, string)>()
         {
             { 1, ( 0, "GLA")}, {19, ( 0, "PLD")},
@@ -99,7 +99,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         else if (this.MainWindowButton.OnMouseLeftClick())
         {
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
-            this.OpenMainWindow();
+            this.MainWindowToggleVisibility();
         }
         else if (this.ScreenshotButton.OnMouseLeftClick())
         {

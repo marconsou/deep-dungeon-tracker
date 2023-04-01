@@ -127,7 +127,7 @@ public class Render
     {
         if (textureWrap != null)
         {
-            var color = Color.Yellow;
+            var color = Color.White;
 
             var tWidth = (float)textureWrap.Width;
             var tHeight = (float)textureWrap.Height;
