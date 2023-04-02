@@ -250,7 +250,7 @@ public class DataStatistics
                 new (Miscellaneous.Death, floor?.Deaths ?? 0),
                 new (Miscellaneous.RegenPotion, floor?.RegenPotions ?? 0),
                 new (Miscellaneous.Map, Convert.ToInt32(floor?.Map, CultureInfo.InvariantCulture))
-            }).RemoveAll(x => x.Total == 0);
+            }).RemoveAll(x => x.Total == 0 && x.Value != Miscellaneous.Map);
         }
         return floors?.SelectMany(x => ImmutableArray.Create(GetStatisticsCommonFloor(x))).ToImmutableList();
     }

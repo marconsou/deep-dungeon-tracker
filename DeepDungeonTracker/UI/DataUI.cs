@@ -68,9 +68,9 @@ public sealed class DataUI : IDisposable
 
     public void DrawPomander(float x, float y, Pomander pomander) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)pomander, 10, 7);
 
-    public void DrawMapNormal(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapNormal, x, y, 1.0f / 8.0f, id, 4, 4);
+    public void DrawMapNormal(float x, float y, int id, bool isMapRevealed) => this.Render.DrawUIElement(this.ResourceUI.MapNormal, x, y, 1.0f / 8.0f, id, 4, 4, color: isMapRevealed ? Color.White : Color.Gray);
 
-    public void DrawMapHallOfFallacies(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.MapHallOfFallacies, x, y, 1.0f / 3.67f, id, 3, 3);
+    public void DrawMapHallOfFallacies(float x, float y, int id, bool isMapRevealed) => this.Render.DrawUIElement(this.ResourceUI.MapHallOfFallacies, x, y, 1.0f / 3.67f, id, 3, 3, color: isMapRevealed ? Color.White : Color.Gray);
 
     public void DrawMainWindowButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, new(464.0f, 14.0f), new(72.0f, 36.0f), null, Alignment.Left);
 

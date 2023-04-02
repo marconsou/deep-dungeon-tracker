@@ -160,7 +160,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         }
     }
 
-    private void DrawMiscellaneousMap(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, MapData? mapData)
+    private void DrawMiscellaneousMap(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, MapData? mapData, bool isMapRevealed)
     {
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Miscellaneous>>())
         {
@@ -181,9 +181,9 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
                             continue;
 
                         if (mapData.FloorType == FloorType.Normal)
-                            this.Data.UI.DrawMapNormal(posX, posY, id.Value);
+                            this.Data.UI.DrawMapNormal(posX, posY, id.Value, isMapRevealed);
                         else if (mapData.FloorType == FloorType.HallOfFallacies)
-                            this.Data.UI.DrawMapHallOfFallacies(posX, posY, id.Value);
+                            this.Data.UI.DrawMapHallOfFallacies(posX, posY, id.Value, isMapRevealed);
                     }
                 }
             }
@@ -420,7 +420,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             DrawTotalScore();
 
         if (isTimeBonusMissScore)
-            ui.DrawMiscellaneous(timeBonusX, y - 15.0f, Miscellaneous.TimeBonus);
+            ui.DrawMiscellaneous(timeBonusX + 2.0f, y - 15.0f, Miscellaneous.TimeBonus);
     }
 
     private void DrawLastFloorAndTotal(float lastFloorX, float totalX, float y, bool forceShowHours, bool isTimeBonusMissScore)
@@ -629,7 +629,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         FloorLoop((floor, index, x, y) => { this.DrawMiscellaneousIcon(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false); }, floors, left, x, y, iconSize, floorWidth, floorHeight);
         this.DrawMiscellaneousIcon(x2, y3, iconSize, statistics?.MiscellaneousLastFloor, false);
         this.DrawMiscellaneousIcon(x - leftPanelAdjust, y3, iconSize, statistics?.MiscellaneousTotal, true);
-        FloorLoop((floor, index, x, y) => { this.DrawMiscellaneousMap(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), floor?.MapData); }, floors, left, x, y, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) => { this.DrawMiscellaneousMap(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), floor?.MapData, (floor?.Map ?? false)); }, floors, left, x, y, iconSize, floorWidth, floorHeight);
         FloorLoop((floor, index, x, y) => { this.DrawCofferIcon(x, y, iconSize, statistics?.CoffersByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize, iconSize, floorWidth, floorHeight);
         this.DrawCofferIcon(x - leftPanelAdjust, y3 + iconSize, iconSize, statistics?.CoffersTotal);
         FloorLoop((floor, index, x, y) => { this.DrawPomanderIcon(x, y, iconSize, statistics?.PomandersByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize2, iconSize, floorWidth, floorHeight);
