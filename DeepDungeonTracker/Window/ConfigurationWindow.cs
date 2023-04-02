@@ -8,11 +8,14 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
 {
     private Data Data { get; }
 
+    private Action MainWindowToggleVisibility { get; }
+
     private string[] FieldNames { get; }
 
-    public ConfigurationWindow(string id, Configuration configuration, Data data) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
+    public ConfigurationWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
     {
         this.Data = data;
+        this.MainWindowToggleVisibility = mainWindowToggleVisibility;
         this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds", "Lurings", "Maps", "Time Bonuses" };
         this.SizeConstraints = new() { MaximumSize = new(600.0f, 600.0f) };
     }
@@ -26,6 +29,11 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             if (ImGui.BeginTabItem("General"))
             {
                 this.General();
+                ImGui.EndTabItem();
+            }
+            if (ImGui.BeginTabItem("Main"))
+            {
+                this.Main();
                 ImGui.EndTabItem();
             }
             if (ImGui.BeginTabItem("Tracker"))
@@ -57,14 +65,13 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
     private void General()
     {
         var config = this.Configuration.General;
+        ImGui.Text($"Click to open the");
+        ImGui.SameLine();
+        this.SmallButton(() => this.MainWindowToggleVisibility(), "Main Window");
+        ImGui.SameLine();
+        ImGui.Text($"or type {Commands.MainCommand}");
         this.CheckBox(config.ShowAccurateTargetHPPercentage, x => config.ShowAccurateTargetHPPercentage = x, "Show accurate target HP %");
         WindowEx.Tooltip("It doesn't apply to Focus Target.");
-
-        if (ImGui.CollapsingHeader("Main Window"))
-        {
-            this.CheckBox(config.MainWindowSolidBackground, x => config.MainWindowSolidBackground = x, "Solid Background");
-            this.DragFloat(config.MainWindowScale, x => config.MainWindowScale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
-        }
 
         if (ImGui.CollapsingHeader("Information"))
         {
@@ -87,10 +94,14 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         }
 
         if (ImGui.CollapsingHeader("OpCodes"))
-        {
-            ImGui.TextWrapped("Values in this section should not be zero.");
             ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, new JsonSerializerOptions() { WriteIndented = true, })}");
-        }
+    }
+
+    private void Main()
+    {
+        var config = this.Configuration.Main;
+        this.CheckBox(config.SolidBackground, x => config.SolidBackground = x, "Solid Background");
+        this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
     }
 
     private void Tracker()
@@ -186,7 +197,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             "Current Floor: Include all floor completion-related score up to the current floor and current character level.\nYou can see your score progressively increasing each time you go to the next floor or level up.\n\n" +
             "Score Window Floor: Include all floor completion-related score up to the floor where it shows the next score window.\n\n" +
             "Last Floor: Include all floor completion-related score at once.\n\n" +
-            "Floor completion-related score has nothing to do with map reveals, and this affects the points earned by killing enemies. It's recommended to change this option before starting a fresh save file.");
+            "Floor completion-related score has nothing to do with map reveals, and this also affects the points earned by killing enemies. It's recommended to change this option before starting a fresh save file.");
         this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
         this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
         WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");

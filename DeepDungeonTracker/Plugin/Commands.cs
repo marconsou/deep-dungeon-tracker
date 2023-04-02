@@ -6,17 +6,17 @@ namespace DeepDungeonTracker;
 
 public sealed class Commands : IDisposable
 {
-    private static string ConfigCommand => "/ddt";
+    public static string ConfigCommand => "/ddt";
 
-    private static string MainCommand => $"{Commands.ConfigCommand}main";
+    public static string MainCommand => $"{Commands.ConfigCommand}main";
 
-    private static string TrackerCommand => $"{Commands.ConfigCommand}tracker";
+    public static string TrackerCommand => $"{Commands.ConfigCommand}tracker";
 
-    private static string TimeCommand => $"{Commands.ConfigCommand}time";
+    public static string TimeCommand => $"{Commands.ConfigCommand}time";
 
-    private static string ScoreCommand => $"{Commands.ConfigCommand}score";
+    public static string ScoreCommand => $"{Commands.ConfigCommand}score";
 
-    private static string LoadCommand => $"{Commands.ConfigCommand}load";
+    public static string LoadCommand => $"{Commands.ConfigCommand}load";
 
     public Commands(string pluginName, HandlerDelegate onConfigCommand, HandlerDelegate onMainCommand, HandlerDelegate onTrackerCommand, HandlerDelegate onTimeCommand, HandlerDelegate onScoreCommand, HandlerDelegate onLoadCommand)
     {

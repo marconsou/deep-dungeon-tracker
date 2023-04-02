@@ -335,7 +335,11 @@ public sealed class MainWindow : WindowEx, IDisposable
         if (currentBackupFileTotal > this.PreviousBackupFileTotal)
             this.BackupIndex = 0;
         else if (currentBackupFileTotal < this.PreviousBackupFileTotal)
+        {
             this.BackupIndex += currentBackupFileTotal - this.PreviousBackupFileTotal;
+            if (this.BackupIndex < 0)
+                this.BackupIndex = 0;
+        }
 
         this.PreviousBackupFileTotal = currentBackupFileTotal;
     }
@@ -343,14 +347,14 @@ public sealed class MainWindow : WindowEx, IDisposable
     public override void Draw()
     {
         var ui = this.Data.UI;
-        var config = this.Configuration.General;
+        var config = this.Configuration.Main;
         var audio = this.Data.Audio;
-        ui.Scale = config.MainWindowScale;
+        ui.Scale = config.Scale;
 
         var width = 440.0f;
         var height = 800.0f;
 
-        ui.DrawBackground(width, height, (!config.MainWindowSolidBackground && this.IsFocused) || config.MainWindowSolidBackground);
+        ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
         ui.DrawDivisorHorizontal(14.0f, height / 2.0f, width - 26.0f);
         ui.DrawTextTrumpGothic(15.0f, 5.0f, "Save Slots & Backups", new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Left);

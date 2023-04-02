@@ -16,6 +16,8 @@ public class Configuration : IPluginConfiguration
 
     public GeneralTab General { get; set; } = new();
 
+    public MainTab Main { get; set; } = new();
+
     public TrackerTab Tracker { get; set; } = new();
 
     public FloorSetTimeTab FloorSetTime { get; set; } = new();
@@ -29,10 +31,13 @@ public class Configuration : IPluginConfiguration
     public class GeneralTab
     {
         public bool ShowAccurateTargetHPPercentage { get; set; }
+    }
 
-        public bool MainWindowSolidBackground { get; set; }
+    public class MainTab
+    {
+        public bool SolidBackground { get; set; }
 
-        public float MainWindowScale { get; set; } = 1.0f;
+        public float Scale { get; set; } = 1.0f;
     }
 
     public class TrackerTab
@@ -164,6 +169,7 @@ public class Configuration : IPluginConfiguration
     public void Reset()
     {
         this.General = new();
+        this.Main = new();
         this.Tracker = new();
         this.FloorSetTime = new();
         this.Score = new();

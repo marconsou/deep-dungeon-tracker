@@ -34,7 +34,7 @@ public sealed class Plugin : IDalamudPlugin
 
         this.WindowSystem = new(this.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
-        this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data));
+        this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.Data, this.MainWindowToggleVisibility));
         this.WindowSystem.AddWindow(new MainWindow(this.Name, this.Configuration, this.Data, this.OpenWindow<StatisticsWindow>));
         this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
         this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
