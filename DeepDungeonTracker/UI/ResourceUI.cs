@@ -50,7 +50,7 @@ public sealed class ResourceUI : IDisposable
     public void BuildFonts()
     {
         var scale = 1.0f / ImGui.GetIO().FontGlobalScale;
-        this.Axis = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.Axis, 19.0f * scale)).ImFont;
+        this.Axis = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.Axis, 19.25f * scale)).ImFont;
         this.MiedingerMid = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.MiedingerMid, 16.0f * scale)).ImFont;
         this.MiedingerMidLarge = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.MiedingerMid, 22.0f * scale)).ImFont;
         this.TrumpGothic = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.TrumpGothic, 32.0f * scale)).ImFont;

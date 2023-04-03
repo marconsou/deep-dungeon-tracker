@@ -124,7 +124,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     public override void OnClose() => this.Data.Audio.PlaySound(SoundIndex.OnCloseMenu);
 
-    private Vector4 SummarySelectionColor(bool condition = true) => (this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary && this.Data.Statistics.SaveSlotSummary != null && condition) ? this.Configuration.Statistics.SummarySelectionColor : Color.White;
+    private Vector4 SummarySelectionColor(bool condition = true, Vector4? color = null) => (this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary && this.Data.Statistics.SaveSlotSummary != null && condition) ? this.Configuration.Statistics.SummarySelectionColor : color ?? Color.White;
 
     private static (float, float) AdjustSummaryFloorSetPosition(float leftPanelAdjust, float x, float y, float top, float lineHeight, int firstFloorNumber)
     {
@@ -494,36 +494,70 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var score = statistics.ScoreSummary ?? this.Data.Common.Score;
         if (score != null)
         {
-            var color = this.SummarySelectionColor();
+            var textColor = Color.White;
+            var numberColor = this.SummarySelectionColor(color: Color.Yellow);
 
-            ui.DrawTextAxis(x, y, $"{(score.IsDutyComplete ? "Duty Complete" : "Duty Failed")} ({score.BaseScore})", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxis(x, y, $"Level: {score.CurrentLevel} (+{score.AetherpoolArm}/+{score.AetherpoolArmor})", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Floor: {score.StartingFloorNumber} to {score.CurrentFloorNumber} ({score.TotalReachedFloors})", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxis(x, y, $"Character: {score.CharacterScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Floors: {score.FloorScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Maps: {score.MapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Coffers: {score.CofferScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
+            void DrawSingle(DataUI ui, float x, ref float y, string label, int score)
+            {
+                var ts = ui.DrawTextAxis(x, y, $"{label}: ", textColor, calcTextSize: true);
+                ui.DrawTextAxis(x + ts.X, y, $"{score.ToString("N0", CultureInfo.InvariantCulture)}", numberColor, calcTextSize: true);
+                y += lineHeight;
+            }
 
+            void DrawMultiple(DataUI ui, float x, ref float y, string totalLabel, string baseLabel, int totalScore, int baseScore, int? additionalBaseScore = null)
+            {
+                var isPositive = baseScore > 0;
+                var ts = ui.DrawTextAxis(x, y, $"{totalLabel}: ", textColor, calcTextSize: true);
+                ts += ui.DrawTextAxis(x + ts.X, y, $"{totalScore.ToString("N0", CultureInfo.InvariantCulture)}", numberColor, calcTextSize: true);
+                ts += ui.DrawTextAxis(x + ts.X, y, " (", textColor, calcTextSize: true);
+                ts += ui.DrawTextAxis(x + ts.X, y, $"{(isPositive ? "+" : string.Empty)}{baseScore.ToString("N0", CultureInfo.InvariantCulture)}", isPositive ? Color.Green : Color.Red, calcTextSize: true);
+                if (additionalBaseScore.HasValue)
+                {
+                    ts += ui.DrawTextAxis(x + ts.X, y, " or ", textColor, calcTextSize: true);
+                    ts += ui.DrawTextAxis(x + ts.X, y, $"{(isPositive ? "+" : string.Empty)}{additionalBaseScore.Value.ToString("N0", CultureInfo.InvariantCulture)}", isPositive ? Color.Green : Color.Red, calcTextSize: true);
+                }
+                ui.DrawTextAxis(x + ts.X, y, $" / {baseLabel})", textColor, calcTextSize: true);
+                y += lineHeight;
+            }
+
+            var ts = ui.DrawTextAxis(x, y, "Level: ", textColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"{score.CurrentLevel}", numberColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $" (", textColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"+{score.AetherpoolArm}", numberColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"/", textColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"+{score.AetherpoolArmor}", numberColor, calcTextSize: true);
+            ui.DrawTextAxis(x + ts.X, y, $")", textColor, calcTextSize: true);
+            y += lineHeight;
+
+            ts = ui.DrawTextAxis(x, y, "Floor: ", textColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"{score.StartingFloorNumber}", numberColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, " to ", textColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"{score.CurrentFloorNumber}", numberColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $" (", textColor, calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"{score.TotalReachedFloors}", numberColor, calcTextSize: true);
+            ui.DrawTextAxis(x + ts.X, y, $")", textColor, calcTextSize: true);
+            y += lineHeight * 2.0f;
+
+            DrawSingle(ui, x, ref y, "Character", score.CharacterScore);
+            DrawSingle(ui, x, ref y, "Floors", score.FloorScore);
+            DrawMultiple(ui, x, ref y, "Maps", "Map", score.MapScore, 2525);
+            DrawMultiple(ui, x, ref y, "Coffers", "Coffer", score.CofferScore, 101);
             if (statistics?.SaveSlot?.DeepDungeon == DeepDungeon.PalaceOfTheDead)
-            {
-                ui.DrawTextAxis(x, y, $"NPCs: {score.NPCScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
-                y += lineHeight;
-            }
-
+                DrawMultiple(ui, x, ref y, "NPCs", "NPC", score.NPCScore, 2220);
             if (statistics?.SaveSlot?.DeepDungeon == DeepDungeon.EurekaOrthos)
-            {
-                ui.DrawTextAxis(x, y, $"Dread Beasts: {score.DreadBeastScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
-                y += lineHeight;
-            }
+                DrawMultiple(ui, x, ref y, "Dread Beasts", "Dread Beast", score.DreadBeastScore, 705);
+            DrawMultiple(ui, x, ref y, "Mimicgoras", "Mimic or Mandragora", score.MimicgoraScore, 705);
+            DrawMultiple(ui, x, ref y, "Enchantments", "Enchantment", score.EnchantmentScore, 505);
+            DrawMultiple(ui, x, ref y, "Traps", "Trap", score.TrapScore, -202);
+            DrawMultiple(ui, x, ref y, "Time Bonuses", "Time Bonus", score.TimeBonusScore, 15150);
+            DrawMultiple(ui, x, ref y, "Deaths", "Death", score.DeathScore, -5050);
+            y += lineHeight;
 
-            ui.DrawTextAxis(x, y, $"Mimicgoras: {score.MimicgoraScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Enchantments: {score.EnchantmentScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Traps: {score.TrapScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Time Bonuses: {score.TimeBonusScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Deaths: {score.DeathScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxis(x, y, $"Non-Kills: {score.NonKillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight;
-            ui.DrawTextAxis(x, y, $"Kills: {score.KillScore.ToString("N0", CultureInfo.InvariantCulture)}", color); y += lineHeight * 2.0f;
-            ui.DrawTextAxis(x, y, $"Total: {score.TotalScore.ToString("N0", CultureInfo.InvariantCulture)}", color);
+            DrawSingle(ui, x, ref y, "Non-Kills", score.NonKillScore);
+            DrawMultiple(ui, x, ref y, "Kills", "Kill", score.KillScore, 200, 301);
+            y += lineHeight;
+
+            DrawSingle(ui, x, ref y, "Total", score.TotalScore);
         }
     }
 
@@ -734,18 +768,17 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
         if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
-            ui.DrawJob(leftPanelAdjust / 2.0f, 160.0f, classJobId.Item1);
+            ui.DrawJob(5.0f + (leftPanelAdjust / 2.0f), 160.0f, classJobId.Item1);
         else
-            ui.DrawJob(leftPanelAdjust / 2.0f, 160.0f, 17);
+            ui.DrawJob(5.0f + (leftPanelAdjust / 2.0f), 160.0f, 17);
 
         if (statistics.DeepDungeon != DeepDungeon.None)
             ui.DrawDeepDungeon(width - 446.0f, 6.0f, statistics.DeepDungeon);
 
-
         this.DoubleArrowButtonSummary.Position = new(90.0f, 8.0f);
-        this.DoubleArrowButtonCurrent.Position = new(210.0f, 8.0f);
-        this.ArrowButtonPrevious.Position = new(130.0f, 7.0f);
-        this.ArrowButtonNext.Position = new(170.0f, 7.0f);
+        this.DoubleArrowButtonCurrent.Position = new(209.0f, 8.0f);
+        this.ArrowButtonPrevious.Position = new(128.0f, 7.0f);
+        this.ArrowButtonNext.Position = new(168.0f, 7.0f);
         this.MainWindowButton.Position = new Vector2(15.0f, 40.0f);
         this.ScreenshotButton.Position = new Vector2(50.0f, 40.0f);
         this.ScreenshotFolderButton.Position = new Vector2(85.0f, 40.0f);

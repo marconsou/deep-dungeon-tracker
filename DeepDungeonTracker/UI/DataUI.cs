@@ -38,7 +38,7 @@ public sealed class DataUI : IDisposable
 
     public void BuildFonts() => this.ResourceUI.BuildFonts();
 
-    public void DrawTextAxis(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.Axis, x, y, text, color, align);
+    public Vector2 DrawTextAxis(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left, bool calcTextSize = false) => this.Render.DrawText(this.ResourceUI.Axis, x, y, text, color, align, calcTextSize);
 
     public void DrawTextMiedingerMid(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left) => this.Render.DrawText(this.ResourceUI.MiedingerMid, x, y, text, color, align);
 

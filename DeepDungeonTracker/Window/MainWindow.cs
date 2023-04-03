@@ -224,7 +224,7 @@ public sealed class MainWindow : WindowEx, IDisposable
             var x = 60.0f;
             var y = centerY + 50.0f;
             var buttonIndex = 0;
-            var textWidthCap = width - x - 10.0f;
+            var textWidthCap = width - x - 25.0f;
 
             foreach (var fileName in fileNames.Skip(this.BackupIndex).Take(MainWindow.BackupFilesPerPage))
             {

@@ -18,7 +18,7 @@ public class Render
         ImGui.Image(textureWrap.ImGuiHandle, new(width * finalScale, height * finalScale), new(x1, y1), new(x2, y2), color ?? Color.White);
     }
 
-    public void DrawText(ImFontPtr imFontPtr, float x, float y, string text, Vector4 color, Alignment align)
+    public Vector2 DrawText(ImFontPtr imFontPtr, float x, float y, string text, Vector4 color, Alignment align, bool calcTextSize = false)
     {
         ImGui.PushFont(imFontPtr);
 
@@ -35,6 +35,8 @@ public class Render
         ImGui.SetCursorPos(new Vector2(x, y));
         ImGui.TextColored(color, text);
         ImGui.PopFont();
+
+        return calcTextSize ? this.GetTextSize(imFontPtr, text) : Vector2.Zero;
     }
 
     public Vector2 GetTextSize(ImFontPtr imFontPtr, string text)
