@@ -68,6 +68,21 @@ public sealed class MainWindow : WindowEx, IDisposable
 
     public void CheckForEvents()
     {
+        void BackupPrevious()
+        {
+            this.BackupIndex--;
+            if (this.BackupIndex < 0)
+                this.BackupIndex = 0;
+        }
+
+        void BackupNext()
+        {
+            this.BackupIndex++;
+            var max = MainWindow.BackupFileNames.Length - MainWindow.BackupFilesPerPage;
+            if (this.BackupIndex > max)
+                this.BackupIndex = max;
+        }
+
         if (this.SaveSlotArrowButtonPrevious.OnMouseLeftClick())
         {
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
@@ -85,17 +100,12 @@ public sealed class MainWindow : WindowEx, IDisposable
         if (this.BackupArrowButtonPrevious.OnMouseLeftClick())
         {
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
-            this.BackupIndex--;
-            if (this.BackupIndex < 0)
-                this.BackupIndex = 0;
+            BackupPrevious();
         }
         else if (this.BackupSlotArrowButtonNext.OnMouseLeftClick())
         {
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
-            this.BackupIndex++;
-            var max = MainWindow.BackupFileNames.Length - MainWindow.BackupFilesPerPage;
-            if (this.BackupIndex > max)
-                this.BackupIndex = max;
+            BackupNext();
         }
         else if (this.BackupFolderButton.OnMouseLeftClickRelease())
         {
@@ -104,6 +114,15 @@ public sealed class MainWindow : WindowEx, IDisposable
         }
         else if (this.CloseButton.OnMouseLeftClick())
             this.IsOpen = false;
+
+        if (ImGui.IsWindowHovered())
+        {
+            var io = ImGui.GetIO();
+            if (io.MouseWheel > 0)
+                BackupPrevious();
+            else if (io.MouseWheel < 0)
+                BackupNext();
+        }
     }
 
     public override void OnOpen() => this.Data.Audio.PlaySound(SoundIndex.OnOpenMenu);
