@@ -30,9 +30,9 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private CloseButton CloseButton { get; } = new();
 
-    private IList<Button> FloorSetSummaryButtons { get; } = new List<Button>();
+    private IList<TextButton> FloorSetSummaryButtons { get; } = new List<TextButton>();
 
-    private IList<Button> PageNavigationButtons { get; } = new List<Button>();
+    private IList<NumberButton> PageNavigationButtons { get; } = new List<NumberButton>();
 
     private IDictionary<uint, (uint, string)> ClassJobIds { get; }
 
@@ -65,7 +65,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
         for (int i = 0; i < 20; i++)
         {
-            this.FloorSetSummaryButtons.Add(new GenericButton());
+            this.FloorSetSummaryButtons.Add(new TextButton());
             this.PageNavigationButtons.Add(new NumberButton(i + 1));
         }
     }
@@ -125,19 +125,6 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     public override void OnClose() => this.Data.Audio.PlaySound(SoundIndex.OnCloseMenu);
 
     private Vector4 SummarySelectionColor(bool condition = true, Vector4? color = null) => (this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary && this.Data.Statistics.SaveSlotSummary != null && condition) ? this.Configuration.Statistics.SummarySelectionColor : color ?? Color.White;
-
-    private static (float, float) AdjustSummaryFloorSetPosition(float leftPanelAdjust, float x, float y, float top, float lineHeight, int firstFloorNumber)
-    {
-        if (firstFloorNumber == 91)
-        {
-            x = 350.0f + leftPanelAdjust;
-            y = top;
-        }
-        else
-            y += lineHeight * 2.525f;
-
-        return (x, y);
-    }
 
     private void DrawMiscellaneousIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, bool includeMapTotal)
     {
@@ -430,37 +417,40 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.DrawFloorText(totalX, y - 20.0f, "Total:", statistics!.TimeTotal, null, statistics.ScoreTotal, null, forceShowHours, false);
     }
 
-    private void DrawSummaryPageTexts(float leftPanelAdjust, float left, float top, float iconSize)
+    private void DrawEnemyIcons(float leftPanelAdjust, float left, float top)
     {
         var statistics = this.Data.Statistics;
         var floorSets = statistics.SaveSlot?.FloorSets ?? Enumerable.Empty<FloorSet>();
         var ui = this.Data.UI;
-
         var x = left + leftPanelAdjust;
         var y = top;
+        var lineHeight = (statistics.SaveSlot?.DeepDungeon == DeepDungeon.PalaceOfTheDead) ? 14.0f : 29.59f;
 
+        foreach (var item in floorSets)
+        {
+            ui.DrawEnemyIcon(x + 99.0f, ((int)y) - 7.0f);
+            y += lineHeight * 2.5f;
+        }
+    }
+
+    private void DrawSummaryPageTexts(float leftPanelAdjust, float left, float top)
+    {
+        this.SummaryPageCenter(leftPanelAdjust, left, top);
+        this.SummaryPageRight(top);
+    }
+
+    private void SummaryPageCenter(float leftPanelAdjust, float left, float top)
+    {
+        var statistics = this.Data.Statistics;
+        var floorSets = statistics.SaveSlot?.FloorSets ?? Enumerable.Empty<FloorSet>();
+        var ui = this.Data.UI;
+        var config = this.Configuration.Statistics;
+        var x = left + leftPanelAdjust + 25.0f;
+        var y = top;
         var totalTime = 0L;
         var totalScore = 0;
         var totalKills = 0;
-        var lineHeight = 28.0f;
-        foreach (var item in floorSets)
-        {
-            var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
-            totalTime += item.Time().Ticks;
-            totalScore += item.Score();
-            totalKills += item.Kills();
-            this.DrawFloorText(x, y, $"{firstFloorNumber:D3}-{firstFloorNumber + 9:D3}:", new TimeSpan(totalTime), item.Time(), totalScore, item.Score(), true);
-
-            var kills = item.Kills();
-            if (kills != totalKills && kills > 0)
-                this.Data.UI.DrawTextAxis(x + iconSize - 16.0f, y + 35.0f, $"+{kills.ToString(CultureInfo.InvariantCulture)}", Color.Yellow, Alignment.Left);
-            this.Data.UI.DrawTextAxis(x + iconSize - 16.0f, y + 21.0f + (kills == totalKills || kills == 0 ? 8.0f : 0.0f), totalKills.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Left);
-
-            (x, y) = StatisticsWindow.AdjustSummaryFloorSetPosition(leftPanelAdjust, x, y, top, lineHeight, firstFloorNumber);
-        }
-
-        x = left;
-        y = top;
+        var lineHeight = (statistics.SaveSlot?.DeepDungeon == DeepDungeon.PalaceOfTheDead) ? 14.0f : 29.59f;
 
         foreach (var item in this.FloorSetSummaryButtons)
             item.Show = false;
@@ -469,13 +459,58 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         foreach (var item in floorSets)
         {
             var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
+            totalTime += item.Time().Ticks;
+            totalScore += item.Score();
+            totalKills += item.Kills();
+            var space = "   ";
             var floorSetText = $"{firstFloorNumber:D3}-{firstFloorNumber + 9:D3}:";
+
+            var isItemSelected = (this.Data.Statistics.FloorSetTextSummary == floorSetText);
+            if (isItemSelected)
+                ui.DrawArrowSelection(x - 26.0f, y + 2.0f);
+            var ts = ui.DrawTextAxis(x, y, $"{floorSetText} ", this.SummarySelectionColor(isItemSelected), calcTextSize: true);
+            ts += ui.DrawTextAxis(x + ts.X, y, $"{space}{space}{space}", Color.White, calcTextSize: true);
+
+            ts += ui.DrawTextAxis(x + ts.X, y, $"{totalKills.ToString(CultureInfo.InvariantCulture)} ", Color.White, calcTextSize: true);
+            var kills = item.Kills();
+            if (kills != totalKills && kills > 0)
+            {
+                ts += ui.DrawTextAxis(x + ts.X, y, "(", Color.White, calcTextSize: true);
+                ts += ui.DrawTextAxis(x + ts.X, y, $"+{kills.ToString(CultureInfo.InvariantCulture)}", Color.Yellow, calcTextSize: true);
+                ts += ui.DrawTextAxis(x + ts.X, y, ") ", Color.White, calcTextSize: true);
+            }
+            ts += ui.DrawTextAxis(x + ts.X, y, space, Color.White, calcTextSize: true);
+
+            var totalTimeTS = new TimeSpan(totalTime);
+            if (totalTimeTS != default)
+                ts += ui.DrawTextAxis(x + ts.X, y, $"{totalTimeTS} ", config.FloorTimeColor, calcTextSize: true);
+
+            if (item.Time() != default && totalTimeTS != item.Time())
+            {
+                ts += ui.DrawTextAxis(x + ts.X, y, "(", Color.White, calcTextSize: true);
+                ts += ui.DrawTextAxis(x + ts.X, y, $"+{item.Time():mm\\:ss}", config.FloorTimeColor, calcTextSize: true);
+                ts += ui.DrawTextAxis(x + ts.X, y, ") ", Color.White, calcTextSize: true);
+            }
+            ts += ui.DrawTextAxis(x + ts.X, y, space, Color.White, calcTextSize: true);
+
+            if (totalScore != 0)
+            {
+                ts += ui.DrawTextAxis(x + ts.X, y, $"{totalScore.ToString("N0", CultureInfo.InvariantCulture)} ", totalScore > 0 ? config.ScoreColor : totalScore < 0 ? Color.Red : Color.White, calcTextSize: true);
+                var previousScore = item.Score();
+                if (previousScore != 0 && previousScore != totalScore)
+                {
+                    ts += ui.DrawTextAxis(x + ts.X, y, "(", Color.White, calcTextSize: true);
+                    ts += ui.DrawTextAxis(x + ts.X, y, $"{(previousScore > 0 ? "+" : string.Empty)}{previousScore.ToString("N0", CultureInfo.InvariantCulture)}", previousScore > 0 ? config.ScoreColor : previousScore < 0 ? Color.Red : Color.White, calcTextSize: true);
+                    ts += ui.DrawTextAxis(x + ts.X, y, ") ", Color.White, calcTextSize: true);
+                }
+                ts += ui.DrawTextAxis(x + ts.X, y, space, Color.White, calcTextSize: true);
+            }
 
             var button = this.FloorSetSummaryButtons[buttonIndex];
 
             button.Show = true;
-            button.Position = new Vector2(x + leftPanelAdjust, y);
-            button.Size = new(240.0f, 48.0f);
+            button.Position = new Vector2(x, y);
+            button.Size = new(ts.X, ui.GetAxisTextSize(space).Y);
             button.Draw(ui, this.Data.Audio);
 
             if (button.OnMouseLeftClick())
@@ -485,13 +520,19 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             }
 
             buttonIndex++;
-
-            (x, y) = StatisticsWindow.AdjustSummaryFloorSetPosition(0.0f, x, y, top, lineHeight, firstFloorNumber);
+            y += lineHeight * 2.5f;
         }
+    }
 
-        x = 1085.0f;
-        y = top;
+    private void SummaryPageRight(float top)
+    {
+        var statistics = this.Data.Statistics;
+        var ui = this.Data.UI;
+        var x = 1085.0f;
+        var y = top;
+        var lineHeight = 32.0f;
         var score = statistics.ScoreSummary ?? this.Data.Common.Score;
+
         if (score != null)
         {
             var textColor = Color.White;
@@ -561,23 +602,6 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         }
     }
 
-    private void DrawFloorSetKillIcons(float leftPanelAdjust, float top, float x)
-    {
-        var statistics = this.Data.Statistics;
-        var floorSets = statistics.SaveSlot?.FloorSets;
-
-        var lineHeight = 28.0f;
-        var y = top;
-
-        foreach (var item in floorSets ?? Enumerable.Empty<FloorSet>())
-        {
-            var firstFloorNumber = item.FirstFloor()?.Number ?? 0;
-            this.Data.UI.DrawMiscellaneous(x - 10.0f + leftPanelAdjust, y + 10.0f, Miscellaneous.Enemy);
-
-            (x, y) = StatisticsWindow.AdjustSummaryFloorSetPosition(0.0f, x, y, top, lineHeight, firstFloorNumber);
-        }
-    }
-
     private void SummaryPage(float leftPanelAdjust, float left, float top, float iconSize, float floorWidth, float floorHeight)
     {
         var statistics = this.Data.Statistics;
@@ -589,7 +613,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var iconSize2 = iconSize * 2.0f;
         var iconSize3 = iconSize * 3.0f;
 
-        this.DrawFloorSetKillIcons(leftPanelAdjust, top, x);
+        this.DrawEnemyIcons(leftPanelAdjust, left, top);
         this.DrawMiscellaneousIcon(x2, y3, iconSize, statistics?.MiscellaneousLastFloor, false);
         this.DrawMiscellaneousIcon(x, y3, iconSize, statistics?.MiscellaneousTotal, true);
         this.DrawCofferIcon(x, y3 + iconSize, iconSize, statistics?.CoffersTotal);
@@ -598,7 +622,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.DrawEnchantmentIcon(x, y3 + iconSize3, iconSize, statistics?.EnchantmentsTotal, false);
         this.DrawTrapIcon(x + ((statistics?.EnchantmentsTotal?.Count() ?? 0) * iconSize), y3 + iconSize3, iconSize, statistics?.TrapsTotal);
 
-        this.DrawSummaryPageTexts(leftPanelAdjust, left, top, iconSize);
+        this.DrawSummaryPageTexts(leftPanelAdjust, left, top);
         this.DrawLastFloorAndTotal(x2, x, y3, true, false);
 
         this.DrawMiscellaneousText(x2, y3, iconSize, statistics?.MiscellaneousLastFloor, false);

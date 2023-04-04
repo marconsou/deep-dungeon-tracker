@@ -88,8 +88,6 @@ public sealed class DataUI : IDisposable
 
     public void DrawCloseButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, Convert.ToInt32(isMouseOver), 2, 1, new(231.0f, 33.0f), new(112.0f, 56.0f), null, Alignment.Left);
 
-    public void DrawGenericButtonOver(float x, float y, float width, float height) => this.Render.DrawGenericButtonOver(this.ResourceUI.UI, x, y, width, height);
-
     public void DrawTextButtonOver(float x, float y, float width, float height) => this.Render.DrawTextButtonOver(this.ResourceUI.UI, x, y, width, height);
 
     public void DrawNumberButtonActive(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, 0, 1, 1, new(464.0f, 53.0f), new(77.0f, 44.0f));
@@ -101,4 +99,8 @@ public sealed class DataUI : IDisposable
     public void DrawBackground(float width, float height, bool isFocused) => this.Render.DrawBackground(this.ResourceUI.UI, width, height, isFocused);
 
     public void DrawPotsherdRegenPotion(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, id, 3, 1, new(2.0f, 153.0f), new(240.0f, 80.0f));
+
+    public void DrawEnemyIcon(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.333f, (int)Miscellaneous.Enemy, 4, 3);
+
+    public void DrawArrowSelection(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.25f, 0, 1, 1, new(377.0f, 236.0f), new(60.0f, 60.0f));
 }
