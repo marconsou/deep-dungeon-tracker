@@ -125,27 +125,6 @@ public class Render
         }
     }
 
-    public void DrawGenericButtonOver(TextureWrap textureWrap, float x, float y, float width, float height)
-    {
-        if (textureWrap != null)
-        {
-            var color = Color.White;
-
-            var tWidth = (float)textureWrap.Width;
-            var tHeight = (float)textureWrap.Height;
-
-            var tOffsetX = 212.0f;
-            var tOffsetY = 2.0f;
-
-            var x1 = tOffsetX / tWidth;
-            var y1 = tOffsetY / tHeight;
-            var x2 = (tOffsetX + 111.0f) / tWidth;
-            var y2 = (tOffsetY + 28.0f) / tHeight;
-
-            this.DrawObject(textureWrap, x, y, width, height, x1, y1, x2, y2, 1.0f, new(color.X, color.Y, color.Z, 0.5f));
-        }
-    }
-
     public void DrawTextButtonOver(TextureWrap textureWrap, float x, float y, float width, float height)
     {
         if (textureWrap != null)
