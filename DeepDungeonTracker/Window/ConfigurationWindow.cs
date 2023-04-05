@@ -89,7 +89,8 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
             ImGui.TextColored(Color.Green, "Save Files:");
             ImGui.TextWrapped(
-                "Save files are automatically created once you enter a Deep Dungeon. They are deleted once you delete an in-game Save Slot and reopen the in-game Save Slot menu. These files cannot be renamed." +
+                "Save files are automatically created once you enter a Deep Dungeon. " +
+                "\nWhen you delete an in-game save slot and then reopen the in-game Save Slot Menu, the saved file associated to that slot will be moved to the Last Save option, instead of being deleted. These files cannot be renamed." +
                 "\nYou can backup your saved files, open the Backup folder, and rename them as you want.");
         }
 
