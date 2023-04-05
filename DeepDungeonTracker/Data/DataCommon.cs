@@ -100,7 +100,11 @@ public class DataCommon
 
     public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
 
+    public static string GetLastSaveFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}Last.json" : string.Empty;
+
     public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data) => DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
+
+    public string GetLastSaveFileName(SaveSlotSelection.SaveSlotSelectionData? data) => DataCommon.GetLastSaveFileName(this.CharacterKey, data);
 
     private void SaveDeepDungeonData()
     {
@@ -260,19 +264,23 @@ public class DataCommon
     public void CheckForSaveSlotDeletion()
     {
         var result = NodeUtility.SaveSlotDeletion(Service.GameGui);
-        var deleteSaveSlots = new bool[] { result.Item1, result.Item2 };
-        for (var i = 0; i < deleteSaveSlots.Length; i++)
+        var moveSaveSlots = new bool[] { result.Item1, result.Item2 };
+        for (var i = 0; i < moveSaveSlots.Length; i++)
         {
-            if (deleteSaveSlots[i])
+            if (moveSaveSlots[i])
             {
                 var saveSlotNumber = i + 1;
-                if (LocalStream.Delete(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(new(this.DeepDungeon, saveSlotNumber))))
+                var saveSlotFileName = this.GetSaveSlotFileName(new(this.DeepDungeon, saveSlotNumber));
+                if (LocalStream.Exists(ServiceUtility.ConfigDirectory, saveSlotFileName))
                 {
-                    var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
-                    if (data?.DeepDungeon == this.DeepDungeon && data.SaveSlotNumber == saveSlotNumber)
+                    if (LocalStream.Move(ServiceUtility.ConfigDirectory, ServiceUtility.ConfigDirectory, saveSlotFileName, this.GetLastSaveFileName(new(this.DeepDungeon, saveSlotNumber))))
                     {
-                        this.ResetSaveSlotSelection();
-                        this.SaveSlotSelection.Save(this.CharacterKey);
+                        var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
+                        if (data?.DeepDungeon == this.DeepDungeon && data.SaveSlotNumber == saveSlotNumber)
+                        {
+                            this.ResetSaveSlotSelection();
+                            this.SaveSlotSelection.Save(this.CharacterKey);
+                        }
                     }
                 }
             }

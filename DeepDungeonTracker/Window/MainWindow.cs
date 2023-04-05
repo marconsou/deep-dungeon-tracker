@@ -35,7 +35,11 @@ public sealed class MainWindow : WindowEx, IDisposable
 
     private IList<TextButton> SaveSlotButtons { get; } = new List<TextButton>();
 
-    private IList<BackupButton> BackupButtons { get; } = new List<BackupButton>();
+    private IList<BackupButton> SaveSlotBackupButtons { get; } = new List<BackupButton>();
+
+    private IList<TextButton> LastSaveButtons { get; } = new List<TextButton>();
+
+    private IList<BackupButton> LastSaveBackupButtons { get; } = new List<BackupButton>();
 
     private IList<TextButton> BackupFileButtons { get; } = new List<TextButton>();
 
@@ -54,7 +58,9 @@ public sealed class MainWindow : WindowEx, IDisposable
         for (var i = 0; i < saveSlotsTotal; i++)
         {
             this.SaveSlotButtons.Add(new());
-            this.BackupButtons.Add(new());
+            this.SaveSlotBackupButtons.Add(new());
+            this.LastSaveButtons.Add(new());
+            this.LastSaveBackupButtons.Add(new());
         }
 
         for (var i = 0; i < MainWindow.BackupFilesPerPage; i++)
@@ -153,13 +159,48 @@ public sealed class MainWindow : WindowEx, IDisposable
             saveSlotSelection.TryGetValue(saveSlot.Key, out var saveSlotSelectionData);
             ui.DrawTextAxis(centerX, 83.0f, $"{saveSlot.Key.Replace("-", "  (", StringComparison.InvariantCultureIgnoreCase)})", Color.White, Alignment.Center);
 
+            void Buttons(TextButton mainButton, BackupButton backupButton, float x, float y, string saveSlotText, KeyValuePair<string, SaveSlotSelection.SaveSlotSelectionData> saveSlot, DeepDungeon deepDungeon, int saveSlotNumber, string fileName, bool enableButtons)
+            {
+                ui.DrawTextAxis(x, y, saveSlotText, enableButtons ? Color.White : Color.Gray);
+
+                mainButton.Position = new(x, y);
+                mainButton.Size = ui.GetAxisTextSize(saveSlotText);
+
+                backupButton.Position = new(x - 35.0f, y - 3.0f);
+
+                if (enableButtons)
+                {
+                    mainButton.Draw(ui, audio);
+                    backupButton.Draw(ui, audio);
+
+                    if (mainButton.OnMouseLeftClick())
+                    {
+                        this.Data.Audio.PlaySound(SoundIndex.OnClick);
+
+                        if (!this.Data.IsInsideDeepDungeon)
+                            this.Data.Common.LoadDeepDungeonData(false, fileName);
+
+                        this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
+                    }
+                    else if (backupButton.OnMouseLeftClick())
+                    {
+                        this.Data.Audio.PlaySound(SoundIndex.OnClick);
+                        var destFileName = $"{LocalStream.FormatFileName(fileName, false)} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.json".Trim();
+                        if (LocalStream.Copy(ServiceUtility.ConfigDirectory, Directories.Backups, fileName, destFileName))
+                            Service.ChatGui.Print($"A new file has been created! ({destFileName})");
+                        else
+                            Service.ChatGui.Print($"No file created!");
+                    }
+                }
+            }
+
             foreach (var deepDungeon in Enum.GetValues<DeepDungeon>())
             {
-                var x = centerX;
-                var y = ((int)deepDungeon * 100.0f) + 10.0f;
-
                 if (deepDungeon == DeepDungeon.None)
                     continue;
+
+                var x = centerX;
+                var y = ((int)deepDungeon * 100.0f) + 10.0f;
 
                 ui.DrawDeepDungeon(x, y, deepDungeon, Alignment.Center);
                 x -= centerX / 2.0f;
@@ -167,48 +208,20 @@ public sealed class MainWindow : WindowEx, IDisposable
 
                 for (var saveSlotNumber = 1; saveSlotNumber <= 2; saveSlotNumber++)
                 {
-                    var fileName = DataCommon.GetSaveSlotFileName(saveSlot.Key, new(deepDungeon, saveSlotNumber));
-
-                    var enableButtons =
-                            (!this.Data.IsInsideDeepDungeon && LocalStream.Exists(ServiceUtility.ConfigDirectory, fileName)) ||
-                            (this.Data.IsInsideDeepDungeon && this.Data.Common.GetSaveSlotFileName(saveSlotSelectionData ?? new()) == fileName);
-
-                    var saveSlotText = $"Save Slot {saveSlotNumber}";
-                    ui.DrawTextAxis(x, y, saveSlotText, enableButtons ? Color.White : Color.Gray);
-
                     var buttonIndex = (((int)deepDungeon - 1) * 2) + (saveSlotNumber - 1);
 
-                    var saveSlotButton = this.SaveSlotButtons[buttonIndex];
-                    saveSlotButton.Position = new(x, y);
-                    saveSlotButton.Size = ui.GetAxisTextSize(saveSlotText);
+                    var saveSlotfileName = DataCommon.GetSaveSlotFileName(saveSlot.Key, new(deepDungeon, saveSlotNumber));
+                    var lastSaveFileName = DataCommon.GetLastSaveFileName(saveSlot.Key, new(deepDungeon, saveSlotNumber));
 
-                    var backupButton = this.BackupButtons[buttonIndex];
-                    backupButton.Position = new(x - 35.0f, y - 3.0f);
+                    var saveSlotEnableButtons =
+                            (!this.Data.IsInsideDeepDungeon && LocalStream.Exists(ServiceUtility.ConfigDirectory, saveSlotfileName)) ||
+                            (this.Data.IsInsideDeepDungeon && this.Data.Common.GetSaveSlotFileName(saveSlotSelectionData ?? new()) == saveSlotfileName);
 
-                    if (enableButtons)
-                    {
-                        saveSlotButton.Draw(ui, audio);
-                        backupButton.Draw(ui, audio);
+                    var lastSaveEnableButtons =
+                           (!this.Data.IsInsideDeepDungeon && LocalStream.Exists(ServiceUtility.ConfigDirectory, lastSaveFileName));
 
-                        if (saveSlotButton.OnMouseLeftClick())
-                        {
-                            this.Data.Audio.PlaySound(SoundIndex.OnClick);
-
-                            if (!this.Data.IsInsideDeepDungeon)
-                                this.Data.Common.LoadDeepDungeonData(false, saveSlot.Key, new(deepDungeon, saveSlotNumber));
-
-                            this.Data.Statistics.Load(this.Data.Common.CurrentSaveSlot, this.OpenStatisticsWindow);
-                        }
-                        else if (backupButton.OnMouseLeftClick())
-                        {
-                            this.Data.Audio.PlaySound(SoundIndex.OnClick);
-                            var destFileName = $"{LocalStream.FormatFileName(fileName, false)} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.json".Trim();
-                            if (LocalStream.Copy(ServiceUtility.ConfigDirectory, Directories.Backups, fileName, destFileName))
-                                Service.ChatGui.Print($"A new file has been created! ({destFileName})");
-                            else
-                                Service.ChatGui.Print($"No file created!");
-                        }
-                    }
+                    Buttons(this.SaveSlotButtons[buttonIndex], this.SaveSlotBackupButtons[buttonIndex], x, y, $"Save Slot {saveSlotNumber}", saveSlot, deepDungeon, saveSlotNumber, saveSlotfileName, saveSlotEnableButtons);
+                    Buttons(this.LastSaveButtons[buttonIndex], this.LastSaveBackupButtons[buttonIndex], x, y + 30.0f, $"Last Save {saveSlotNumber}", saveSlot, deepDungeon, saveSlotNumber, lastSaveFileName, lastSaveEnableButtons);
 
                     x += width / 3.0f;
                 }

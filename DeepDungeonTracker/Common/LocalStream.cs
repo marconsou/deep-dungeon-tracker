@@ -56,6 +56,22 @@ public static class LocalStream
         return false;
     }
 
+    public static bool Move(string sourceDirectory, string destDirectory, string sourceFileName, string destFileName)
+    {
+        if (!LocalStream.Exists(sourceDirectory))
+            Directory.CreateDirectory(sourceDirectory);
+
+        if (!LocalStream.Exists(destDirectory))
+            Directory.CreateDirectory(destDirectory);
+
+        if (LocalStream.Exists(sourceDirectory, sourceFileName))
+        {
+            File.Move(Path.Combine(sourceDirectory, sourceFileName), Path.Combine(destDirectory, destFileName), true);
+            return true;
+        }
+        return false;
+    }
+
     public static string[] GetFileNamesFromDirectory(string directory) => LocalStream.Exists(directory) ? Directory.EnumerateFiles(directory).ToArray() : Array.Empty<string>();
 
     public static void OpenFolder(string directory)
