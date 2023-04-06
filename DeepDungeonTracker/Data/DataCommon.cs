@@ -128,12 +128,6 @@ public class DataCommon
         return this.CurrentSaveSlot;
     }
 
-    public void LoadDeepDungeonData(bool showFloorSetTimeValues, string key, SaveSlotSelection.SaveSlotSelectionData data)
-    {
-        var fileName = DataCommon.GetSaveSlotFileName(key, data);
-        this.LoadDeepDungeonData(showFloorSetTimeValues, fileName);
-    }
-
     public void LoadDeepDungeonData(bool showFloorSetTimeValues, bool ignoreDeepDungeonRegion = false)
     {
         var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
