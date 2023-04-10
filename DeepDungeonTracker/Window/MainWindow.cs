@@ -221,7 +221,7 @@ public sealed class MainWindow : WindowEx, IDisposable
                            (!this.Data.IsInsideDeepDungeon && LocalStream.Exists(ServiceUtility.ConfigDirectory, lastSaveFileName));
 
                     Buttons(this.SaveSlotButtons[buttonIndex], this.SaveSlotBackupButtons[buttonIndex], x, y, $"Save Slot {saveSlotNumber}", saveSlot, deepDungeon, saveSlotNumber, saveSlotfileName, saveSlotEnableButtons);
-                    Buttons(this.LastSaveButtons[buttonIndex], this.LastSaveBackupButtons[buttonIndex], x, y + 30.0f, $"Last Save {saveSlotNumber}", saveSlot, deepDungeon, saveSlotNumber, lastSaveFileName, lastSaveEnableButtons);
+                    Buttons(this.LastSaveButtons[buttonIndex], this.LastSaveBackupButtons[buttonIndex], x, y + 30.0f, "Last Save", saveSlot, deepDungeon, saveSlotNumber, lastSaveFileName, lastSaveEnableButtons);
 
                     x += width / 3.0f;
                 }
@@ -283,11 +283,12 @@ public sealed class MainWindow : WindowEx, IDisposable
 
                 var backupFileButton = this.BackupFileButtons[buttonIndex];
 
+                backupFileButton.Position = new(x, y);
+                backupFileButton.Size = ui.GetAxisTextSize(uiFileName);
+
                 if (enableButtons)
                 {
                     backupFileButton.Show = true;
-                    backupFileButton.Position = new(x, y);
-                    backupFileButton.Size = ui.GetAxisTextSize(uiFileName);
                     backupFileButton.Draw(ui, audio);
 
                     if (backupFileButton.OnMouseLeftClick())

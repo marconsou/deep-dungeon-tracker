@@ -63,6 +63,16 @@ namespace DeepDungeonTracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] BossStatusTimer {
+            get {
+                object obj = ResourceManager.GetObject("BossStatusTimer", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Coffer {
             get {
                 object obj = ResourceManager.GetObject("Coffer", resourceCulture);

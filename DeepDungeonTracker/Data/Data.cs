@@ -28,6 +28,8 @@ public sealed class Data : IDisposable
 
     private ConditionEvent Occupied33 { get; } = new();
 
+    private ConditionEvent InCombat { get; } = new();
+
     private Event<string> EnchantmentMessage { get; } = new();
 
     private Event<string> TrapMessage { get; } = new();
@@ -56,6 +58,8 @@ public sealed class Data : IDisposable
 
         this.InDeepDungeon.AddActivating(this.DeepDungeonActivating);
         this.InDeepDungeon.AddDeactivating(this.DeepDungeonDeactivating);
+        this.InCombat.AddActivating(this.CombatActivating);
+        this.InCombat.AddDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Add(this.EnchantmentMessageReceived);
         this.TrapMessage.Add(this.TrapMessageReceived);
         this.ActorControl.Add(this.ActorControlAction);
@@ -72,6 +76,7 @@ public sealed class Data : IDisposable
             this.ConditionChange(ConditionFlag.BoundToDuty97, Service.Condition[ConditionFlag.BoundToDuty97]);
             this.ConditionChange(ConditionFlag.InDeepDungeon, Service.Condition[ConditionFlag.InDeepDungeon]);
             this.ConditionChange(ConditionFlag.Occupied33, Service.Condition[ConditionFlag.Occupied33]);
+            this.ConditionChange(ConditionFlag.InCombat, Service.Condition[ConditionFlag.InCombat]);
             this.TerritoryChanged(Service.ClientState.TerritoryType);
             this.Login();
         }
@@ -81,6 +86,8 @@ public sealed class Data : IDisposable
     {
         this.InDeepDungeon.RemoveActivating(this.DeepDungeonActivating);
         this.InDeepDungeon.RemoveDeactivating(this.DeepDungeonDeactivating);
+        this.InCombat.RemoveActivating(this.CombatActivating);
+        this.InCombat.RemoveDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Remove(this.EnchantmentMessageReceived);
         this.TrapMessage.Remove(this.TrapMessageReceived);
         this.ActorControl.Remove(this.ActorControlAction);
@@ -90,6 +97,7 @@ public sealed class Data : IDisposable
         this.SystemLogMessage.Remove(this.SystemLogMessageAction);
         this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
+        this.Common.Dispose();
         this.UI.Dispose();
     }
 
@@ -106,6 +114,7 @@ public sealed class Data : IDisposable
             this.CheckForMapReveal();
             this.CheckForTimeBonus();
             this.CheckForCairnOfPassageActivation();
+            this.CheckForBossStatusTimer();
         }
         else
         {
@@ -168,6 +177,14 @@ public sealed class Data : IDisposable
         this.Common.CheckForCairnOfPassageActivation(this.Text);
     }
 
+    private void CheckForBossStatusTimer()
+    {
+        if (this.IsCharacterBusy)
+            return;
+
+        this.Common.CheckForBossStatusTimer(this.InCombat.IsActivated);
+    }
+
     public void Login() => this.Common.ResetCharacterData();
 
     public void TerritoryChanged(ushort territoryType) => this.Common.DeepDungeonUpdate(this.Text, territoryType);
@@ -187,6 +204,9 @@ public sealed class Data : IDisposable
                 break;
             case ConditionFlag.Occupied33:
                 this.Occupied33.Update(value);
+                break;
+            case ConditionFlag.InCombat:
+                this.InCombat.Update(value);
                 break;
             default:
                 break;
@@ -233,6 +253,10 @@ public sealed class Data : IDisposable
     private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon();
 
     private void DeepDungeonDeactivating() => this.Common.ExitingDeepDungeon();
+
+    private void CombatActivating() => this.Common.EnteringCombat();
+
+    private void CombatDeactivating() => this.Common.ExitingCombat();
 
     private void EnchantmentMessageReceived(string message) => this.Common.EnchantmentMessageReceived(this.Text, message);
 

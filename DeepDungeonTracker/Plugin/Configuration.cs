@@ -26,6 +26,8 @@ public class Configuration : IPluginConfiguration
 
     public StatisticsTab Statistics { get; set; } = new();
 
+    public BossStatusTimerTab BossStatusTimer { get; set; } = new();
+
     public OpCodeValues OpCodes { get; set; } = new();
 
     public class GeneralTab
@@ -143,6 +145,23 @@ public class Configuration : IPluginConfiguration
         public Vector4 SummarySelectionColor { get; set; } = Color.Cyan;
     }
 
+    public class BossStatusTimerTab
+    {
+        public bool SolidBackground { get; set; }
+
+        public float Scale { get; set; } = 1.0f;
+
+        public bool IsStartTimeVisible { get; set; } = true;
+
+        public Vector4 StartTimeColor { get; set; } = Color.Green;
+
+        public bool IsEndTimeVisible { get; set; } = true;
+
+        public Vector4 EndTimeColor { get; set; } = Color.Red;
+
+        public Vector4 TotalTimeColor { get; set; } = Color.Gold;
+    }
+
     public class OpCodeValues
     {
         public ushort ActorControl { get; set; }
@@ -174,5 +193,6 @@ public class Configuration : IPluginConfiguration
         this.FloorSetTime = new();
         this.Score = new();
         this.Statistics = new();
+        this.BossStatusTimer = new();
     }
 }

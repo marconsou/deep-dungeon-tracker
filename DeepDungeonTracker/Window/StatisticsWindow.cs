@@ -14,6 +14,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private Action MainWindowToggleVisibility { get; }
 
+    private Action BossStatusTimerWindowToggleVisibility { get; }
+
     private DoubleArrowButton DoubleArrowButtonSummary { get; } = new(false);
 
     private DoubleArrowButton DoubleArrowButtonCurrent { get; } = new(true);
@@ -23,6 +25,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private ArrowButton ArrowButtonNext { get; } = new(true);
 
     private MainWindowButton MainWindowButton { get; } = new();
+
+    private BossStatusTimerButton BossStatusTimerButton { get; } = new();
 
     private ScreenshotButton ScreenshotButton { get; } = new();
 
@@ -36,10 +40,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private IDictionary<uint, (uint, string)> ClassJobIds { get; }
 
-    public StatisticsWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
+    public StatisticsWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility, Action bossStatusTimerWindowToggleVisibility) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
     {
         this.Data = data;
         this.MainWindowToggleVisibility = mainWindowToggleVisibility;
+        this.BossStatusTimerWindowToggleVisibility = bossStatusTimerWindowToggleVisibility;
         this.ClassJobIds = new Dictionary<uint, (uint, string)>()
         {
             { 1, ( 0, "GLA")}, {19, ( 0, "PLD")},
@@ -100,6 +105,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         {
             this.Data.Audio.PlaySound(SoundIndex.OnClick);
             this.MainWindowToggleVisibility();
+        }
+        else if (this.BossStatusTimerButton.OnMouseLeftClick())
+        {
+            this.Data.Audio.PlaySound(SoundIndex.OnClick);
+            this.BossStatusTimerWindowToggleVisibility();
         }
         else if (this.ScreenshotButton.OnMouseLeftClick())
         {
@@ -229,9 +239,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         }
     }
 
-    private void DrawPomanderIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data)
+    private void DrawPomanderIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data, Floor? floor = null)
     {
         var offset = 4.0f;
+        if (this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(floor) ?? false)
+            y -= iconSize;
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
         {
             this.Data.UI.DrawPomander(x + offset, y + offset, (Pomander)(Enum)item.Value);
@@ -239,9 +251,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         }
     }
 
-    private void DrawPomanderText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data)
+    private void DrawPomanderText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data, Floor? floor = null)
     {
         var offset = 0.0f;
+        if (this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(floor) ?? false)
+            y -= offset + iconSize;
         foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
         {
             var total = item.Total;
@@ -334,7 +348,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         }
     }
 
-    private void DrawGotUsedText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Coffer>>? cofferData, IEnumerable<StatisticsItem<Pomander>>? pomanderData)
+    private void DrawGotUsedText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Coffer>>? cofferData, IEnumerable<StatisticsItem<Pomander>>? pomanderData, Floor? floor = null)
     {
         var color = new Vector4(1.0f, 1.0f, 1.0f, 0.7f);
 
@@ -343,7 +357,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         if (cofferData?.Count() > 0)
             this.Data.UI.DrawTextMiedingerMid(x + offset, y + offset + adjustY, "Got", color);
 
-        if (pomanderData?.Count() > 0)
+        if (pomanderData?.Count() > 0 && (!this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(floor) ?? false))
             this.Data.UI.DrawTextMiedingerMid(x + offset, y + offset + iconSize + adjustY, "Used", color);
     }
 
@@ -684,18 +698,36 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             for (var i = 1; i <= 2; i++)
                 this.Data.UI.DrawDivisorVertical(4.0f + (floorWidth * i) + leftPanelAdjust, 37.0f + (floorHeight * j), floorHeight + 1.0f);
 
-        FloorLoop((floor, index, x, y) => { this.DrawMiscellaneousIcon(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false); }, floors, left, x, y, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawMiscellaneousIcon(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false);
+        }, floors, left, x, y, iconSize, floorWidth, floorHeight);
         this.DrawMiscellaneousIcon(x2, y3, iconSize, statistics?.MiscellaneousLastFloor, false);
         this.DrawMiscellaneousIcon(x - leftPanelAdjust, y3, iconSize, statistics?.MiscellaneousTotal, true);
-        FloorLoop((floor, index, x, y) => { this.DrawMiscellaneousMap(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), floor?.MapData, (floor?.Map ?? false)); }, floors, left, x, y, iconSize, floorWidth, floorHeight);
-        FloorLoop((floor, index, x, y) => { this.DrawCofferIcon(x, y, iconSize, statistics?.CoffersByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawMiscellaneousMap(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), floor?.MapData, (floor?.Map ?? false));
+        }, floors, left, x, y, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawCofferIcon(x, y, iconSize, statistics?.CoffersByFloor?.ElementAtOrDefault(index));
+        }, floors, left, x, y + iconSize, iconSize, floorWidth, floorHeight);
         this.DrawCofferIcon(x - leftPanelAdjust, y3 + iconSize, iconSize, statistics?.CoffersTotal);
-        FloorLoop((floor, index, x, y) => { this.DrawPomanderIcon(x, y, iconSize, statistics?.PomandersByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize2, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawPomanderIcon(x, y, iconSize, statistics?.PomandersByFloor?.ElementAtOrDefault(index), floor);
+        }, floors, left, x, y + iconSize2, iconSize, floorWidth, floorHeight);
         this.DrawPomanderIcon(x2, y3 + iconSize, iconSize, statistics?.PomandersLastFloor);
         this.DrawPomanderIcon(x - leftPanelAdjust, y3 + iconSize2, iconSize, statistics?.PomandersTotal);
-        FloorLoop((floor, index, x, y) => { this.DrawEnchantmentIcon(x, y, iconSize, statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index), floor?.EnchantmentsSerenized.Count > 0); }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawEnchantmentIcon(x, y, iconSize, statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index), floor?.EnchantmentsSerenized.Count > 0);
+        }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
         this.DrawEnchantmentIcon(x - leftPanelAdjust, y3 + iconSize3, iconSize, statistics?.EnchantmentsTotal, false);
-        FloorLoop((floor, index, x, y) => { this.DrawTrapIcon(x + ((statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index)?.Count() ?? 0) * iconSize), y, iconSize, statistics?.TrapsByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawTrapIcon(x + ((statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index)?.Count() ?? 0) * iconSize), y, iconSize, statistics?.TrapsByFloor?.ElementAtOrDefault(index));
+        }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
         this.DrawTrapIcon(x + ((statistics?.EnchantmentsTotal?.Count() ?? 0) * iconSize) - leftPanelAdjust, y3 + iconSize3, iconSize, statistics?.TrapsTotal);
 
         TimeSpan timeBonusMissScoreTotal = TimeSpan.Zero;
@@ -706,24 +738,39 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             CheckForTimeBonusMissScore(ref timeBonusMissScoreTotal, ref isTimeBonusMissScore, floor.Time);
             this.DrawFloorText(x, y, $"Floor {floor.Number}:", floor.Time, null, floor.Score, null, false, isTimeBonusMissScore);
         }, floors, left, x, y - 20.0f, iconSize, floorWidth, floorHeight);
-
         CheckForTimeBonusMissScore(ref timeBonusMissScoreTotal, ref isTimeBonusMissScore, statistics?.FloorSet?.LastFloor()?.Time ?? default);
         this.DrawLastFloorAndTotal(x2, x - leftPanelAdjust, y3, false, isTimeBonusMissScore);
-
-        FloorLoop((floor, index, x, y) => { this.DrawMiscellaneousText(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false); }, floors, left, x, y, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawMiscellaneousText(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false);
+        }, floors, left, x, y, iconSize, floorWidth, floorHeight);
         this.DrawMiscellaneousText(x2, y3, iconSize, statistics?.MiscellaneousLastFloor, false);
         this.DrawMiscellaneousText(x - leftPanelAdjust, y3, iconSize, statistics?.MiscellaneousTotal, true);
-        FloorLoop((floor, index, x, y) => { this.DrawCofferText(x, y, iconSize, statistics?.CoffersByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawCofferText(x, y, iconSize, statistics?.CoffersByFloor?.ElementAtOrDefault(index));
+        }, floors, left, x, y + iconSize, iconSize, floorWidth, floorHeight);
         this.DrawCofferText(x - leftPanelAdjust, y3 + iconSize, iconSize, statistics?.CoffersTotal);
-        FloorLoop((floor, index, x, y) => { this.DrawPomanderText(x, y, iconSize, statistics?.PomandersByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize2, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawPomanderText(x, y, iconSize, statistics?.PomandersByFloor?.ElementAtOrDefault(index), floor);
+        }, floors, left, x, y + iconSize2, iconSize, floorWidth, floorHeight);
         this.DrawPomanderText(x2, y3 + iconSize, iconSize, statistics?.PomandersLastFloor);
         this.DrawPomanderText(x - leftPanelAdjust, y3 + iconSize2, iconSize, statistics?.PomandersTotal);
-        FloorLoop((floor, index, x, y) => { this.DrawEnchantmentText(x, y, iconSize, statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawEnchantmentText(x, y, iconSize, statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index));
+        }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
         this.DrawEnchantmentText(x - leftPanelAdjust, y3 + iconSize3, iconSize, statistics?.EnchantmentsTotal);
-        FloorLoop((floor, index, x, y) => { this.DrawTrapText(x + ((statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index)?.Count() ?? 0) * iconSize), y, iconSize, statistics?.TrapsByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawTrapText(x + ((statistics?.EnchantmentsByFloor?.ElementAtOrDefault(index)?.Count() ?? 0) * iconSize), y, iconSize, statistics?.TrapsByFloor?.ElementAtOrDefault(index));
+        }, floors, left, x, y + iconSize3, iconSize, floorWidth, floorHeight);
         this.DrawTrapText(x + ((statistics?.EnchantmentsTotal?.Count() ?? 0) * iconSize) - leftPanelAdjust, y3 + iconSize3, iconSize, statistics?.TrapsTotal);
-
-        FloorLoop((floor, index, x, y) => { this.DrawGotUsedText(x, y, iconSize, statistics?.CoffersByFloor?.ElementAtOrDefault(index), statistics?.PomandersByFloor?.ElementAtOrDefault(index)); }, floors, left, x, y + iconSize, iconSize, floorWidth, floorHeight);
+        FloorLoop((floor, index, x, y) =>
+        {
+            this.DrawGotUsedText(x, y, iconSize, statistics?.CoffersByFloor?.ElementAtOrDefault(index), statistics?.PomandersByFloor?.ElementAtOrDefault(index), floor);
+        }, floors, left, x, y + iconSize, iconSize, floorWidth, floorHeight);
         this.DrawGotUsedText(x - leftPanelAdjust, y3 + iconSize, iconSize, statistics?.CoffersTotal, statistics?.PomandersTotal);
     }
 
@@ -803,9 +850,10 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.DoubleArrowButtonCurrent.Position = new(209.0f, 8.0f);
         this.ArrowButtonPrevious.Position = new(128.0f, 7.0f);
         this.ArrowButtonNext.Position = new(168.0f, 7.0f);
-        this.MainWindowButton.Position = new Vector2(15.0f, 40.0f);
-        this.ScreenshotButton.Position = new Vector2(50.0f, 40.0f);
-        this.ScreenshotFolderButton.Position = new Vector2(85.0f, 40.0f);
+        this.MainWindowButton.Position = new Vector2(25.0f, 45.0f);
+        this.BossStatusTimerButton.Position = new Vector2(60.0f, 45.0f);
+        this.ScreenshotButton.Position = new Vector2(95.0f, 45.0f);
+        this.ScreenshotFolderButton.Position = new Vector2(130.0f, 45.0f);
         this.CloseButton.Position = new(width - 35.0f, 7.0f);
 
         this.DoubleArrowButtonSummary.Draw(ui, audio);
@@ -813,6 +861,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.ArrowButtonPrevious.Draw(ui, audio);
         this.ArrowButtonNext.Draw(ui, audio);
         this.MainWindowButton.Draw(ui, audio);
+        this.BossStatusTimerButton.Draw(ui, audio);
         this.ScreenshotButton.Draw(ui, audio);
         this.ScreenshotFolderButton.Draw(ui, audio);
         this.CloseButton.Draw(ui, audio);

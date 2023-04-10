@@ -30,6 +30,8 @@ public sealed class ResourceUI : IDisposable
 
     public TextureWrap Trap { get; }
 
+    public TextureWrap BossStatusTimer { get; }
+
     public TextureWrap MapNormal { get; }
 
     public TextureWrap MapHallOfFallacies { get; }
@@ -43,6 +45,7 @@ public sealed class ResourceUI : IDisposable
         this.Coffer = Service.PluginInterface.UiBuilder.LoadImage(Resources.Coffer);
         this.Enchantment = Service.PluginInterface.UiBuilder.LoadImage(Resources.Enchantment);
         this.Trap = Service.PluginInterface.UiBuilder.LoadImage(Resources.Trap);
+        this.BossStatusTimer = Service.PluginInterface.UiBuilder.LoadImage(Resources.BossStatusTimer);
         this.MapNormal = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapNormal);
         this.MapHallOfFallacies = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapHallOfFallacies);
     }
@@ -65,6 +68,7 @@ public sealed class ResourceUI : IDisposable
         this.Coffer.Dispose();
         this.Enchantment.Dispose();
         this.Trap.Dispose();
+        this.BossStatusTimer.Dispose();
         this.MapNormal.Dispose();
         this.MapHallOfFallacies.Dispose();
     }

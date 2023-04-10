@@ -56,6 +56,11 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
                 this.Statistics();
                 ImGui.EndTabItem();
             }
+            if (ImGui.BeginTabItem("Boss Status Timer"))
+            {
+                this.BossStatusTimer();
+                ImGui.EndTabItem();
+            }
             ImGui.EndTabBar();
         }
         ImGui.Separator();
@@ -211,7 +216,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
     private void Statistics()
     {
         var config = this.Configuration.Statistics;
-        var statistics = this.Data.Statistics;
         this.CheckBox(config.SolidBackground, x => config.SolidBackground = x, "Solid Background");
         this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
         this.ColorEdit4(config.FloorTimeColor, x => config.FloorTimeColor = x, "Floor Time");
@@ -219,5 +223,21 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
         ImGui.SameLine();
         this.ColorEdit4(config.SummarySelectionColor, x => config.SummarySelectionColor = x, "Summary Selection");
+    }
+
+    private void BossStatusTimer()
+    {
+        var config = this.Configuration.BossStatusTimer;
+        this.CheckBox(config.SolidBackground, x => config.SolidBackground = x, "Solid Background");
+        this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
+        this.CheckBox(config.IsStartTimeVisible, x => config.IsStartTimeVisible = x, "##IsStartTimeVisible");
+        ImGui.SameLine();
+        this.ColorEdit4(config.StartTimeColor, x => config.StartTimeColor = x, "Start Time");
+        ImGui.SameLine();
+        this.CheckBox(config.IsEndTimeVisible, x => config.IsEndTimeVisible = x, "##IsEndTimeVisible");
+        ImGui.SameLine();
+        this.ColorEdit4(config.EndTimeColor, x => config.EndTimeColor = x, "End Time");
+        ImGui.SameLine();
+        this.ColorEdit4(config.TotalTimeColor, x => config.TotalTimeColor = x, "Total Time");
     }
 }

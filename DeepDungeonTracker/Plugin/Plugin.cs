@@ -39,7 +39,8 @@ public sealed class Plugin : IDalamudPlugin
         this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
         this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
         this.WindowSystem.AddWindow(new ScoreWindow(this.Name, this.Configuration, this.Data));
-        this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data, this.MainWindowToggleVisibility));
+        this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data, this.MainWindowToggleVisibility, this.BossStatusTimerWindowToggleVisibility));
+        this.WindowSystem.AddWindow(new BossStatusTimerWindow(this.Name, this.Configuration, this.Data));
 #pragma warning restore CA2000
 
         Service.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
@@ -122,6 +123,14 @@ public sealed class Plugin : IDalamudPlugin
             this.OpenWindow<MainWindow>();
         else
             this.CloseWindow<MainWindow>();
+    }
+
+    private void BossStatusTimerWindowToggleVisibility()
+    {
+        if (!this.IsWindowOpen<BossStatusTimerWindow>())
+            this.OpenWindow<BossStatusTimerWindow>();
+        else
+            this.CloseWindow<BossStatusTimerWindow>();
     }
 
     private void Draw() => this.WindowSystem.Draw();

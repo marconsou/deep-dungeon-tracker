@@ -118,6 +118,8 @@ public class SaveSlot
         this.AetherpoolArmor = Math.Max(this.AetherpoolArmor, armor);
     }
 
+    public bool IsSpecialBossFloor(Floor? floor) => (this.DeepDungeon == DeepDungeon.EurekaOrthos && floor?.Number == 99);
+
     static public void Copy(SaveSlot? source, SaveSlot? dest, int maxFloor)
     {
         if (source == null || dest == null)

@@ -66,6 +66,8 @@ public sealed class DataUI : IDisposable
 
     public void DrawTrap(float x, float y, Trap trap) => this.Render.DrawUIElement(this.ResourceUI.Trap, x, y, 0.5f, (int)trap, 3, 3, null, null, Color.Red);
 
+    public void DrawBossStatusTimer(float x, float y, BossStatusTimer bossStatusTimer, byte stacks = 0) => this.Render.DrawUIElement(this.ResourceUI.BossStatusTimer, x, y, 0.5f, (int)(stacks == 0 ? bossStatusTimer : BossStatusTimer.VulnerabilityUp + stacks - 1), 5, 4);
+
     public void DrawPomander(float x, float y, Pomander pomander) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)pomander, 10, 7);
 
     public void DrawMapNormal(float x, float y, int id, bool isMapRevealed) => this.Render.DrawUIElement(this.ResourceUI.MapNormal, x, y, 1.0f / 8.0f, id, 4, 4, color: isMapRevealed ? Color.White : Color.Gray);
@@ -73,6 +75,8 @@ public sealed class DataUI : IDisposable
     public void DrawMapHallOfFallacies(float x, float y, int id, bool isMapRevealed) => this.Render.DrawUIElement(this.ResourceUI.MapHallOfFallacies, x, y, 1.0f / 3.67f, id, 3, 3, color: isMapRevealed ? Color.White : Color.Gray);
 
     public void DrawMainWindowButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, new(464.0f, 14.0f), new(72.0f, 36.0f), null, Alignment.Left);
+
+    public void DrawBossStatusTimerWindowButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, new(440.0f, 236.0f), new(72.0f, 36.0f), null, Alignment.Left);
 
     public void DrawScreenshotButton(float x, float y, bool isMouseOver) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.75f, Convert.ToInt32(isMouseOver), 2, 1, new(156.0f, 61.0f), new(72.0f, 36.0f), null, Alignment.Left);
 
@@ -90,6 +94,8 @@ public sealed class DataUI : IDisposable
 
     public void DrawTextButtonOver(float x, float y, float width, float height) => this.Render.DrawTextButtonOver(this.ResourceUI.UI, x, y, width, height);
 
+    public void DrawBar(float x, float y, float width, float height) => this.Render.DrawBar(this.ResourceUI.UI, x, y, width, height);
+
     public void DrawNumberButtonActive(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, 0, 1, 1, new(464.0f, 53.0f), new(77.0f, 44.0f));
 
     public void DrawDivisorHorizontal(float x, float y, float width) => this.Render.DrawDivisorHorizontal(this.ResourceUI.UI, x, y, width);
@@ -103,4 +109,6 @@ public sealed class DataUI : IDisposable
     public void DrawEnemyIcon(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.333f, (int)Miscellaneous.Enemy, 4, 3);
 
     public void DrawArrowSelection(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.25f, 0, 1, 1, new(377.0f, 236.0f), new(60.0f, 60.0f));
+
+    public void DrawArrow(float x, float y, bool mirrorVertical) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, 0, 1, 1, new(78.0f, 287.0f), new(14.0f, 14.0f), Color.Yellow, mirrorVertical: mirrorVertical);
 }

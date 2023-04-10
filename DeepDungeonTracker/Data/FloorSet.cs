@@ -13,6 +13,9 @@ public class FloorSet
     [JsonInclude]
     public Collection<Floor> Floors { get; private set; } = new();
 
+    [JsonInclude]
+    public BossStatusTimerData BossStatusTimerData { get; private set; } = new();
+
     public TimeSpan Time() => new(this.Floors.Sum(x => x.Time.Ticks));
 
     public int Score() => this.Floors.Sum(x => x.Score);
@@ -57,7 +60,15 @@ public class FloorSet
 
     public void ClearFloors() => this.Floors.Clear();
 
-    public void CheckForTimeBonus(TimeSpan totalTime) => this.TimeBonus = totalTime <= new TimeSpan(0, 30, 0);
+    public void CheckForTimeBonus(TimeSpan totalTime) => this.TimeBonus = totalTime <= new TimeSpan(0, 30, 1);
 
     public void NoTimeBonus() => this.TimeBonus = false;
+
+    public BossStatusTimerManager StartBossStatusTimer()
+    {
+        this.BossStatusTimerData = new();
+        return new BossStatusTimerManager(this.BossStatusTimerData);
+    }
+
+    public void EndBossStatusTimer() => this.BossStatusTimerData.TimerEnd();
 }

@@ -2,11 +2,12 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeepDungeonTracker;
 
-public class DataCommon
+public sealed class DataCommon : IDisposable
 {
     private string CharacterName { get; set; } = string.Empty;
 
@@ -40,6 +41,8 @@ public class DataCommon
 
     public FloorEffect FloorEffect { get; private set; } = new();
 
+    public BossStatusTimerManager? BossStatusTimerManager { get; set; }
+
     public Score? Score { get; private set; }
 
     private string CharacterKey => $"{this.CharacterName}-{this.ServerName}";
@@ -57,6 +60,8 @@ public class DataCommon
     public bool IsSpecialBossFloor => this.IsEurekaOrthosFloor99;
 
     private static Pomander[] SharedPomanders => new[] { Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising };
+
+    public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
     public void ResetCharacterData()
     {
@@ -96,6 +101,18 @@ public class DataCommon
             this.FloorScoreUpdate(this.CurrentSaveSlot?.CurrentFloor()?.Score);
 
         this.SaveDeepDungeonData();
+    }
+
+    public void EnteringCombat()
+    {
+        if (this.IsLastFloor || this.IsSpecialBossFloor)
+            this.BossStatusTimerManager = this.CurrentSaveSlot?.CurrentFloorSet()?.StartBossStatusTimer();
+    }
+
+    public void ExitingCombat()
+    {
+        this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
+        this.BossStatusTimerManager?.ResetStatusState();
     }
 
     public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
@@ -253,6 +270,15 @@ public class DataCommon
         }
 
         this.IsCairnOfPassageActivated = NodeUtility.CairnOfPassageActivation(Service.GameGui);
+    }
+
+    public void CheckForBossStatusTimer(bool inCombat)
+    {
+        if (inCombat && (this.IsLastFloor || this.IsSpecialBossFloor))
+        {
+            var enemy = Service.ObjectTable.MaxBy(x => (x as Character)?.MaxHp) as BattleChara;
+            this.BossStatusTimerManager?.Update(enemy);
+        }
     }
 
     public void CheckForSaveSlotDeletion()

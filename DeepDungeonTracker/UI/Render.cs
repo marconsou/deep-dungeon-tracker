@@ -47,7 +47,7 @@ public class Render
         return size;
     }
 
-    public void DrawUIElement(TextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector2? offset = null, Vector2? size = null, Vector4? color = null, Alignment align = Alignment.Left, bool mirrorHorizontal = false)
+    public void DrawUIElement(TextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector2? offset = null, Vector2? size = null, Vector4? color = null, Alignment align = Alignment.Left, bool mirrorHorizontal = false, bool mirrorVertical = false)
     {
         if (textureWrap == null)
             return;
@@ -86,6 +86,9 @@ public class Render
 
         if (mirrorHorizontal)
             (x2, x1) = (x1, x2);
+
+        if (mirrorVertical)
+            (y2, y1) = (y1, y2);
 
         this.DrawObject(textureWrap, x, y, width, height, x1, y1, x2, y2, innerScale, color);
     }
@@ -151,6 +154,38 @@ public class Render
             width *= 1.025f;
             Draw(x, y, offsetX, height, 77.0f, 236.0f, offsetX, 48.0f);
             Draw(x + offsetX, y, width - offsetX, height, 77.0f + offsetX, 236.0f, 134.0f - offsetX, 48.0f);
+        }
+    }
+
+    public void DrawBar(TextureWrap textureWrap, float x, float y, float width, float height)
+    {
+        if (textureWrap != null)
+        {
+            void Draw(float x, float y, float width, float height, float tX, float tY, float tW, float tH)
+            {
+                var tWidth = (float)textureWrap.Width;
+                var tHeight = (float)textureWrap.Height;
+
+                var tOffsetX = tX;
+                var tOffsetY = tY;
+
+                var x1 = tOffsetX / tWidth;
+                var y1 = tOffsetY / tHeight;
+                var x2 = (tOffsetX + tW) / tWidth;
+                var y2 = (tOffsetY + tH) / tHeight;
+
+                this.DrawObject(textureWrap, x, y, width, height, x1, y1, x2, y2, 1.0f);
+            }
+
+            var offsetX = 8.0f;
+            var textureX = 95.0f;
+            var textureY = 287.0f;
+            var textureW = 116.0f;
+            var textureH = 18.0f;
+            var innerTextureW = textureW - (offsetX * 2.0f);
+            Draw(x, y, width, height, textureX + offsetX, textureY, innerTextureW, textureH);
+            Draw(x - offsetX, y, offsetX, height, textureX, textureY, offsetX, textureH);
+            Draw(x + width, y, offsetX, height, textureX + offsetX + innerTextureW, textureY, offsetX, textureH);
         }
     }
 
