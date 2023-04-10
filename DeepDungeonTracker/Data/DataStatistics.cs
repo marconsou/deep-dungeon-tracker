@@ -65,7 +65,7 @@ public class DataStatistics
 
     public uint ClassJobId => this.SaveSlot?.ClassJobId ?? 0;
 
-    public bool IsSpecialBossFloor => this.DeepDungeon == DeepDungeon.EurekaOrthos && this.FloorSetStatistics == FloorSetStatistics.From091To100;
+    public bool IsEurekaOrthosFloor99 => this.DeepDungeon == DeepDungeon.EurekaOrthos && this.FloorSetStatistics == FloorSetStatistics.From091To100;
 
     private static IEnumerable<Pomander> BossRelevantPomanders { get; }
 
@@ -195,10 +195,10 @@ public class DataStatistics
 
             this.Inventory = DataStatistics.BuildInventory(coffersTotalExceptLast, pomandersTotalExceptLast);
 
-            if (!this.IsSpecialBossFloor)
-                this.PomandersBossStatusTimer = this.FloorSet?.LastFloor()?.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()))?.Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value));
-            else
+            if (this.IsEurekaOrthosFloor99)
                 this.PomandersBossStatusTimer = this.FloorSet?.Floors.Where(x => x.Number == 99).SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value));
+            else
+                this.PomandersBossStatusTimer = this.FloorSet?.LastFloor()?.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()))?.Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value));
 
             this.TimeLastFloor = new(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
             this.TimeTotal = new(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);

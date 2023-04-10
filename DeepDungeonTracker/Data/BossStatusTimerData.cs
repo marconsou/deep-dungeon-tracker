@@ -81,8 +81,6 @@ public class BossStatusTimerData
     [JsonPropertyName("VulnerabilityDownEurekaOrthos")]
     public Collection<BossStatusTimerItem>? SerializationVulnerabilityDownEurekaOrthos { get => this.VulnerabilityDownEurekaOrthos?.Count > 0 ? this.VulnerabilityDownEurekaOrthos : null; private set => this.VulnerabilityDownEurekaOrthos = value ?? new(); }
 
-    public bool IsInCombat() => this.Combat.HasStarted() && !this.Combat.HasEnded();
-
     public void Update(BattleChara? enemy)
     {
         var vulnerabilityUp = this.VulnerabilityUp.LastOrDefault();
@@ -110,6 +108,9 @@ public class BossStatusTimerData
 
     public void TimerEnd()
     {
+        if (this.Combat.HasEnded())
+            return;
+
         foreach (var item in this.Medicated)
             item.TimerEnd();
 

@@ -22,12 +22,25 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
 
     public void Dispose() { }
 
+    private string GetFloorNumber()
+    {
+        var statistics = this.Data.Statistics;
+        if (statistics.FloorSetStatistics != FloorSetStatistics.Summary)
+        {
+            if (statistics.IsEurekaOrthosFloor99)
+                return "99";
+            else
+                return statistics.FloorSetStatistics.GetDescription().Split('-').LastOrDefault() ?? string.Empty;
+        }
+        return string.Empty;
+    }
+
     public void CheckForEvents()
     {
         if (this.ScreenshotButton.OnMouseLeftClick())
         {
             this.Data.Audio.PlaySound(SoundIndex.Screenshot);
-            var fileName = $"Boss Status Timer {this.Data.Statistics.FloorSetStatistics.GetDescription()} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.png".Trim();
+            var fileName = $"Boss Status Timer {this.GetFloorNumber()} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.png".Trim();
             var fontGlobalScale = ImGui.GetIO().FontGlobalScale;
             var size = this.GetSizeScaled() * (fontGlobalScale > 1.0f ? fontGlobalScale : 1.0f);
             var result = ScreenStream.Screenshot(ImGui.GetWindowPos(), size, Directories.Screenshots, fileName);
@@ -208,7 +221,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         ui.Scale = config.Scale;
         var statistics = this.Data.Statistics;
         var data = statistics.FloorSet?.BossStatusTimerData;
-        var isInCombat = data?.IsInCombat() ?? false;
+        var isDataValid = data?.Combat.IsDataValid() ?? false;
 
         var left = 15.0f;
         var top = 50.0f;
@@ -216,13 +229,13 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         var iconSize = 32.0f;
         var offsetY = 24.0f;
         var width = 440.0f;
-        var height = top + headerHeight + ((!isInCombat ? (data?.TimersCount() ?? 1) : 1) * (iconSize + offsetY)) - 5.0f;
+        var height = top + headerHeight + ((isDataValid ? (data?.TimersCount() ?? 1) : 1) * (iconSize + offsetY)) - 5.0f;
+        var floorNumber = this.GetFloorNumber();
 
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
-        var floorText = statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"{statistics.FloorSetStatistics.GetDescription().Split('-').LastOrDefault()}" : string.Empty;
         ui.DrawTextTrumpGothic(15.0f, 5.0f, "Boss Status Timer", new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Left);
-        ui.DrawTextTrumpGothic(width - 38.0f, 38.0f, floorText, new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Right);
+        ui.DrawTextTrumpGothic(width - 38.0f, 38.0f, floorNumber, new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Right);
 
         this.ScreenshotButton.Position = new Vector2(138.0f, 7.0f);
         this.ScreenshotFolderButton.Position = new Vector2(173.0f, 7.0f);
@@ -232,14 +245,14 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         this.ScreenshotFolderButton.Draw(ui, audio);
         this.CloseButton.Draw(ui, audio);
 
-        if (data != null && !isInCombat)
+        if (data != null && isDataValid)
         {
             this.DrawWindowHeader(left, top, width, headerHeight);
             top += headerHeight;
             this.DrawWindowContent(data, left, top, iconSize, offsetY, width);
         }
         else
-            ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"No data on {floorText}" : "Change the page to a floor set to view the data.", Color.White, Alignment.Center);
+            ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"No data on {floorNumber}" : "Change the page to any floor set to view the data.", Color.White, Alignment.Center);
 
         this.WindowSizeUpdate(width, height, ui.Scale);
         this.CheckForEvents();

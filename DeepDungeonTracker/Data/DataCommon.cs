@@ -100,6 +100,9 @@ public sealed class DataCommon : IDisposable
         else
             this.FloorScoreUpdate(this.CurrentSaveSlot?.CurrentFloor()?.Score);
 
+        if (this.IsLastFloor || this.IsSpecialBossFloor)
+            this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
+
         this.SaveDeepDungeonData();
     }
 
@@ -111,8 +114,11 @@ public sealed class DataCommon : IDisposable
 
     public void ExitingCombat()
     {
-        this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
-        this.BossStatusTimerManager?.ResetStatusState();
+        if (this.IsLastFloor || this.IsSpecialBossFloor)
+        {
+            this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
+            this.BossStatusTimerManager?.ResetStatusState();
+        }
     }
 
     public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;

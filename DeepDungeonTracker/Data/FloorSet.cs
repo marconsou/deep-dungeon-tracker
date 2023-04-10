@@ -14,7 +14,7 @@ public class FloorSet
     public Collection<Floor> Floors { get; private set; } = new();
 
     [JsonInclude]
-    public BossStatusTimerData BossStatusTimerData { get; private set; } = new();
+    public BossStatusTimerData? BossStatusTimerData { get; private set; }
 
     public TimeSpan Time() => new(this.Floors.Sum(x => x.Time.Ticks));
 
@@ -70,5 +70,5 @@ public class FloorSet
         return new BossStatusTimerManager(this.BossStatusTimerData);
     }
 
-    public void EndBossStatusTimer() => this.BossStatusTimerData.TimerEnd();
+    public void EndBossStatusTimer() => this.BossStatusTimerData?.TimerEnd();
 }

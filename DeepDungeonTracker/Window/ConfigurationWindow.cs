@@ -6,15 +6,12 @@ namespace DeepDungeonTracker;
 
 public sealed class ConfigurationWindow : WindowEx, IDisposable
 {
-    private Data Data { get; }
-
     private Action MainWindowToggleVisibility { get; }
 
     private string[] FieldNames { get; }
 
-    public ConfigurationWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
+    public ConfigurationWindow(string id, Configuration configuration, Action mainWindowToggleVisibility) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
     {
-        this.Data = data;
         this.MainWindowToggleVisibility = mainWindowToggleVisibility;
         this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds", "Lurings", "Maps", "Time Bonuses" };
         this.SizeConstraints = new() { MaximumSize = new(600.0f, 600.0f) };
