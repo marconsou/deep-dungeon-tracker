@@ -49,6 +49,8 @@ public class DataStatistics
 
     public IEnumerable<StatisticsItem<Pomander>>? PomandersTotal { get; private set; }
 
+    public IEnumerable<StatisticsItem<Pomander>>? PomandersBossStatusTimer { get; private set; }
+
     public IEnumerable<StatisticsItem<Pomander>>? Inventory { get; private set; }
 
     public TimeSpan TimeLastFloor { get; private set; }
@@ -62,6 +64,20 @@ public class DataStatistics
     public DeepDungeon DeepDungeon => this.SaveSlot?.DeepDungeon ?? DeepDungeon.None;
 
     public uint ClassJobId => this.SaveSlot?.ClassJobId ?? 0;
+
+    public bool IsSpecialBossFloor => this.DeepDungeon == DeepDungeon.EurekaOrthos && this.FloorSetStatistics == FloorSetStatistics.From091To100;
+
+    private static IEnumerable<Pomander> BossRelevantPomanders { get; }
+
+    static DataStatistics()
+    {
+        DataStatistics.BossRelevantPomanders = new List<Pomander>()
+        {
+            Pomander.Resolution,
+            Pomander.InfernoMagicite, Pomander.CragMagicite, Pomander.VortexMagicite, Pomander.ElderMagicite,
+            Pomander.UneiDemiclone, Pomander.DogaDemiclone, Pomander.OnionKnightDemiclone
+        };
+    }
 
     public void FloorSetStatisticsSummary()
     {
@@ -149,6 +165,7 @@ public class DataStatistics
         this.EnchantmentsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty;
         this.TrapsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty;
         this.PomandersByFloor = ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty;
+        this.PomandersBossStatusTimer = new List<StatisticsItem<Pomander>>();
         this.Inventory = new List<StatisticsItem<Pomander>>();
 
         if (this.FloorSetStatistics != FloorSetStatistics.Summary)
@@ -177,6 +194,11 @@ public class DataStatistics
             var pomandersTotalExceptLast = floorsExceptLast?.SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).OrderBy(x => x.Value);
 
             this.Inventory = DataStatistics.BuildInventory(coffersTotalExceptLast, pomandersTotalExceptLast);
+
+            if (!this.IsSpecialBossFloor)
+                this.PomandersBossStatusTimer = this.FloorSet?.LastFloor()?.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()))?.Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value));
+            else
+                this.PomandersBossStatusTimer = this.FloorSet?.Floors.Where(x => x.Number == 99).SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value));
 
             this.TimeLastFloor = new(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
             this.TimeTotal = new(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using static DeepDungeonTracker.DataStatistics;
 
 namespace DeepDungeonTracker;
 
@@ -45,14 +46,61 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
 
     public override void OnClose() => this.Data.Audio.PlaySound(SoundIndex.OnCloseMenu);
 
-    public void DrawWindowContent(BossStatusTimerData data, float top, float iconSize, float offsetY, float windowWidth)
+    private void DrawPomanderIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data)
+    {
+        var offset = 4.0f;
+        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        {
+            var pomander = (Pomander)(Enum)item.Value;
+            this.Data.UI.DrawPomander(x + offset, y + offset, pomander);
+            x += iconSize;
+        }
+    }
+
+    private void DrawPomanderText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data)
+    {
+        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        {
+            var pomander = (Pomander)(Enum)item.Value;
+            var total = item.Total;
+            if (total > 1)
+                this.Data.UI.DrawTextAxis(x + iconSize, y + iconSize, total.ToString(CultureInfo.InvariantCulture), Color.White, Alignment.Right);
+            x += iconSize;
+        }
+    }
+
+    private void DrawWindowHeader(float left, float top, float width, float headerHeight)
+    {
+        var ui = this.Data.UI;
+        var statistics = this.Data.Statistics;
+
+        ui.DrawDeepDungeon(width / 2.0f, top + 5.0f, statistics.DeepDungeon, Alignment.Center);
+        top += headerHeight - 32.0f;
+
+        var x = left + 15.0f;
+        var y = top + 5.0f;
+
+        if (ClassJobIds.Data.TryGetValue(statistics.ClassJobId, out var classJobId))
+            ui.DrawJob(x, y, classJobId.Item1, 0.25f);
+        else
+            ui.DrawJob(x, y, classJobId.Item1, 0.25f);
+
+        x += 20.0f;
+        y -= 22.0f;
+        var iconSize = 48.0f;
+
+        var pomanders = statistics.PomandersBossStatusTimer;
+        this.DrawPomanderIcon(x, y, iconSize, pomanders);
+        this.DrawPomanderText(x, y, iconSize, pomanders);
+    }
+
+    private void DrawWindowContent(BossStatusTimerData data, float left, float top, float iconSize, float offsetY, float windowWidth)
     {
         if (data == null)
             return;
 
         var ui = this.Data.UI;
         var config = this.Configuration.BossStatusTimer;
-        var left = 15.0f;
 
         var x = left;
         var y = top;
@@ -122,7 +170,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
             DrawTextTotal(y, totalTime);
         }
 
-        ui.DrawTextMiedingerMid(windowWidth - 48.0f, 48.0f, "Total", Color.White, Alignment.Center);
+        ui.DrawTextMiedingerMid(windowWidth - 48.0f, top - 5.0f, "Total", Color.White, Alignment.Center);
 
         DrawIcon(BossStatusTimer.Combat);
         DrawBarAndTextCurrent(data.Combat, y);
@@ -158,18 +206,23 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         var config = this.Configuration.BossStatusTimer;
         var audio = this.Data.Audio;
         ui.Scale = config.Scale;
-        var data = this.Data.Statistics.FloorSet?.BossStatusTimerData;
+        var statistics = this.Data.Statistics;
+        var data = statistics.FloorSet?.BossStatusTimerData;
         var isInCombat = data?.IsInCombat() ?? false;
 
+        var left = 15.0f;
         var top = 50.0f;
+        var headerHeight = 70.0f;
         var iconSize = 32.0f;
         var offsetY = 24.0f;
         var width = 440.0f;
-        var height = top + ((!isInCombat ? (data?.TimersCount() ?? 1) : 1) * (iconSize + offsetY));
+        var height = top + headerHeight + ((!isInCombat ? (data?.TimersCount() ?? 1) : 1) * (iconSize + offsetY));
 
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
+        var floorText = statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"{statistics.FloorSetStatistics.GetDescription().Split('-').LastOrDefault()}" : string.Empty;
         ui.DrawTextTrumpGothic(15.0f, 5.0f, "Boss Status Timer", new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Left);
+        ui.DrawTextTrumpGothic(width - 38.0f, 38.0f, floorText, new(0.8197f, 0.8197f, 0.8197f, 1.0f), Alignment.Right);
 
         this.ScreenshotButton.Position = new Vector2(138.0f, 7.0f);
         this.ScreenshotFolderButton.Position = new Vector2(173.0f, 7.0f);
@@ -180,9 +233,13 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         this.CloseButton.Draw(ui, audio);
 
         if (data != null && !isInCombat)
-            this.DrawWindowContent(data, top, iconSize, offsetY, width);
+        {
+            this.DrawWindowHeader(left, top, width, headerHeight);
+            top += headerHeight;
+            this.DrawWindowContent(data, left, top, iconSize, offsetY, width);
+        }
         else
-            ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, this.Data.Statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"No data on {this.Data.Statistics.FloorSetStatistics.GetDescription()}" : "Change the page to view the data.", Color.White, Alignment.Center);
+            ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"No data on {floorText}" : "Change the page to view the data.", Color.White, Alignment.Center);
 
         this.WindowSizeUpdate(width, height, ui.Scale);
         this.CheckForEvents();

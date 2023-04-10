@@ -38,35 +38,11 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private IList<NumberButton> PageNavigationButtons { get; } = new List<NumberButton>();
 
-    private IDictionary<uint, (uint, string)> ClassJobIds { get; }
-
     public StatisticsWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility, Action bossStatusTimerWindowToggleVisibility) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
     {
         this.Data = data;
         this.MainWindowToggleVisibility = mainWindowToggleVisibility;
         this.BossStatusTimerWindowToggleVisibility = bossStatusTimerWindowToggleVisibility;
-        this.ClassJobIds = new Dictionary<uint, (uint, string)>()
-        {
-            { 1, ( 0, "GLA")}, {19, ( 0, "PLD")},
-            { 2, ( 1, "PGL")}, {20, ( 1, "MNK")},
-            { 3, ( 2, "MRD")}, {21, ( 2, "WAR")},
-            { 4, ( 3, "LNC")}, {22, ( 3, "DRG")},
-            { 5, ( 4, "ARC")}, {23, ( 5, "BRD")},
-            { 6, ( 6, "CNJ")}, {24, ( 6, "WHM")},
-            { 7, ( 7, "THM")}, {25, ( 7, "BLM")},
-            {26, ( 8, "ACN")}, {27, ( 9, "SMN")}, {28, (10, "SCH")},
-            {29, (11, "ROG")}, {30, (11, "NIN")},
-            {31, (12, "MCH")},
-            {32, (13, "DRK")},
-            {33, (14, "AST")},
-            {34, (15, "SAM")},
-            {35, (16, "RDM")},
-            {36, (17, "BLU")},
-            {37, (18, "GNB")},
-            {38, (19, "DNC")},
-            {39, (20, "RPR")},
-            {40, (21, "SGE")}
-        };
 
         for (int i = 0; i < 20; i++)
         {
@@ -114,7 +90,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         else if (this.ScreenshotButton.OnMouseLeftClick())
         {
             this.Data.Audio.PlaySound(SoundIndex.Screenshot);
-            var classJobName = this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId) ? classJobId.Item2 : string.Empty;
+            var classJobName = ClassJobIds.Data.TryGetValue(statistics.ClassJobId, out var classJobId) ? classJobId.Item2 : string.Empty;
             var fileName = $"{classJobName} {statistics.FloorSetStatistics.GetDescription()} {DateTime.Now.ToString("yyyyMMdd HHmmss", CultureInfo.InvariantCulture)}.png".Trim();
             var fontGlobalScale = ImGui.GetIO().FontGlobalScale;
             var size = this.GetSizeScaled() * (fontGlobalScale > 1.0f ? fontGlobalScale : 1.0f);
@@ -785,8 +761,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         this.DrawInventoryText(x, y + 40.0f, iconSize, inventory, 3);
         if (inventory?.Count() > 0)
         {
-            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 20.0f, "Inventory", new Vector4(1.0f, 1.0f, 1.0f, 0.7f), Alignment.Center);
-            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 33.0f, this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary ? "Currently" : "At the Start", new Vector4(1.0f, 1.0f, 1.0f, 0.7f), Alignment.Center);
+            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 20.0f, "Inventory", Color.White, Alignment.Center);
+            ui.DrawTextMiedingerMid((leftPanelAdjust / 2.0f) + 4.0f, y + 33.0f, this.Data.Statistics.FloorSetStatistics == FloorSetStatistics.Summary ? "Currently" : "At the Start", Color.White, Alignment.Center);
         }
     }
 
@@ -838,7 +814,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 
-        if (this.ClassJobIds.TryGetValue(statistics.ClassJobId, out var classJobId))
+        if (ClassJobIds.Data.TryGetValue(statistics.ClassJobId, out var classJobId))
             ui.DrawJob(5.0f + (leftPanelAdjust / 2.0f), 160.0f, classJobId.Item1);
         else
             ui.DrawJob(5.0f + (leftPanelAdjust / 2.0f), 160.0f, 17);
