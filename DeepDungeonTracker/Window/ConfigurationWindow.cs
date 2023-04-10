@@ -85,7 +85,9 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
                 "All enemies killed from a distance of more than two rooms cannot be counted." +
                 "\nIf you use a magicite, do so in the center of the floor, covering all enemies killed (as much as possible).");
             ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
-            ImGui.TextWrapped("Keep your map menu open to verify the Cairn of Passage key status. The value can be inaccurate if you kill too many enemies at the same time.");
+            ImGui.TextWrapped(
+                "Keep your map menu open to verify the Cairn of Passage key status." +
+                "\nThe value can be inaccurate if you kill too many enemies at the same time.");
             ImGui.TextColored(Color.Green, "Maps:");
             ImGui.TextWrapped("Keep your map menu open to verify the map reveal.");
             ImGui.TextColored(Color.Green, "Potsherds:");
@@ -94,9 +96,13 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
             ImGui.TextColored(Color.Green, "Save Files:");
             ImGui.TextWrapped(
-                "Save files are automatically created once you enter a Deep Dungeon. " +
+                "Save files are automatically created once you enter a Deep Dungeon." +
                 "\nWhen you delete an in-game save slot and then reopen the in-game Save Slot Menu, the saved file associated to that slot will be moved to the Last Save option, instead of being deleted. These files cannot be renamed." +
                 "\nYou can backup your saved files, open the Backup folder, and rename them as you want.");
+            ImGui.TextColored(Color.Green, "Boss Status Timer:");
+            ImGui.TextWrapped(
+                "The timers shown on this menu can be inaccurate up to 1 second." +
+                "\nThe pomanders shown on this menu are based on the pomanders used during the entire time on the floor, not only the boss fight.");
         }
 
         if (ImGui.CollapsingHeader("OpCodes"))

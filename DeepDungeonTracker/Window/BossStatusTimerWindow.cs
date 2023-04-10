@@ -216,7 +216,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         var iconSize = 32.0f;
         var offsetY = 24.0f;
         var width = 440.0f;
-        var height = top + headerHeight + ((!isInCombat ? (data?.TimersCount() ?? 1) : 1) * (iconSize + offsetY));
+        var height = top + headerHeight + ((!isInCombat ? (data?.TimersCount() ?? 1) : 1) * (iconSize + offsetY)) - 5.0f;
 
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
         ui.DrawDivisorHorizontal(14.0f, 34.0f, width - 26.0f);
@@ -239,7 +239,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
             this.DrawWindowContent(data, left, top, iconSize, offsetY, width);
         }
         else
-            ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"No data on {floorText}" : "Change the page to view the data.", Color.White, Alignment.Center);
+            ui.DrawTextAxis(width / 2.0f, (height / 2.0f) + 15.0f, statistics.FloorSetStatistics != FloorSetStatistics.Summary ? $"No data on {floorText}" : "Change the page to a floor set to view the data.", Color.White, Alignment.Center);
 
         this.WindowSizeUpdate(width, height, ui.Scale);
         this.CheckForEvents();
