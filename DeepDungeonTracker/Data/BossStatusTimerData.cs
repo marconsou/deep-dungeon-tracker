@@ -108,9 +108,6 @@ public class BossStatusTimerData
 
     public void TimerEnd()
     {
-        if (this.Combat.HasEnded())
-            return;
-
         foreach (var item in this.Medicated)
             item.TimerEnd();
 
