@@ -282,8 +282,11 @@ public sealed class DataCommon : IDisposable
     {
         if (inCombat && (this.IsLastFloor || this.IsSpecialBossFloor))
         {
-            var enemy = Service.ObjectTable.MaxBy(x => (x as Character)?.MaxHp) as BattleChara;
-            this.BossStatusTimerManager?.Update(enemy);
+            unsafe
+            {
+                var enemy = Service.ObjectTable.Where(x => ((FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)x.Address)->GetIsTargetable()).MaxBy(x => (x as Character)?.MaxHp) as BattleChara;
+                this.BossStatusTimerManager?.Update(enemy);
+            }
         }
     }
 
