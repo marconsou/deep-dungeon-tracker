@@ -196,9 +196,9 @@ public class DataStatistics
             this.Inventory = DataStatistics.BuildInventory(coffersTotalExceptLast, pomandersTotalExceptLast);
 
             if (this.IsEurekaOrthosFloor99)
-                this.PomandersBossStatusTimer = this.FloorSet?.Floors.Where(x => x.Number == 99).SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value));
+                this.PomandersBossStatusTimer = this.FloorSet?.Floors.Where(x => x.Number == 99).SelectMany(x => x.Pomanders).GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value)).Take(4);
             else
-                this.PomandersBossStatusTimer = this.FloorSet?.LastFloor()?.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()))?.Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value));
+                this.PomandersBossStatusTimer = this.FloorSet?.LastFloor()?.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count()))?.Where(x => DataStatistics.BossRelevantPomanders.Contains(x.Value)).Take(4);
 
             this.TimeLastFloor = new(this.FloorSet?.LastFloor()?.Time.Ticks ?? default);
             this.TimeTotal = new(this.FloorSet?.Floors.Sum(x => x.Time.Ticks) ?? default);

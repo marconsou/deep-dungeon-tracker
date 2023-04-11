@@ -128,7 +128,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         void DrawIcon(BossStatusTimer bossStatusTimer)
         {
             y += bossStatusTimer != BossStatusTimer.Combat ? iconSize + offsetY : 0.0f;
-            totalTime = new TimeSpan();
+            totalTime = new();
             ui.DrawBossStatusTimer(x, y, bossStatusTimer);
         }
 
@@ -174,11 +174,12 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
 
         void Draw(BossStatusTimer bossStatusTimer, ICollection<BossStatusTimerItem> data)
         {
-            if (data.Count == 0)
+            var newData = BossStatusTimerData.RemoveLessThanOneSecondDuration(data);
+            if (newData.Count == 0)
                 return;
 
             DrawIcon(bossStatusTimer);
-            foreach (var item in data)
+            foreach (var item in newData)
                 DrawBarAndTextCurrent(item, y);
             DrawTextTotal(y, totalTime);
         }
