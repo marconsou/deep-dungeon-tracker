@@ -82,12 +82,12 @@ public abstract class Score
             this.BaseScore = -10;
     }
 
-    private void CharacterScoreCalculation(int level) => this.CharacterScore = (this.AetherpoolArm + this.AetherpoolArmor) * 10 + level * 500;
+    private void CharacterScoreCalculation(int level, int aetherpoolArm, int aetherpoolArmor) => this.CharacterScore = (aetherpoolArm + aetherpoolArmor) * 10 + level * 500;
 
-    private void FloorScoreCalculation()
+    private void FloorScoreCalculation(int aetherpoolArm, int aetherpoolArmor)
     {
         var total = 0;
-        total += (430 - ((198 - this.AetherpoolArm - this.AetherpoolArmor) * 10)) * this.DistanceFromStartingFloor;
+        total += (430 - ((198 - aetherpoolArm - aetherpoolArmor) * 10)) * this.DistanceFromStartingFloor;
         total += (int)(this.CurrentFloorNumber - (this.StartingFloorNumber + Math.Truncate(this.DistanceFromStartingFloor / 10.0))) * 50 * 91;
         total += (int)Math.Truncate(this.DistanceFromStartingFloor / 10.0) * this.Duty * 300;
         total += this.FloorCompletionScoreCalculation();
@@ -164,20 +164,30 @@ public abstract class Score
 
         var currentFloorNumber = this.CurrentFloorNumber;
 
+        var aetherpoolArm = this.AetherpoolArm;
+        var aetherpoolArmor = this.AetherpoolArmor;
         if (scoreCalculationType != ScoreCalculationType.CurrentFloor)
         {
             var floor = this.CurrentFloorNumber;
             if (scoreCalculationType == ScoreCalculationType.ScoreWindowFloor)
+            {
                 floor = currentFloorNumber > this.LastNormalFloorNumber() ? this.LastBonusFloorNumber() : this.LastNormalFloorNumber();
+                aetherpoolArm = 99;
+                aetherpoolArmor = 99;
+            }
             else if (scoreCalculationType == ScoreCalculationType.LastFloor)
+            {
                 floor = this.LastBonusFloorNumber();
+                aetherpoolArm = 99;
+                aetherpoolArmor = 99;
+            }
 
             this.FloorCompletionUpdate(floor);
         }
 
         this.BaseScoreCalculation();
-        this.CharacterScoreCalculation((scoreCalculationType == ScoreCalculationType.CurrentFloor) ? this.CurrentLevel : this.Level());
-        this.FloorScoreCalculation();
+        this.CharacterScoreCalculation((scoreCalculationType == ScoreCalculationType.CurrentFloor) ? this.CurrentLevel : this.Level(), aetherpoolArm, aetherpoolArmor);
+        this.FloorScoreCalculation(aetherpoolArm, aetherpoolArmor);
         this.MapScoreCalculation();
         this.CofferScoreCalculation();
         this.NPCScoreCalculation();

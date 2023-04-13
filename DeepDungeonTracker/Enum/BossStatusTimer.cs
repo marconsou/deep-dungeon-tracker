@@ -11,6 +11,10 @@ public enum BossStatusTimer
     VulnerabilityDown,
     VulnerabilityUp,
     Enervation = 12,
-    DamageUpEurekaOrthos = 16,
-    VulnerabilityDownEurekaOrthos
+    DamageUpHeavenOnHigh,
+    VulnerabilityDownHeavenOnHigh,
+    RehabilitationHeavenOnHigh,
+    DamageUpEurekaOrthos,
+    VulnerabilityDownEurekaOrthos,
+    RehabilitationEurekaOrthos
 }

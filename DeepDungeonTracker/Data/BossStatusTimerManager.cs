@@ -24,9 +24,17 @@ public sealed class BossStatusTimerManager : IDisposable
 
     private ConditionEvent Enervation { get; } = new();
 
+    private ConditionEvent DamageUpHeavenOnHigh { get; } = new();
+
+    private ConditionEvent VulnerabilityDownHeavenOnHigh { get; } = new();
+
+    private ConditionEvent RehabilitationHeavenOnHigh { get; } = new();
+
     private ConditionEvent DamageUpEurekaOrthos { get; } = new();
 
     private ConditionEvent VulnerabilityDownEurekaOrthos { get; } = new();
+
+    private ConditionEvent RehabilitationEurekaOrthos { get; } = new();
 
     public BossStatusTimerManager(BossStatusTimerData bossStatusTimerData)
     {
@@ -48,10 +56,18 @@ public sealed class BossStatusTimerManager : IDisposable
         this.VulnerabilityUp.AddDeactivating(this.VulnerabilityUpDeactivating);
         this.Enervation.AddActivating(this.EnervationActivating);
         this.Enervation.AddDeactivating(this.EnervationDeactivating);
+        this.DamageUpHeavenOnHigh.AddActivating(this.DamageUpHeavenOnHighActivating);
+        this.DamageUpHeavenOnHigh.AddDeactivating(this.DamageUpHeavenOnHighDeactivating);
+        this.VulnerabilityDownHeavenOnHigh.AddActivating(this.VulnerabilityDownHeavenOnHighActivating);
+        this.VulnerabilityDownHeavenOnHigh.AddDeactivating(this.VulnerabilityDownHeavenOnHighDeactivating);
+        this.RehabilitationHeavenOnHigh.AddActivating(this.RehabilitationHeavenOnHighActivating);
+        this.RehabilitationHeavenOnHigh.AddDeactivating(this.RehabilitationHeavenOnHighDeactivating);
         this.DamageUpEurekaOrthos.AddActivating(this.DamageUpEurekaOrthosActivating);
         this.DamageUpEurekaOrthos.AddDeactivating(this.DamageUpEurekaOrthosDeactivating);
         this.VulnerabilityDownEurekaOrthos.AddActivating(this.VulnerabilityDownEurekaOrthosActivating);
         this.VulnerabilityDownEurekaOrthos.AddDeactivating(this.VulnerabilityDownEurekaOrthosDeactivating);
+        this.RehabilitationEurekaOrthos.AddActivating(this.RehabilitationEurekaOrthosActivating);
+        this.RehabilitationEurekaOrthos.AddDeactivating(this.RehabilitationEurekaOrthosDeactivating);
     }
 
     public void Dispose()
@@ -72,10 +88,18 @@ public sealed class BossStatusTimerManager : IDisposable
         this.VulnerabilityUp.RemoveDeactivating(this.VulnerabilityUpDeactivating);
         this.Enervation.RemoveActivating(this.EnervationActivating);
         this.Enervation.RemoveDeactivating(this.EnervationDeactivating);
+        this.DamageUpHeavenOnHigh.RemoveActivating(this.DamageUpHeavenOnHighActivating);
+        this.DamageUpHeavenOnHigh.RemoveDeactivating(this.DamageUpHeavenOnHighDeactivating);
+        this.VulnerabilityDownHeavenOnHigh.RemoveActivating(this.VulnerabilityDownHeavenOnHighActivating);
+        this.VulnerabilityDownHeavenOnHigh.RemoveDeactivating(this.VulnerabilityDownHeavenOnHighDeactivating);
+        this.RehabilitationHeavenOnHigh.RemoveActivating(this.RehabilitationHeavenOnHighActivating);
+        this.RehabilitationHeavenOnHigh.RemoveDeactivating(this.RehabilitationHeavenOnHighDeactivating);
         this.DamageUpEurekaOrthos.RemoveActivating(this.DamageUpEurekaOrthosActivating);
         this.DamageUpEurekaOrthos.RemoveDeactivating(this.DamageUpEurekaOrthosDeactivating);
         this.VulnerabilityDownEurekaOrthos.RemoveActivating(this.VulnerabilityDownEurekaOrthosActivating);
         this.VulnerabilityDownEurekaOrthos.RemoveDeactivating(this.VulnerabilityDownEurekaOrthosDeactivating);
+        this.RehabilitationEurekaOrthos.RemoveActivating(this.RehabilitationEurekaOrthosActivating);
+        this.RehabilitationEurekaOrthos.RemoveDeactivating(this.RehabilitationEurekaOrthosDeactivating);
     }
 
     public void MedicatedActivating() => this.BossStatusTimerData?.Medicated?.Add(new(BossStatusTimer.Medicated));
@@ -110,6 +134,18 @@ public sealed class BossStatusTimerManager : IDisposable
 
     public void EnervationDeactivating() => this.BossStatusTimerData?.Enervation?.LastOrDefault()?.TimerEnd();
 
+    public void DamageUpHeavenOnHighActivating() => this.BossStatusTimerData?.DamageUpHeavenOnHigh?.Add(new(BossStatusTimer.DamageUpHeavenOnHigh));
+
+    public void DamageUpHeavenOnHighDeactivating() => this.BossStatusTimerData?.DamageUpHeavenOnHigh?.LastOrDefault()?.TimerEnd();
+
+    public void VulnerabilityDownHeavenOnHighActivating() => this.BossStatusTimerData?.VulnerabilityDownHeavenOnHigh?.Add(new(BossStatusTimer.VulnerabilityDownHeavenOnHigh));
+
+    public void VulnerabilityDownHeavenOnHighDeactivating() => this.BossStatusTimerData?.VulnerabilityDownHeavenOnHigh?.LastOrDefault()?.TimerEnd();
+
+    public void RehabilitationHeavenOnHighActivating() => this.BossStatusTimerData?.RehabilitationHeavenOnHigh?.Add(new(BossStatusTimer.RehabilitationHeavenOnHigh));
+
+    public void RehabilitationHeavenOnHighDeactivating() => this.BossStatusTimerData?.RehabilitationHeavenOnHigh?.LastOrDefault()?.TimerEnd();
+
     public void DamageUpEurekaOrthosActivating() => this.BossStatusTimerData?.DamageUpEurekaOrthos?.Add(new(BossStatusTimer.DamageUpEurekaOrthos));
 
     public void DamageUpEurekaOrthosDeactivating() => this.BossStatusTimerData?.DamageUpEurekaOrthos?.LastOrDefault()?.TimerEnd();
@@ -117,6 +153,10 @@ public sealed class BossStatusTimerManager : IDisposable
     public void VulnerabilityDownEurekaOrthosActivating() => this.BossStatusTimerData?.VulnerabilityDownEurekaOrthos?.Add(new(BossStatusTimer.VulnerabilityDownEurekaOrthos));
 
     public void VulnerabilityDownEurekaOrthosDeactivating() => this.BossStatusTimerData?.VulnerabilityDownEurekaOrthos?.LastOrDefault()?.TimerEnd();
+
+    public void RehabilitationEurekaOrthosActivating() => this.BossStatusTimerData?.RehabilitationEurekaOrthos?.Add(new(BossStatusTimer.RehabilitationEurekaOrthos));
+
+    public void RehabilitationEurekaOrthosDeactivating() => this.BossStatusTimerData?.RehabilitationEurekaOrthos?.LastOrDefault()?.TimerEnd();
 
     public void Update(BattleChara? enemy)
     {
@@ -139,8 +179,12 @@ public sealed class BossStatusTimerManager : IDisposable
         if (enemy != null)
             this.Enervation.Update(enemy.StatusList.Any(x => x.StatusId == 546));
 
+        this.DamageUpHeavenOnHigh.Update(player.StatusList.Any(x => x.StatusId == 1584));
+        this.VulnerabilityDownHeavenOnHigh.Update(player.StatusList.Any(x => x.StatusId == 1585));
+        this.RehabilitationHeavenOnHigh.Update(player.StatusList.Any(x => x.StatusId == 1586));
         this.DamageUpEurekaOrthos.Update(player.StatusList.Any(x => x.StatusId == 3490));
         this.VulnerabilityDownEurekaOrthos.Update(player.StatusList.Any(x => x.StatusId == 3491));
+        this.RehabilitationEurekaOrthos.Update(player.StatusList.Any(x => x.StatusId == 3492));
     }
 
     public void ResetStatusState()
@@ -153,7 +197,11 @@ public sealed class BossStatusTimerManager : IDisposable
         this.VulnerabilityDown.Update(false);
         this.VulnerabilityUp.Update(false);
         this.Enervation.Update(false);
+        this.DamageUpHeavenOnHigh.Update(false);
+        this.VulnerabilityDownHeavenOnHigh.Update(false);
+        this.RehabilitationHeavenOnHigh.Update(false);
         this.DamageUpEurekaOrthos.Update(false);
         this.VulnerabilityDownEurekaOrthos.Update(false);
+        this.RehabilitationEurekaOrthos.Update(false);
     }
 }

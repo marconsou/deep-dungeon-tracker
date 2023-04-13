@@ -192,9 +192,13 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
 
         Draw(BossStatusTimer.Medicated, data.Medicated);
         Draw(BossStatusTimer.DamageUp, data.DamageUp);
+        Draw(BossStatusTimer.DamageUpHeavenOnHigh, data.DamageUpHeavenOnHigh);
         Draw(BossStatusTimer.DamageUpEurekaOrthos, data.DamageUpEurekaOrthos);
         Draw(BossStatusTimer.VulnerabilityDown, data.VulnerabilityDown);
+        Draw(BossStatusTimer.VulnerabilityDownHeavenOnHigh, data.VulnerabilityDownHeavenOnHigh);
         Draw(BossStatusTimer.VulnerabilityDownEurekaOrthos, data.VulnerabilityDownEurekaOrthos);
+        Draw(BossStatusTimer.RehabilitationHeavenOnHigh, data.RehabilitationHeavenOnHigh);
+        Draw(BossStatusTimer.RehabilitationEurekaOrthos, data.RehabilitationEurekaOrthos);
 
         if (data.VulnerabilityUp.Count > 0)
         {

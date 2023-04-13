@@ -69,6 +69,27 @@ public class BossStatusTimerData
     public Collection<BossStatusTimerItem>? SerializationEnervation { get => this.Enervation?.Count > 0 ? this.Enervation : null; private set => this.Enervation = value ?? new(); }
 
     [JsonIgnore]
+    public Collection<BossStatusTimerItem> DamageUpHeavenOnHigh { get; private set; } = new();
+
+    [JsonInclude]
+    [JsonPropertyName("DamageUpHeavenOnHigh")]
+    public Collection<BossStatusTimerItem>? SerializationDamageUpHeavenOnHigh { get => this.DamageUpHeavenOnHigh?.Count > 0 ? this.DamageUpHeavenOnHigh : null; private set => this.DamageUpHeavenOnHigh = value ?? new(); }
+
+    [JsonIgnore]
+    public Collection<BossStatusTimerItem> VulnerabilityDownHeavenOnHigh { get; private set; } = new();
+
+    [JsonInclude]
+    [JsonPropertyName("VulnerabilityDownHeavenOnHigh")]
+    public Collection<BossStatusTimerItem>? SerializationVulnerabilityDownHeavenOnHigh { get => this.VulnerabilityDownHeavenOnHigh?.Count > 0 ? this.VulnerabilityDownHeavenOnHigh : null; private set => this.VulnerabilityDownHeavenOnHigh = value ?? new(); }
+
+    [JsonIgnore]
+    public Collection<BossStatusTimerItem> RehabilitationHeavenOnHigh { get; private set; } = new();
+
+    [JsonInclude]
+    [JsonPropertyName("RehabilitationHeavenOnHigh")]
+    public Collection<BossStatusTimerItem>? SerializationRehabilitationHeavenOnHigh { get => this.RehabilitationHeavenOnHigh?.Count > 0 ? this.RehabilitationHeavenOnHigh : null; private set => this.RehabilitationHeavenOnHigh = value ?? new(); }
+
+    [JsonIgnore]
     public Collection<BossStatusTimerItem> DamageUpEurekaOrthos { get; private set; } = new();
 
     [JsonInclude]
@@ -81,6 +102,13 @@ public class BossStatusTimerData
     [JsonInclude]
     [JsonPropertyName("VulnerabilityDownEurekaOrthos")]
     public Collection<BossStatusTimerItem>? SerializationVulnerabilityDownEurekaOrthos { get => this.VulnerabilityDownEurekaOrthos?.Count > 0 ? this.VulnerabilityDownEurekaOrthos : null; private set => this.VulnerabilityDownEurekaOrthos = value ?? new(); }
+
+    [JsonIgnore]
+    public Collection<BossStatusTimerItem> RehabilitationEurekaOrthos { get; private set; } = new();
+
+    [JsonInclude]
+    [JsonPropertyName("RehabilitationEurekaOrthos")]
+    public Collection<BossStatusTimerItem>? SerializationRehabilitationEurekaOrthos { get => this.RehabilitationEurekaOrthos?.Count > 0 ? this.RehabilitationEurekaOrthos : null; private set => this.RehabilitationEurekaOrthos = value ?? new(); }
 
     public void Update(BattleChara? enemy)
     {
@@ -118,10 +146,22 @@ public class BossStatusTimerData
         foreach (var item in this.Enervation)
             item.TimerEnd();
 
+        foreach (var item in this.DamageUpHeavenOnHigh)
+            item.TimerEnd();
+
+        foreach (var item in this.VulnerabilityDownHeavenOnHigh)
+            item.TimerEnd();
+
+        foreach (var item in this.RehabilitationHeavenOnHigh)
+            item.TimerEnd();
+
         foreach (var item in this.DamageUpEurekaOrthos)
             item.TimerEnd();
 
         foreach (var item in this.VulnerabilityDownEurekaOrthos)
+            item.TimerEnd();
+
+        foreach (var item in this.RehabilitationEurekaOrthos)
             item.TimerEnd();
 
         this.Combat.TimerEnd();
@@ -138,8 +178,12 @@ public class BossStatusTimerData
             this.VulnerabilityDown.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
             (this.VulnerabilityUp?.Where(DurationMoreThanOneSecond).DistinctBy(x => x.Stacks).Count() ?? 0) +
             this.Enervation.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.DamageUpHeavenOnHigh.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.VulnerabilityDownHeavenOnHigh.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.RehabilitationHeavenOnHigh.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
             this.DamageUpEurekaOrthos.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.VulnerabilityDownEurekaOrthos.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count();
+            this.VulnerabilityDownEurekaOrthos.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.RehabilitationEurekaOrthos.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count();
     }
 
     public static Collection<BossStatusTimerItem> RemoveLessThanOneSecondDuration(ICollection<BossStatusTimerItem> data)

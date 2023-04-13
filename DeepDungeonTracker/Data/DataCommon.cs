@@ -90,6 +90,11 @@ public sealed class DataCommon : IDisposable
 
         if (this.DutyStatus != DutyStatus.Complete)
             this.CurrentSaveSlot?.KOed();
+        else
+        {
+            if (this.IsLastFloor || this.IsSpecialBossFloor)
+                this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
+        }
 
         if (this.DutyStatus == DutyStatus.None)
         {
@@ -99,9 +104,6 @@ public sealed class DataCommon : IDisposable
         }
         else
             this.FloorScoreUpdate(this.CurrentSaveSlot?.CurrentFloor()?.Score);
-
-        if (this.IsLastFloor || this.IsSpecialBossFloor)
-            this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
 
         this.SaveDeepDungeonData();
     }

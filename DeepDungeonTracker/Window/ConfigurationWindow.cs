@@ -203,10 +203,10 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.Combo(config.FontType, x => config.FontType = x, "Font");
         this.Combo(config.ScoreCalculationType, x => config.ScoreCalculationType = x, "Score Calculation");
         WindowEx.Tooltip(
-            "Current Floor: Include all floor completion-related score up to the current floor and current character level.\nYou can see your score progressively increasing each time you go to the next floor or level up.\n\n" +
+            "Current Floor: Include all floor completion-related score up to the current floor, current character level and Aetherpool.\nYou can see your score progressively increasing each time you go to the next floor, level up or upgrade your Aetherpool.\n\n" +
             "Score Window Floor: Include all floor completion-related score up to the floor where it shows the next score window.\n\n" +
             "Last Floor: Include all floor completion-related score at once.\n\n" +
-            "Floor completion-related score has nothing to do with map reveals, and this also affects the points earned by killing enemies.\nIt's recommended to change this option before starting a fresh save file.");
+            "Floor completion-related score has nothing to do with map reveals; this also affects the points earned by killing enemies, and it will assume Aetherpool at max level.\nIt's recommended to change this option before starting a fresh save file.");
         this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
         this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
         WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");
