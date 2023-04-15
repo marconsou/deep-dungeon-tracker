@@ -64,10 +64,10 @@ public class FloorSet
 
     public void NoTimeBonus() => this.TimeBonus = false;
 
-    public BossStatusTimerManager StartBossStatusTimer()
+    public BossStatusTimerManager StartBossStatusTimer(Action isBossDeadAction)
     {
         this.BossStatusTimerData = new();
-        return new BossStatusTimerManager(this.BossStatusTimerData);
+        return new BossStatusTimerManager(this.BossStatusTimerData, isBossDeadAction);
     }
 
     public void EndBossStatusTimer() => this.BossStatusTimerData?.TimerEnd();

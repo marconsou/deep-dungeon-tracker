@@ -123,8 +123,6 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         var barHeight = 18.0f;
         TimeSpan totalTime;
 
-        TimeSpan Round(TimeSpan time) => TimeSpan.FromSeconds(Math.Round(time.TotalSeconds, 0, MidpointRounding.ToZero));
-
         void DrawIcon(BossStatusTimer bossStatusTimer)
         {
             y += bossStatusTimer != BossStatusTimer.Combat ? iconSize + offsetY : 0.0f;
@@ -135,30 +133,29 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
         void DrawBarAndTextCurrent(BossStatusTimerItem currentItem, float iconY)
         {
             var y = iconY + (iconSize / 2.0f) - (barHeight / 2.0f);
-            var start = currentItem.Start - data.Combat.Start;
-            var end = currentItem.End - data.Combat.Start;
-            totalTime += (Round(end) - Round(start));
-            var combatTime = data.Combat.Duration().TotalSeconds;
-            var x = (float)(barStartX + ((start.TotalSeconds / combatTime) * barWidth));
-            var width = (float)((end - start).TotalSeconds / combatTime) * barWidth;
+            var start = (currentItem.Start - data.Combat.Start).Round();
+            var end = (currentItem.End - data.Combat.Start).Round();
+            var durationTime = (end - start).Round();
+            totalTime += durationTime;
+            var combatDuration = data.Combat.Duration();
+            var x = (float)(barStartX + ((start.TotalSeconds / combatDuration.TotalSeconds) * barWidth));
+            var width = (float)(durationTime.TotalSeconds / combatDuration.TotalSeconds) * barWidth;
 
             var offsetX = 8.0f;
 
             ui.DrawBar(x + offsetX, y, width - (offsetX * 2.0f), barHeight);
             if (currentItem.BossStatusTimer != BossStatusTimer.Combat)
             {
-                var roundedStart = Round(start);
-                if (config.IsStartTimeVisible && roundedStart != default && roundedStart != Round(data.Combat.Duration()))
+                if (config.IsStartTimeVisible && start != default && start != combatDuration)
                 {
-                    var timeText = $"{roundedStart:mm\\:ss}";
+                    var timeText = $"{start:mm\\:ss}";
                     var timeTextSize = ui.GetAxisTextSize(timeText);
                     ui.DrawArrow(x - 3.5f, y - 3.5f, false);
                     ui.DrawTextAxis(x - (timeTextSize.X / 2.0f), y - timeTextSize.Y, timeText, config.StartTimeColor);
                 }
-                var roundedEnd = Round(end);
-                if (config.IsEndTimeVisible && roundedEnd != default && roundedEnd != Round(data.Combat.Duration()))
+                if (config.IsEndTimeVisible && end != default && end != combatDuration)
                 {
-                    var timeText = $"{roundedEnd:mm\\:ss}";
+                    var timeText = $"{end:mm\\:ss}";
                     var timeTextSize = ui.GetAxisTextSize(timeText);
                     ui.DrawArrow(x + width - 3.5f, y + barHeight - 3.5f, true);
                     ui.DrawTextAxis(x + width - (timeTextSize.X / 2.0f), y + barHeight, timeText, config.EndTimeColor);
@@ -168,13 +165,13 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
 
         void DrawTextTotal(float y, TimeSpan totalTime)
         {
-            var text = $"{Round(totalTime):mm\\:ss}";
+            var text = $"{(totalTime):mm\\:ss}";
             ui.DrawTextAxis(barStartX + barWidth + offsetX, y + (iconSize / 2.0f) - (ui.GetAxisTextSize(text).Y / 2.0f), text, config.TotalTimeColor);
         }
 
         void Draw(BossStatusTimer bossStatusTimer, ICollection<BossStatusTimerItem> data)
         {
-            var newData = BossStatusTimerData.RemoveLessThanOneSecondDuration(data);
+            var newData = BossStatusTimerData.RemoveShortDuration(data);
             if (newData.Count == 0)
                 return;
 

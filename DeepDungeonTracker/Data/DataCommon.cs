@@ -51,13 +51,15 @@ public sealed class DataCommon : IDisposable
 
     public int ContentId => this.CurrentSaveSlot?.ContentId ?? 0;
 
-    public bool IsLastFloor => this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false;
-
     public int TotalScore => this.Score?.TotalScore ?? 0;
+
+    public bool IsLastFloor => this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false;
 
     private bool IsEurekaOrthosFloor99 => this.DeepDungeon == DeepDungeon.EurekaOrthos && this.CurrentSaveSlot?.CurrentFloorNumber() == 99;
 
     public bool IsSpecialBossFloor => this.IsEurekaOrthosFloor99;
+
+    public bool IsBossFloor => this.IsLastFloor || this.IsSpecialBossFloor;
 
     private static Pomander[] SharedPomanders => new[] { Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising };
 
@@ -90,11 +92,6 @@ public sealed class DataCommon : IDisposable
 
         if (this.DutyStatus != DutyStatus.Complete)
             this.CurrentSaveSlot?.KOed();
-        else
-        {
-            if (this.IsLastFloor || this.IsSpecialBossFloor)
-                this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
-        }
 
         if (this.DutyStatus == DutyStatus.None)
         {
@@ -110,17 +107,14 @@ public sealed class DataCommon : IDisposable
 
     public void EnteringCombat()
     {
-        if (this.IsLastFloor || this.IsSpecialBossFloor)
-            this.BossStatusTimerManager = this.CurrentSaveSlot?.CurrentFloorSet()?.StartBossStatusTimer();
+        if (this.IsBossFloor)
+            this.BossStatusTimerManager = this.CurrentSaveSlot?.CurrentFloorSet()?.StartBossStatusTimer(this.ExitingCombat);
     }
 
     public void ExitingCombat()
     {
-        if (this.IsLastFloor || this.IsSpecialBossFloor)
-        {
+        if (this.IsBossFloor)
             this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
-            this.BossStatusTimerManager?.ResetStatusState();
-        }
     }
 
     public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
@@ -214,7 +208,7 @@ public sealed class DataCommon : IDisposable
 
     public void CheckForBossKilled(DataText dataText)
     {
-        if ((this.IsLastFloor || this.IsSpecialBossFloor) && !this.IsBossDead)
+        if (this.IsBossFloor && !this.IsBossDead)
         {
             foreach (var enemy in Service.ObjectTable)
             {
@@ -282,7 +276,7 @@ public sealed class DataCommon : IDisposable
 
     public void CheckForBossStatusTimer(bool inCombat)
     {
-        if (inCombat && (this.IsLastFloor || this.IsSpecialBossFloor))
+        if (inCombat && this.IsBossFloor)
         {
             unsafe
             {
@@ -338,7 +332,7 @@ public sealed class DataCommon : IDisposable
     {
         var floorNumber = this.CurrentSaveSlot?.CurrentFloorNumber();
 
-        if (this.IsLastFloor || this.IsSpecialBossFloor)
+        if (this.IsBossFloor)
             return default;
 
         if (this.DeepDungeon == DeepDungeon.PalaceOfTheDead)

@@ -98,7 +98,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
                 "\nYou can backup your saved files, open the Backup folder, and rename them as you want.");
             ImGui.TextColored(Color.Green, "Boss Status Timer:");
             ImGui.TextWrapped(
-                "The timers shown on this menu can be inaccurate up to one second. If the total duration is less than one second, it will not be shown." +
+                "The timers shown on this menu can be inaccurate up to one second. Only durations longer than ten seconds will be shown." +
                 "\nThe pomanders shown on this menu are based on the pomanders used during the entire time on the floor, not only the boss fight.");
         }
 

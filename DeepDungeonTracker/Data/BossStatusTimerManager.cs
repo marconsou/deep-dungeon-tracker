@@ -8,6 +8,10 @@ public sealed class BossStatusTimerManager : IDisposable
 {
     private BossStatusTimerData BossStatusTimerData { get; }
 
+    private Action IsBossDeadAction { get; }
+
+    private ConditionEvent IsBossDead { get; } = new();
+
     private ConditionEvent Medicated { get; } = new();
 
     private ConditionEvent AccursedPox { get; } = new();
@@ -36,9 +40,12 @@ public sealed class BossStatusTimerManager : IDisposable
 
     private ConditionEvent RehabilitationEurekaOrthos { get; } = new();
 
-    public BossStatusTimerManager(BossStatusTimerData bossStatusTimerData)
+    public BossStatusTimerManager(BossStatusTimerData bossStatusTimerData, Action isBossDeadAction)
     {
         this.BossStatusTimerData = bossStatusTimerData;
+        this.IsBossDeadAction = isBossDeadAction;
+
+        this.IsBossDead.AddActivating(this.IsBossDeadAction);
 
         this.Medicated.AddActivating(this.MedicatedActivating);
         this.Medicated.AddDeactivating(this.MedicatedDeactivating);
@@ -72,6 +79,8 @@ public sealed class BossStatusTimerManager : IDisposable
 
     public void Dispose()
     {
+        this.IsBossDead.RemoveActivating(this.IsBossDeadAction);
+
         this.Medicated.RemoveActivating(this.MedicatedActivating);
         this.Medicated.RemoveDeactivating(this.MedicatedDeactivating);
         this.AccursedPox.RemoveActivating(this.AccursedPoxActivating);
@@ -166,42 +175,21 @@ public sealed class BossStatusTimerManager : IDisposable
 
         this.BossStatusTimerData.Update(enemy);
 
+        this.IsBossDead.Update(enemy?.IsDead ?? false);
+
         this.Medicated.Update(player.StatusList.Any(x => x.StatusId == 49));
         this.AccursedPox.Update(player.StatusList.Any(x => x.StatusId == 1087));
         this.Weakness.Update(player.StatusList.Any(x => x.StatusId == 43));
         this.BrinkOfDeath.Update(player.StatusList.Any(x => x.StatusId == 44));
         this.DamageUp.Update(player.StatusList.Any(x => x.StatusId == 687));
         this.VulnerabilityDown.Update(player.StatusList.Any(x => x.StatusId == 1100));
-
-        if (enemy != null)
-            this.VulnerabilityUp.Update(enemy.StatusList.Any(x => x.StatusId == 714));
-
-        if (enemy != null)
-            this.Enervation.Update(enemy.StatusList.Any(x => x.StatusId == 546));
-
+        this.VulnerabilityUp.Update(enemy?.StatusList.Any(x => x.StatusId == 714) ?? false);
+        this.Enervation.Update(enemy?.StatusList.Any(x => x.StatusId == 546) ?? false);
         this.DamageUpHeavenOnHigh.Update(player.StatusList.Any(x => x.StatusId == 1584));
         this.VulnerabilityDownHeavenOnHigh.Update(player.StatusList.Any(x => x.StatusId == 1585));
         this.RehabilitationHeavenOnHigh.Update(player.StatusList.Any(x => x.StatusId == 1586));
         this.DamageUpEurekaOrthos.Update(player.StatusList.Any(x => x.StatusId == 3490));
         this.VulnerabilityDownEurekaOrthos.Update(player.StatusList.Any(x => x.StatusId == 3491));
         this.RehabilitationEurekaOrthos.Update(player.StatusList.Any(x => x.StatusId == 3492));
-    }
-
-    public void ResetStatusState()
-    {
-        this.Medicated.Update(false);
-        this.AccursedPox.Update(false);
-        this.Weakness.Update(false);
-        this.BrinkOfDeath.Update(false);
-        this.DamageUp.Update(false);
-        this.VulnerabilityDown.Update(false);
-        this.VulnerabilityUp.Update(false);
-        this.Enervation.Update(false);
-        this.DamageUpHeavenOnHigh.Update(false);
-        this.VulnerabilityDownHeavenOnHigh.Update(false);
-        this.RehabilitationHeavenOnHigh.Update(false);
-        this.DamageUpEurekaOrthos.Update(false);
-        this.VulnerabilityDownEurekaOrthos.Update(false);
-        this.RehabilitationEurekaOrthos.Update(false);
     }
 }

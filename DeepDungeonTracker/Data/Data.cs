@@ -271,7 +271,7 @@ public sealed class Data : IDisposable
             var name = character?.Name.TextValue ?? string.Empty;
             if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || this.Text.IsMandragora(name).Item1))
             {
-                if (!this.Common.IsLastFloor && !this.Common.IsSpecialBossFloor)
+                if (!this.Common.IsBossFloor)
                     this.Common.CheckForEnemyKilled(this.Text, name);
             }
             else if (character?.ObjectKind == ObjectKind.Player)

@@ -170,32 +170,23 @@ public class BossStatusTimerData
     public int TimersCount()
     {
         return 1 +
-            this.Medicated.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.AccursedPox.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.Weakness.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.BrinkOfDeath.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.DamageUp.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.VulnerabilityDown.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            (this.VulnerabilityUp?.Where(DurationMoreThanOneSecond).DistinctBy(x => x.Stacks).Count() ?? 0) +
-            this.Enervation.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.DamageUpHeavenOnHigh.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.VulnerabilityDownHeavenOnHigh.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.RehabilitationHeavenOnHigh.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.DamageUpEurekaOrthos.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.VulnerabilityDownEurekaOrthos.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count() +
-            this.RehabilitationEurekaOrthos.Where(DurationMoreThanOneSecond).DistinctBy(x => x.BossStatusTimer).Count();
+            this.Medicated.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.AccursedPox.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.Weakness.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.BrinkOfDeath.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.DamageUp.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.VulnerabilityDown.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            (this.VulnerabilityUp?.Where(IsLongDuration).DistinctBy(x => x.Stacks).Count() ?? 0) +
+            this.Enervation.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.DamageUpHeavenOnHigh.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.VulnerabilityDownHeavenOnHigh.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.RehabilitationHeavenOnHigh.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.DamageUpEurekaOrthos.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.VulnerabilityDownEurekaOrthos.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count() +
+            this.RehabilitationEurekaOrthos.Where(IsLongDuration).DistinctBy(x => x.BossStatusTimer).Count();
     }
 
-    public static Collection<BossStatusTimerItem> RemoveLessThanOneSecondDuration(ICollection<BossStatusTimerItem> data)
-    {
-        var newData = new Collection<BossStatusTimerItem>();
-        foreach (var item in data ?? Enumerable.Empty<BossStatusTimerItem>())
-        {
-            if (DurationMoreThanOneSecond(item))
-                newData.Add(item);
-        }
-        return newData;
-    }
+    public static Collection<BossStatusTimerItem> RemoveShortDuration(ICollection<BossStatusTimerItem> data) => new(data.Where(IsLongDuration).ToList());
 
-    private static bool DurationMoreThanOneSecond(BossStatusTimerItem item) => item.Duration() > new TimeSpan(0, 0, 1);
+    private static bool IsLongDuration(BossStatusTimerItem item) => item.Duration() > TimeSpan.FromSeconds(10);
 }

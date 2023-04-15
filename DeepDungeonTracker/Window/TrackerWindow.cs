@@ -131,7 +131,7 @@ public sealed class TrackerWindow : WindowEx, IDisposable
             }
         }
 
-        if (config.ShowFloorEffectPomanders && !floor.IsLastFloor() && !this.Data.Common.IsSpecialBossFloor)
+        if (config.ShowFloorEffectPomanders && !this.Data.Common.IsBossFloor)
         {
             var floorEffectPomandersScale = 0.60f;
             ui.Scale *= floorEffectPomandersScale;

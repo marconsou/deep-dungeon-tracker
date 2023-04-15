@@ -23,7 +23,7 @@ public class BossStatusTimerItem
 
     public bool IsDataValid() => this.HasStarted() && this.HasEnded();
 
-    public TimeSpan Duration() => this.IsDataValid() ? this.End - this.Start : default;
+    public TimeSpan Duration() => this.IsDataValid() ? (this.End - this.Start).Round() : default;
 
     public void StacksUpdate(byte stacks) => this.Stacks = stacks;
 
