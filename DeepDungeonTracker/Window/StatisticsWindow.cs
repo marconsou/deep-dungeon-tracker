@@ -337,6 +337,36 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             this.Data.UI.DrawTextMiedingerMid(x + offset, y + offset + iconSize + adjustY, "Used", color);
     }
 
+    private void DrawBossStatusTimerIcon(float x, float y, float iconSize, float floorHeight, IEnumerable<StatisticsItem<BossStatusTimer>>? data, ICollection<Floor>? floors)
+    {
+        var offsetX = 8.0f;
+        var offsetY = 8.0f;
+        var adjustY = (floors?.Any(x => this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(x) ?? false) ?? false) ? -floorHeight : 0.0f;
+
+        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<BossStatusTimer>>())
+        {
+            var value = (BossStatusTimer)(Enum)item.Value;
+            this.Data.UI.DrawBossStatusTimer(x + offsetX, y + offsetY + adjustY, value);
+            x += iconSize;
+        }
+    }
+
+    private void DrawBossStatusTimerText(float x, float y, float iconSize, float floorHeight, IEnumerable<StatisticsItem<BossStatusTimer>>? data, ICollection<Floor>? floors)
+    {
+        var offset = 0.0f;
+        var adjustY = (floors?.Any(x => this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(x) ?? false) ?? false) ? -floorHeight : 0.0f;
+        var combatTotalSeconds = data?.FirstOrDefault()?.Total ?? 0;
+
+        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<BossStatusTimer>>())
+        {
+            var value = (BossStatusTimer)(Enum)item.Value;
+            var total = item.Total;
+            if (total != combatTotalSeconds || value == BossStatusTimer.Combat)
+                this.Data.UI.DrawTextAxis(x + offset + iconSize, y + offset + iconSize + adjustY, $"{TimeSpan.FromSeconds(total):mm\\:ss}", this.Configuration.Statistics.FloorTimeColor, Alignment.Right);
+            x += iconSize;
+        }
+    }
+
     private void DrawFloorText(float x, float y, string floorText, TimeSpan totalTime, TimeSpan? previousTime, int totalScore, int? previousScore, bool forceShowHours = false, bool isTimeBonusMissScore = false)
     {
         var config = this.Configuration.Statistics;
@@ -679,6 +709,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             this.DrawMiscellaneousIcon(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false);
         }, floors, left, x, y, iconSize, floorWidth, floorHeight);
         this.DrawMiscellaneousIcon(x2, y3, iconSize, statistics?.MiscellaneousLastFloor, false);
+        this.DrawBossStatusTimerIcon(x2, y3 + iconSize2, iconSize, floorHeight, statistics?.BossStatusTimerByFloorSet, floors);
         this.DrawMiscellaneousIcon(x - leftPanelAdjust, y3, iconSize, statistics?.MiscellaneousTotal, true);
         FloorLoop((floor, index, x, y) =>
         {
@@ -721,6 +752,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             this.DrawMiscellaneousText(x, y, iconSize, statistics?.MiscellaneousByFloor?.ElementAtOrDefault(index), false);
         }, floors, left, x, y, iconSize, floorWidth, floorHeight);
         this.DrawMiscellaneousText(x2, y3, iconSize, statistics?.MiscellaneousLastFloor, false);
+        this.DrawBossStatusTimerText(x2, y3 + iconSize2, iconSize, floorHeight, statistics?.BossStatusTimerByFloorSet, floors);
         this.DrawMiscellaneousText(x - leftPanelAdjust, y3, iconSize, statistics?.MiscellaneousTotal, true);
         FloorLoop((floor, index, x, y) =>
         {

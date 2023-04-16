@@ -135,7 +135,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
             var y = iconY + (iconSize / 2.0f) - (barHeight / 2.0f);
             var start = (currentItem.Start - data.Combat.Start).Round();
             var end = (currentItem.End - data.Combat.Start).Round();
-            var durationTime = (end - start).Round();
+            var durationTime = ((currentItem.End - data.Combat.Start) - (currentItem.Start - data.Combat.Start)).Round();
             totalTime += durationTime;
             var combatDuration = data.Combat.Duration();
             var x = (float)(barStartX + ((start.TotalSeconds / combatDuration.TotalSeconds) * barWidth));
@@ -165,7 +165,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
 
         void DrawTextTotal(float y, TimeSpan totalTime)
         {
-            var text = $"{(totalTime):mm\\:ss}";
+            var text = $"{totalTime:mm\\:ss}";
             ui.DrawTextAxis(barStartX + barWidth + offsetX, y + (iconSize / 2.0f) - (ui.GetAxisTextSize(text).Y / 2.0f), text, config.TotalTimeColor);
         }
 

@@ -188,5 +188,5 @@ public class BossStatusTimerData
 
     public static Collection<BossStatusTimerItem> RemoveShortDuration(ICollection<BossStatusTimerItem> data) => new(data.Where(IsLongDuration).ToList());
 
-    private static bool IsLongDuration(BossStatusTimerItem item) => item.Duration() > TimeSpan.FromSeconds(10);
+    public static bool IsLongDuration(BossStatusTimerItem item) => item?.Duration() > TimeSpan.FromSeconds(10);
 }

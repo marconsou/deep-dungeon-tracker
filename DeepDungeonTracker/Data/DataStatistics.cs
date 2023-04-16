@@ -39,6 +39,8 @@ public class DataStatistics
 
     public IEnumerable<StatisticsItem<Miscellaneous>>? MiscellaneousTotal { get; private set; }
 
+    public IEnumerable<StatisticsItem<BossStatusTimer>>? BossStatusTimerByFloorSet { get; private set; }
+
     public IEnumerable<StatisticsItem<Coffer>>? CoffersTotal { get; private set; }
 
     public IEnumerable<StatisticsItem<Enchantment>>? EnchantmentsTotal { get; private set; }
@@ -165,6 +167,7 @@ public class DataStatistics
         this.EnchantmentsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty;
         this.TrapsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty;
         this.PomandersByFloor = ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty;
+        this.BossStatusTimerByFloorSet = new List<StatisticsItem<BossStatusTimer>>();
         this.PomandersBossStatusTimer = new List<StatisticsItem<Pomander>>();
         this.Inventory = new List<StatisticsItem<Pomander>>();
 
@@ -180,6 +183,7 @@ public class DataStatistics
 
             this.MiscellaneousLastFloor = (this.MiscellaneousByFloor?.Count == 10) ? this.MiscellaneousByFloor[^1] : default;
             this.MiscellaneousTotal = DataStatistics.GetMiscellaneousByFloorSet(this.FloorSet);
+            this.BossStatusTimerByFloorSet = DataStatistics.GetBossStatusTimerByFloorSet(this.FloorSet)?.Take(9);
 
             this.CoffersTotal = this.FloorSet?.Floors.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).OrderByDescending(x => x.Value != Coffer.Potsherd && x.Value != Coffer.Medicine && x.Value != Coffer.Aetherpool).ThenBy(x => x.Value).Take(22);
             this.EnchantmentsTotal = this.FloorSet?.Floors.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
@@ -308,6 +312,35 @@ public class DataStatistics
             new (Miscellaneous.RegenPotion, saveSlot?.RegenPotions() ?? 0),
             new (Miscellaneous.Map, saveSlot?.Maps() ?? 0),
             new (Miscellaneous.TimeBonus, saveSlot?.TimeBonuses() ?? 0)
+        }).RemoveAll(x => x.Total == 0);
+    }
+
+    private static IEnumerable<StatisticsItem<BossStatusTimer>>? GetBossStatusTimerByFloorSet(FloorSet? floorSet)
+    {
+        var bst = floorSet?.BossStatusTimerData;
+        var duration = (BossStatusTimerItem? item) => item?.Duration().TotalSeconds ?? 0;
+        return ImmutableArray.CreateRange(new StatisticsItem<BossStatusTimer>[]
+        {
+            new (BossStatusTimer.Combat,(int) duration(bst?.Combat)),
+            new (BossStatusTimer.Medicated,(int) (bst?.Medicated.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.DamageUp,(int) (bst?.DamageUp.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.DamageUpHeavenOnHigh,(int) (bst?.DamageUpHeavenOnHigh.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.DamageUpEurekaOrthos,(int) (bst?.DamageUpEurekaOrthos.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityDown,(int) (bst?.VulnerabilityDown.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityDownHeavenOnHigh,(int) (bst?.VulnerabilityDownHeavenOnHigh.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityDownEurekaOrthos,(int) (bst?.VulnerabilityDownEurekaOrthos.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.RehabilitationHeavenOnHigh,(int) (bst?.RehabilitationHeavenOnHigh.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.RehabilitationEurekaOrthos,(int) (bst?.RehabilitationEurekaOrthos.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityUpx5,(int) (bst?.VulnerabilityUp.Where(x => x.Stacks == 5).Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityUpx4,(int) (bst?.VulnerabilityUp.Where(x => x.Stacks == 4).Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityUpx3,(int) (bst?.VulnerabilityUp.Where(x => x.Stacks == 3).Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityUpx2,(int) (bst?.VulnerabilityUp.Where(x => x.Stacks == 2).Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.VulnerabilityUp,(int) (bst?.VulnerabilityUp.Where(x => x.Stacks == 1).Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.Enervation,(int) (bst?.Enervation.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.AccursedPox,(int) (bst?.AccursedPox.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.Weakness,(int) (bst?.Weakness.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+            new (BossStatusTimer.BrinkOfDeath,(int) (bst?.BrinkOfDeath.Where(BossStatusTimerData.IsLongDuration).Sum(duration) ?? 0)),
+
         }).RemoveAll(x => x.Total == 0);
     }
 }
