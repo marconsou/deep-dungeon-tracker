@@ -13,7 +13,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
     public ConfigurationWindow(string id, Configuration configuration, Action mainWindowToggleVisibility) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
     {
         this.MainWindowToggleVisibility = mainWindowToggleVisibility;
-        this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds", "Lurings", "Maps", "Time Bonuses" };
+        this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds/Fragments", "Lurings", "Maps", "Time Bonuses" };
         this.SizeConstraints = new() { MaximumSize = new(600.0f, 600.0f) };
     }
 
@@ -79,16 +79,16 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         {
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
-                "All enemies killed from a distance of more than two rooms cannot be counted." +
-                "\nIf you use a magicite, do so in the center of the floor, covering all enemies killed (as much as possible).");
-            ImGui.TextColored(Color.Green, "Cairn of Passage Kills:");
+                "All enemies killed from a distance of more than two rooms (any situation) cannot be counted." +
+                "\nIf you use a Magicite, do so in the center of the floor, covering all enemies killed (as much as possible).");
+            ImGui.TextColored(Color.Green, "Kills to open the Passage:");
             ImGui.TextWrapped(
-                "Keep your map menu open to verify the Cairn of Passage key status." +
+                "Keep your map menu open to verify the Passage Key status." +
                 "\nThe value can be inaccurate if you kill too many enemies at the same time.");
             ImGui.TextColored(Color.Green, "Maps:");
             ImGui.TextWrapped("Keep your map menu open to verify the map reveal.");
-            ImGui.TextColored(Color.Green, "Potsherds:");
-            ImGui.TextWrapped("Only Potsherds obtained from bronze coffers will be counted.");
+            ImGui.TextColored(Color.Green, "Potsherds/Fragments:");
+            ImGui.TextWrapped("Only Potsherds/Fragments obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
             ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
             ImGui.TextColored(Color.Green, "Save Files:");
@@ -98,7 +98,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
                 "\nYou can backup your saved files, open the Backup folder, and rename them as you want.");
             ImGui.TextColored(Color.Green, "Boss Status Timer:");
             ImGui.TextWrapped(
-                "The timers shown on this menu can be inaccurate up to one second. Only durations longer than ten seconds will be shown." +
+                "The timers shown on this menu can be inaccurate up to one second (due to rounding values). Only durations longer than ten seconds will be shown." +
                 "\nThe pomanders shown on this menu are based on the pomanders used during the entire time on the floor, not only the boss fight.");
         }
 
@@ -203,10 +203,12 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.Combo(config.FontType, x => config.FontType = x, "Font");
         this.Combo(config.ScoreCalculationType, x => config.ScoreCalculationType = x, "Score Calculation");
         WindowEx.Tooltip(
-            "Current Floor: Include all floor completion-related score up to the current floor, current character level and Aetherpool.\nYou can see your score progressively increasing each time you go to the next floor, level up or upgrade your Aetherpool.\n\n" +
+            "Current Floor: Include all floor completion-related score up to the current floor, current character level and Aetherpool.\n" +
+            "You can see your score progressively increasing each time you go to the next floor, level up or upgrade your Aetherpool.\n\n" +
             "Score Window Floor: Include all floor completion-related score up to the floor where it shows the next score window.\n\n" +
             "Last Floor: Include all floor completion-related score at once.\n\n" +
-            "Floor completion-related score has nothing to do with map reveals; this also affects the points earned by killing enemies, and it will assume Aetherpool at max level.\nIt's recommended to change this option before starting a fresh save file.");
+            "Floor completion-related score has nothing to do with map reveals: it will assume you are at a specific floor and Aetherpool is at max level (depending on the chosen setting) and also affect the points earned by killing enemies.\n" +
+            "It's recommended to change this option before starting a fresh save file.");
         this.DragFloat(config.Scale, x => config.Scale = x, "Scale", 0.01f, 0.25f, 2.0f, "%.2f");
         this.CheckBox(config.IsFlyTextScoreVisible, x => config.IsFlyTextScoreVisible = x, "##IsFlyTextScoreVisible");
         WindowEx.Tooltip("When the score changes, a Fly Text will be shown.");

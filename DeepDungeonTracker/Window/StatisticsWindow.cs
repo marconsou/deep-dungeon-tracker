@@ -618,7 +618,8 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
             DrawMultiple(ui, x, ref y, "Kills", "Kill", score.KillScore, 200, 301);
             y += lineHeight;
 
-            DrawSingle(ui, x, ref y, "Total", score.TotalScore);
+            DrawSingle(ui, x, ref y, "Player Score", score.TotalScore - score.CharacterScore - score.FloorScore);
+            DrawSingle(ui, x, ref y, "Total Score", score.TotalScore);
         }
     }
 

@@ -58,7 +58,7 @@ public sealed class TrackerWindow : WindowEx, IDisposable
             => DrawTextLine(y, columnX, offsetX, "Regen Potions:", floor.RegenPotions, floorSet.RegenPotions(), saveSlot.RegenPotions());
 
         void Potsherds(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
-            => DrawTextLine(y, columnX, offsetX, "Potsherds:", floor.Potsherds(), floorSet.Potsherds(), saveSlot.Potsherds());
+            => DrawTextLine(y, columnX, offsetX, saveSlot.DeepDungeon == DeepDungeon.EurekaOrthos ? "Fragments" : "Potsherds:", floor.Potsherds(), floorSet.Potsherds(), saveSlot.Potsherds());
 
         void Lurings(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
             => DrawTextLine(y, columnX, offsetX, "Lurings:", floor.Lurings(), floorSet.Lurings(), saveSlot.Lurings());
