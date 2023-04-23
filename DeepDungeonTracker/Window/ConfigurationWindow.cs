@@ -88,7 +88,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextColored(Color.Green, "Maps:");
             ImGui.TextWrapped("Keep your map menu open to verify the map reveal.");
             ImGui.TextColored(Color.Green, "Potsherds/Fragments:");
-            ImGui.TextWrapped("Only Potsherds/Fragments obtained from bronze coffers will be counted.");
+            ImGui.TextWrapped("Only obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
             ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
             ImGui.TextColored(Color.Green, "Save Files:");

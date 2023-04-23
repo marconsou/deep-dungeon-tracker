@@ -24,6 +24,10 @@ public sealed class TrackerWindow : WindowEx, IDisposable
 
     public override void Draw()
     {
+        bool CheckForDeepDungeon(DeepDungeon deepDungeon)
+            => ((this.Data.Common.CurrentSaveSlot?.DeepDungeon == deepDungeon) ||
+               ((this.Data.Common.CurrentSaveSlot == null || this.Data.Common.CurrentSaveSlot.DeepDungeon == DeepDungeon.None) && this.Data.Common.DeepDungeon == deepDungeon));
+
         void Kills(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
             => DrawTextLine(y, columnX, offsetX, "Kills:", floor.Kills, floorSet.Kills(), saveSlot.Kills());
 
@@ -58,7 +62,7 @@ public sealed class TrackerWindow : WindowEx, IDisposable
             => DrawTextLine(y, columnX, offsetX, "Regen Potions:", floor.RegenPotions, floorSet.RegenPotions(), saveSlot.RegenPotions());
 
         void Potsherds(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
-            => DrawTextLine(y, columnX, offsetX, saveSlot.DeepDungeon == DeepDungeon.EurekaOrthos ? "Fragments" : "Potsherds:", floor.Potsherds(), floorSet.Potsherds(), saveSlot.Potsherds());
+            => DrawTextLine(y, columnX, offsetX, CheckForDeepDungeon(DeepDungeon.EurekaOrthos) ? "Fragments:" : "Potsherds:", floor.Potsherds(), floorSet.Potsherds(), saveSlot.Potsherds());
 
         void Lurings(float y, float columnX, float offsetX, SaveSlot saveSlot, FloorSet floorSet, Floor floor)
             => DrawTextLine(y, columnX, offsetX, "Lurings:", floor.Lurings(), floorSet.Lurings(), saveSlot.Lurings());
@@ -77,9 +81,7 @@ public sealed class TrackerWindow : WindowEx, IDisposable
         var lineHeight = 30.0f;
         var NPCindex = 4;
 
-        bool ShowSpecial(DeepDungeon deepDungeon) => (config?.Fields?[NPCindex].Show ?? false) &&
-            ((this.Data.Common.CurrentSaveSlot?.DeepDungeon == deepDungeon) ||
-            ((this.Data.Common.CurrentSaveSlot == null || this.Data.Common.CurrentSaveSlot.DeepDungeon == DeepDungeon.None) && this.Data.Common.DeepDungeon == deepDungeon));
+        bool ShowSpecial(DeepDungeon deepDungeon) => (config?.Fields?[NPCindex].Show ?? false) && CheckForDeepDungeon(deepDungeon);
 
         var ShowNPCs = ShowSpecial(DeepDungeon.PalaceOfTheDead);
         var ShowDreadBeasts = ShowSpecial(DeepDungeon.EurekaOrthos);
