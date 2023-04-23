@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,7 +28,13 @@ public sealed class DataCommon : IDisposable
 
     private bool IsBossDead { get; set; }
 
+    private bool WasMagiciteUsed { get; set; }
+
+    public bool ImprovedMagiciteKillsDetection { get; set; }
+
     private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
+
+    private Dictionary<uint, Enemy> NearbyEnemies { get; set; } = new();
 
     public DeepDungeon DeepDungeon { get; private set; }
 
@@ -81,6 +88,8 @@ public sealed class DataCommon : IDisposable
         this.EnableFlyTextScore = false;
         this.IsCairnOfPassageActivated = false;
         this.IsBossDead = false;
+        this.WasMagiciteUsed = false;
+        this.NearbyEnemies = new();
         this.CairnOfPassageKillIds = new();
         this.DutyStatus = DutyStatus.None;
         this.CurrentSaveSlot?.ContentIdUpdate(0);
@@ -286,6 +295,66 @@ public sealed class DataCommon : IDisposable
         }
     }
 
+    public void CheckForNearbyEnemies(DataText dataText)
+    {
+        if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || !this.ImprovedMagiciteKillsDetection || this.IsLastFloor)
+            return;
+
+        foreach (var enemy in Service.ObjectTable)
+        {
+            var character = enemy as Character;
+            if (character == null)
+                continue;
+
+            var name = character.Name.TextValue;
+            if ((character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(name).Item1 ?? false)))
+                this.NearbyEnemies.TryAdd(character.ObjectId, new() { Name = name, IsDead = character.IsDead });
+        }
+    }
+
+    private bool CheckForMagiciteKills(DataText dataText, uint id)
+    {
+        if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || !this.ImprovedMagiciteKillsDetection || this.IsLastFloor)
+            return false;
+
+        if (this.WasMagiciteUsed)
+        {
+            var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
+
+            foreach (var item in this.NearbyEnemies)
+            {
+                var enemy = item.Value;
+                if (!enemy.IsDead)
+                {
+                    enemy.IsDead = true;
+                    this.NearbyEnemies[item.Key] = enemy;
+
+                    currentFloor?.EnemyKilled();
+                    if (dataText?.IsMimic(enemy.Name).Item1 ?? false)
+                        currentFloor?.MimicKilled();
+                    else if (dataText?.IsMandragora(enemy.Name).Item1 ?? false)
+                        currentFloor?.MandragoraKilled();
+                }
+            }
+            this.WasMagiciteUsed = false;
+            return true;
+        }
+        else
+        {
+            if (this.NearbyEnemies.TryGetValue(id, out var enemy))
+            {
+                if (!enemy.IsDead)
+                {
+                    enemy.IsDead = true;
+                    this.NearbyEnemies[id] = enemy;
+                }
+                else
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public void CheckForSaveSlotDeletion()
     {
         var result = NodeUtility.SaveSlotDeletion(Service.GameGui);
@@ -383,8 +452,11 @@ public sealed class DataCommon : IDisposable
             this.CurrentSaveSlot?.CurrentFloor()?.TrapTriggered((Trap)(result.Item2! - TextIndex.LandmineTrap));
     }
 
-    public void CheckForEnemyKilled(DataText dataText, string name)
+    public void CheckForEnemyKilled(DataText dataText, string name, uint id)
     {
+        if (this.CheckForMagiciteKills(dataText, id))
+            return;
+
         var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
 
         currentFloor?.EnemyKilled();
@@ -580,7 +652,11 @@ public sealed class DataCommon : IDisposable
         this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);
     }
 
-    public void MagiciteUsed(int itemId) => this.SpecialPomanderUsed(Coffer.InfernoMagicite, itemId);
+    public void MagiciteUsed(int itemId)
+    {
+        this.SpecialPomanderUsed(Coffer.InfernoMagicite, itemId);
+        this.WasMagiciteUsed = true;
+    }
 
     public void DemicloneUsed(int itemId) => this.SpecialPomanderUsed(Coffer.UneiDemiclone, itemId);
 
@@ -592,7 +668,12 @@ public sealed class DataCommon : IDisposable
         this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);
     }
 
-    public void TransferenceInitiated() => this.IsTransferenceInitiated = true;
+    public void TransferenceInitiated()
+    {
+        this.WasMagiciteUsed = false;
+        this.NearbyEnemies = new();
+        this.IsTransferenceInitiated = true;
+    }
 
     public void BronzeCofferUpdate(DataText dataText, int itemId)
     {

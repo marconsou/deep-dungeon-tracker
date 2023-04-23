@@ -103,6 +103,7 @@ public sealed class Data : IDisposable
 
     public void Update(Configuration configuration)
     {
+        this.Common.ImprovedMagiciteKillsDetection = configuration?.General.ImprovedMagiciteKillsDetection ?? false;
         this.UI.Update(configuration?.General.ShowAccurateTargetHPPercentage ?? false);
         this.CharacterUpdate();
 
@@ -115,6 +116,7 @@ public sealed class Data : IDisposable
             this.CheckForTimeBonus();
             this.CheckForCairnOfPassageActivation();
             this.CheckForBossStatusTimer();
+            this.CheckForNearbyEnemies();
         }
         else
         {
@@ -183,6 +185,14 @@ public sealed class Data : IDisposable
             return;
 
         this.Common.CheckForBossStatusTimer(this.InCombat.IsActivated);
+    }
+
+    private void CheckForNearbyEnemies()
+    {
+        if (this.IsCharacterBusy)
+            return;
+
+        this.Common.CheckForNearbyEnemies(this.Text);
     }
 
     public void Login() => this.Common.ResetCharacterData();
@@ -267,12 +277,13 @@ public sealed class Data : IDisposable
         var defeat = 6;
         if (NetworkData.ExtractNumber(data.Item1, 0, 1) == defeat)
         {
-            var character = Service.ObjectTable.SearchById(data.Item2) as Character;
+            var id = data.Item2;
+            var character = Service.ObjectTable.SearchById(id) as Character;
             var name = character?.Name.TextValue ?? string.Empty;
             if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || this.Text.IsMandragora(name).Item1))
             {
                 if (!this.Common.IsBossFloor)
-                    this.Common.CheckForEnemyKilled(this.Text, name);
+                    this.Common.CheckForEnemyKilled(this.Text, name, id);
             }
             else if (character?.ObjectKind == ObjectKind.Player)
                 this.Common.CheckForPlayerKilled(character);

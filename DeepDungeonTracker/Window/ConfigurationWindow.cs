@@ -104,6 +104,27 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
 
         if (ImGui.CollapsingHeader("OpCodes"))
             ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, new JsonSerializerOptions() { WriteIndented = true, })}");
+
+        if (ImGui.CollapsingHeader("Testing"))
+        {
+            this.CheckBox(config.ImprovedMagiciteKillsDetection, x => config.ImprovedMagiciteKillsDetection = x, "Improved Magicite Kills Detection");
+
+            ImGui.TextWrapped("In Heaven-on-High, when you use a Magicite on a floor, all enemies far from you cannot be counted as killed, and the best you can do to cover as many kills as you can is to use the Magicite at the very center of the floor (hard to execute).");
+            ImGui.TextWrapped("Enabling this option will allow for a more accurate kill count, if not 100%% correct.");
+            ImGui.TextColored(Color.Green, "How does it work?");
+            ImGui.TextWrapped("Every time you get close to the enemies, their data will be stored.");
+            ImGui.TextWrapped("When you use a Magicite, instead of counting all enemies close to you during the moment you use it, the counting will be based on the stored data previously mentioned (which includes enemies close to you and potentially enemies far from you if you got close to them at some point before using the Magicite).");
+            ImGui.TextColored(Color.Green, "How close do you need to get to an enemy?");
+            ImGui.TextWrapped("The distance is approximately two rooms (straight).");
+            ImGui.TextWrapped("If you need a visual indication on an open floor (like Big Floors/Hall of Fallacies), when you get close to the enemies, you will see them spawning on your screen with a dark-purple aura around them.");
+            ImGui.TextWrapped("This is the required distance, and from this point on, those enemies will be counted when you use a Magicite no matter where you use it (close to or far from them).");
+            ImGui.TextWrapped("So this can give you more flexibility in how you use the Magicite. Basically, every enemy you see on your screen for the first time will be counted, even if you get far away from them when using a Magicite.");
+            ImGui.TextColored(Color.Green, "Limitations:");
+            ImGui.TextWrapped("Using a Magicite as soon as you enter on a floor will not make it possible to count all the kills (unless you start close to all enemies at once).");
+            ImGui.TextWrapped("A respawn far away from you will not be possible to count as a kill (unless you go back and get close to them; distance is mentioned above).");
+            ImGui.TextWrapped("The limitations mentioned above are already present even if you disable this option.");
+            ImGui.TextWrapped("So, the more you move on a floor around the rooms before you decide to use a Magicite, more accurate it can be, potentially covering all enemies.");
+        }
     }
 
     private void Main()
