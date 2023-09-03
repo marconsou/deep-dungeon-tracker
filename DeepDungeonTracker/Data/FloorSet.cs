@@ -60,7 +60,7 @@ public class FloorSet
 
     public void ClearFloors() => this.Floors.Clear();
 
-    public void CheckForTimeBonus(TimeSpan totalTime) => this.TimeBonus = totalTime <= new TimeSpan(0, 30, 1);
+    public void CheckForTimeBonus(TimeSpan totalTime) => this.TimeBonus = totalTime <= new TimeSpan(0, 30, 2);
 
     public void NoTimeBonus() => this.TimeBonus = false;
 

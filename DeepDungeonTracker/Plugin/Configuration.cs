@@ -33,8 +33,6 @@ public class Configuration : IPluginConfiguration
     public class GeneralTab
     {
         public bool ShowAccurateTargetHPPercentage { get; set; }
-
-        public bool ImprovedMagiciteKillsDetection { get; set; }
     }
 
     public class MainTab

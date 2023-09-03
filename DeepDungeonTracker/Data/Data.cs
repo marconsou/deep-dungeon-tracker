@@ -103,7 +103,6 @@ public sealed class Data : IDisposable
 
     public void Update(Configuration configuration)
     {
-        this.Common.ImprovedMagiciteKillsDetection = configuration?.General.ImprovedMagiciteKillsDetection ?? false;
         this.UI.Update(configuration?.General.ShowAccurateTargetHPPercentage ?? false);
         this.CharacterUpdate();
 

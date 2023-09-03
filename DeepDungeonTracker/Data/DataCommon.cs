@@ -30,8 +30,6 @@ public sealed class DataCommon : IDisposable
 
     private bool WasMagiciteUsed { get; set; }
 
-    public bool ImprovedMagiciteKillsDetection { get; set; }
-
     private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
 
     private Dictionary<uint, Enemy> NearbyEnemies { get; set; } = new();
@@ -297,7 +295,7 @@ public sealed class DataCommon : IDisposable
 
     public void CheckForNearbyEnemies(DataText dataText)
     {
-        if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || !this.ImprovedMagiciteKillsDetection || this.IsLastFloor)
+        if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.IsLastFloor)
             return;
 
         foreach (var enemy in Service.ObjectTable)
@@ -314,7 +312,7 @@ public sealed class DataCommon : IDisposable
 
     private bool CheckForMagiciteKills(DataText dataText, uint id)
     {
-        if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || !this.ImprovedMagiciteKillsDetection || this.IsLastFloor)
+        if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.IsLastFloor)
             return false;
 
         if (this.WasMagiciteUsed)
