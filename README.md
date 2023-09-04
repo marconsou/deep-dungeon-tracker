@@ -1,4 +1,4 @@
-# Deep Dungeon Tracker <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fkamori.goats.dev%2FPlugin%2FDownloadCounts&query=DeepDungeonTracker&style=for-the-badge&logo=github&label=Downloads&color=brightgreen&link=https%3A%2F%2Fgithub.com%2Fmarconsou%2Fdeep-dungeon-tracker">
+# Deep Dungeon Tracker [![Download count](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fkamori.goats.dev%2FPlugin%2FDownloadCounts&query=DeepDungeonTracker&style=for-the-badge&logo=github&label=Downloads&color=brightgreen)](https://github.com/marconsou/deep-dungeon-tracker)
 <img src="https://user-images.githubusercontent.com/27457164/195154649-f18da733-842a-4a77-ac72-9fad9343bbad.png" width="256" height="256">
 
 A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to track things inside Deep Dungeons (Solo only).
