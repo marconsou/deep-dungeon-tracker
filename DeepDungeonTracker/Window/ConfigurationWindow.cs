@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace DeepDungeonTracker;
@@ -62,6 +63,8 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         }
         ImGui.Separator();
         this.Button(this.Configuration.Reset, "Reset all settings to default", true);
+        ImGui.SameLine();
+        this.Button(this.OpenKofiLink, "Ko-fi", false);
     }
 
     private void General()
@@ -75,13 +78,13 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.CheckBox(config.ShowAccurateTargetHPPercentage, x => config.ShowAccurateTargetHPPercentage = x, "Show accurate target HP %");
         WindowEx.Tooltip("It doesn't apply to Focus Target.");
 
-        if (ImGui.CollapsingHeader("Information"))
+        if (ImGui.CollapsingHeader("Information (Recommended)"))
         {
             ImGui.TextColored(Color.Green, "Kills:");
             ImGui.TextWrapped(
                 "All enemies killed from a distance of more than two rooms cannot be counted." +
-                "\nCheck for [Magicite Kills Detection] at bottom for more details.");
-            ImGui.TextColored(Color.Green, "Kills to open the Passage:");
+                "\nFor [Heaven-on-High] check for [Magicite Kills Detection] and [Score Window Kills] at bottom for more details.");
+            ImGui.TextColored(Color.Green, "Kills to open the Cairn/Pylon of Passage:");
             ImGui.TextWrapped(
                 "Keep your map menu open to verify the Passage Key status." +
                 "\nThe value can be inaccurate if you kill too many enemies at the same time.");
@@ -90,7 +93,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextColored(Color.Green, "Potsherds/Fragments:");
             ImGui.TextWrapped("Only obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
-            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value.\nThe score will be zero if you start tracking it from an ongoing save file.");
+            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value, starting from floor 1.\nThe score will be zero if you start tracking it from an ongoing save file.");
             ImGui.TextColored(Color.Green, "Save Files:");
             ImGui.TextWrapped(
                 "Save files are automatically created once you enter a Deep Dungeon." +
@@ -113,6 +116,9 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextWrapped("Using a Magicite as soon as you enter on a floor will not make it possible to count all the kills (unless you start close to all enemies at once).");
             ImGui.TextWrapped("When using a Magicite without enemies alive close to you (for example, a second Magicite being used to kill a respawn, but you moved away from the respawn), the functionality required to check for kills will not be called in this case (at least one enemy killed must be close to you when you use a Magicite). This is a very specific case (unlikely to happen), because every time you use a Magicite, there is at least one enemy alive close to you.");
             ImGui.TextWrapped("So, the more you move on a floor around the rooms before you decide to use a Magicite, more accurate it can be, potentially covering all enemies.");
+            ImGui.TextColored(Color.Green, "Score Window Kills (Heaven-on-High only):");
+            ImGui.TextWrapped("When you see the Score Window on the screen, the detected kills so far will be adjusted based on the number shown on the Score Window. The kills will be added as normal enemies on floor 1/21 (lower floors) or 31 (higher floors).");
+            ImGui.TextWrapped("While opened, wait a bit until the final value of kills is shown, which is around when the exit button becomes available to click (avoid leaving before or it will not work).");
         }
 
         if (ImGui.CollapsingHeader("OpCodes"))
@@ -258,4 +264,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         ImGui.SameLine();
         this.ColorEdit4(config.TotalTimeColor, x => config.TotalTimeColor = x, "Total Time");
     }
+
+    private void OpenKofiLink() => Process.Start(new ProcessStartInfo { FileName = "https://ko-fi.com/marconsou", UseShellExecute = true });
 }

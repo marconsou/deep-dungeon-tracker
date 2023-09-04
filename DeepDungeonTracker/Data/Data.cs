@@ -116,6 +116,7 @@ public sealed class Data : IDisposable
             this.CheckForCairnOfPassageActivation();
             this.CheckForBossStatusTimer();
             this.CheckForNearbyEnemies();
+            this.CheckForScoreWindowKills();
         }
         else
         {
@@ -193,6 +194,8 @@ public sealed class Data : IDisposable
 
         this.Common.CheckForNearbyEnemies(this.Text);
     }
+
+    private void CheckForScoreWindowKills() => this.Common.CheckForScoreWindowKills();
 
     public void Login() => this.Common.ResetCharacterData();
 

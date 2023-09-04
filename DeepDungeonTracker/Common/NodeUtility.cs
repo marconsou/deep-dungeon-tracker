@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
@@ -322,6 +323,49 @@ public unsafe static partial class NodeUtility
             }
         }
         return false;
+    }
+
+    public static (bool, int) ScoreWindowKills(GameGui gameGui)
+    {
+        static (bool, int) GetValue(AtkComponentNode* node)
+        {
+            var buffer = string.Empty;
+            for (var i = node->Component->UldManager.NodeListCount - 1; i >= 0; i--)
+            {
+                var resNode = node->Component->UldManager.NodeList[i]->GetAsAtkComponentNode();
+                if (resNode == null)
+                    continue;
+
+                var imageNode = resNode->Component->UldManager.NodeListCount > 0 ? resNode->Component->UldManager.NodeList[0]->GetAsAtkImageNode() : null;
+                if (imageNode == null)
+                    continue;
+
+                buffer += imageNode->PartId.ToString(CultureInfo.InvariantCulture);
+            }
+            return int.TryParse(buffer, out int value) ? (true, value) : (false, -1);
+        }
+
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonResult", 1)!;
+        if (addon == null)
+            return (false, -1);
+
+        var exitButton = addon->UldManager.NodeListCount > 2 ? addon->UldManager.NodeList[2]->GetAsAtkComponentButton() : null;
+        if (exitButton == null || !exitButton->IsEnabled)
+            return (false, -1);
+
+        var floorNode = addon->UldManager.NodeListCount > 13 ? addon->UldManager.NodeList[13]->GetAsAtkComponentNode() : null;
+        if (floorNode == null)
+            return (false, -1);
+
+        var result = GetValue(floorNode);
+        if (!result.Item1 || result.Item2 <= 0)
+            return (false, -1);
+
+        var killsNode = addon->UldManager.NodeListCount > 11 ? addon->UldManager.NodeList[11]->GetAsAtkComponentNode() : null;
+        if (killsNode == null)
+            return (false, -1);
+
+        return GetValue(killsNode);
     }
 
     public static bool IsNowLoading(GameGui gameGui)

@@ -30,6 +30,8 @@ public sealed class DataCommon : IDisposable
 
     private bool WasMagiciteUsed { get; set; }
 
+    private bool WasScoreWindowShown { get; set; }
+
     private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
 
     private Dictionary<uint, Enemy> NearbyEnemies { get; set; } = new();
@@ -87,6 +89,7 @@ public sealed class DataCommon : IDisposable
         this.IsCairnOfPassageActivated = false;
         this.IsBossDead = false;
         this.WasMagiciteUsed = false;
+        this.WasScoreWindowShown = false;
         this.NearbyEnemies = new();
         this.CairnOfPassageKillIds = new();
         this.DutyStatus = DutyStatus.None;
@@ -307,6 +310,33 @@ public sealed class DataCommon : IDisposable
             var name = character.Name.TextValue;
             if ((character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(name).Item1 ?? false)))
                 this.NearbyEnemies.TryAdd(character.ObjectId, new() { Name = name, IsDead = character.IsDead });
+        }
+    }
+
+    public void CheckForScoreWindowKills()
+    {
+        if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.WasScoreWindowShown)
+            return;
+
+        var result = NodeUtility.ScoreWindowKills(Service.GameGui);
+        if (result.Item1)
+        {
+            this.WasScoreWindowShown = true;
+            var totalKills = result.Item2;
+            var additionalKills = totalKills - (this.CurrentSaveSlot?.Kills() ?? 0);
+
+            if (additionalKills <= 0)
+                return;
+
+            var floorNumber = this.CurrentSaveSlot?.CurrentFloorNumber();
+
+            if (floorNumber <= 30)
+                this.CurrentSaveSlot?.AdditionalKills(0, additionalKills);
+            else if (floorNumber <= 100)
+            {
+                var startingFloorNumber = this.CurrentSaveSlot?.StartingFloorNumber() ?? 0;
+                this.CurrentSaveSlot?.AdditionalKills((startingFloorNumber == 1) ? 3 : (startingFloorNumber == 21) ? 1 : 0, additionalKills);
+            }
         }
     }
 
@@ -669,6 +699,7 @@ public sealed class DataCommon : IDisposable
     public void TransferenceInitiated()
     {
         this.WasMagiciteUsed = false;
+        this.WasScoreWindowShown = false;
         this.NearbyEnemies = new();
         this.IsTransferenceInitiated = true;
     }
