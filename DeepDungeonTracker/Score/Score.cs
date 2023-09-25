@@ -156,7 +156,7 @@ public abstract class Score
 
     public void TotalScoreCalculation(bool calculateScore, ScoreCalculationType scoreCalculationType)
     {
-        if ((this.StartingFloorNumber != 1 && this.StartingFloorNumber != this.ShortcutStartingFloorNumber()) || !calculateScore)
+        if (this.StartingFloorNumber != 1 || !calculateScore)
         {
             this.TotalScore = 0;
             return;

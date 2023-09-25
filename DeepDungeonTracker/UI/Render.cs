@@ -1,5 +1,5 @@
-﻿using ImGuiNET;
-using ImGuiScene;
+﻿using Dalamud.Interface.Internal;
+using ImGuiNET;
 using System;
 using System.Globalization;
 using System.Numerics;
@@ -10,7 +10,7 @@ public class Render
 {
     public float Scale { get; set; } = 1.0f;
 
-    private void DrawObject(TextureWrap textureWrap, float x, float y, float width, float height, float x1, float y1, float x2, float y2, float innerScale, Vector4? color = null)
+    private void DrawObject(IDalamudTextureWrap textureWrap, float x, float y, float width, float height, float x1, float y1, float x2, float y2, float innerScale, Vector4? color = null)
     {
         var posScale = 1.0f / innerScale;
         var finalScale = this.Scale * innerScale;
@@ -47,7 +47,7 @@ public class Render
         return size;
     }
 
-    public void DrawUIElement(TextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector2? offset = null, Vector2? size = null, Vector4? color = null, Alignment align = Alignment.Left, bool mirrorHorizontal = false, bool mirrorVertical = false)
+    public void DrawUIElement(IDalamudTextureWrap textureWrap, float x, float y, float innerScale, int id, int horizontalElements, int verticalElements, Vector2? offset = null, Vector2? size = null, Vector4? color = null, Alignment align = Alignment.Left, bool mirrorHorizontal = false, bool mirrorVertical = false)
     {
         if (textureWrap == null)
             return;
@@ -93,7 +93,7 @@ public class Render
         this.DrawObject(textureWrap, x, y, width, height, x1, y1, x2, y2, innerScale, color);
     }
 
-    public void DrawNumber(TextureWrap textureWrap, float x, float y, float innerScale, int number, Vector4? color, Alignment align)
+    public void DrawNumber(IDalamudTextureWrap textureWrap, float x, float y, float innerScale, int number, Vector4? color, Alignment align)
     {
         if (textureWrap == null)
             return;
@@ -128,7 +128,7 @@ public class Render
         }
     }
 
-    public void DrawTextButtonOver(TextureWrap textureWrap, float x, float y, float width, float height)
+    public void DrawTextButtonOver(IDalamudTextureWrap textureWrap, float x, float y, float width, float height)
     {
         if (textureWrap != null)
         {
@@ -157,7 +157,7 @@ public class Render
         }
     }
 
-    public void DrawBar(TextureWrap textureWrap, float x, float y, float width, float height)
+    public void DrawBar(IDalamudTextureWrap textureWrap, float x, float y, float width, float height)
     {
         if (textureWrap != null)
         {
@@ -189,7 +189,7 @@ public class Render
         }
     }
 
-    public void DrawDivisorHorizontal(TextureWrap textureWrap, float x, float y, float width)
+    public void DrawDivisorHorizontal(IDalamudTextureWrap textureWrap, float x, float y, float width)
     {
         if (textureWrap == null)
             return;
@@ -218,7 +218,7 @@ public class Render
         this.DrawObject(textureWrap, x, y, offset, offset, x3, y1, x4, y2, 1.0f);
     }
 
-    public void DrawDivisorVertical(TextureWrap textureWrap, float x, float y, float height)
+    public void DrawDivisorVertical(IDalamudTextureWrap textureWrap, float x, float y, float height)
     {
         if (textureWrap == null)
             return;
@@ -247,7 +247,7 @@ public class Render
         this.DrawObject(textureWrap, x, y, offset, offset, x1, y3, x2, y4, 1.0f);
     }
 
-    public void DrawBackground(TextureWrap textureWrap, float width, float height, bool isFocused)
+    public void DrawBackground(IDalamudTextureWrap textureWrap, float width, float height, bool isFocused)
     {
         if (textureWrap == null)
             return;

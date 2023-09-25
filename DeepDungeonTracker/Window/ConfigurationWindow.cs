@@ -93,7 +93,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextColored(Color.Green, "Potsherds/Fragments:");
             ImGui.TextWrapped("Only obtained from bronze coffers will be counted.");
             ImGui.TextColored(Color.Green, "Score:");
-            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value, starting from floor 1.\nThe score will be zero if you start tracking it from an ongoing save file.");
+            ImGui.TextWrapped("The number shown in the Score Window is the Duty Complete value, starting from floor 1.\nThe score will be zero if you start tracking it from an ongoing save file or from a shortcut floor.");
             ImGui.TextColored(Color.Green, "Save Files:");
             ImGui.TextWrapped(
                 "Save files are automatically created once you enter a Deep Dungeon." +
@@ -108,7 +108,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextWrapped("Every time you get close to the enemies, their data will be stored.");
             ImGui.TextWrapped("When you use a Magicite, instead of counting all enemies close to you during the moment you use it, the counting will be based on the stored data previously mentioned (which includes enemies close to you and potentially enemies far from you if you got close to them at some point before using the Magicite).");
             ImGui.TextColored(Color.Yellow, " • How close do you need to get to an enemy?");
-            ImGui.TextWrapped("The distance is approximately two rooms (straight).");
+            ImGui.TextWrapped("The distance is approximately two rooms (straight line).");
             ImGui.TextWrapped("If you need a visual indication on an open floor (like Big Floors/Hall of Fallacies), when you get close to the enemies, you will see them spawning on your screen with a dark-purple aura around them.");
             ImGui.TextWrapped("This is the required distance, and from this point on, those enemies will be counted when you use a Magicite no matter where you use it (close to or far from them).");
             ImGui.TextWrapped("So this can give you more flexibility in how you use the Magicite. Basically, every enemy you see on your screen for the first time will be counted, even if you get far away from them when using a Magicite.");

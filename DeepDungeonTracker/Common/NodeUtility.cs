@@ -1,7 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Game.Gui;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -72,7 +72,7 @@ public unsafe static partial class NodeUtility
         addon->UldManager.UpdateDrawNodeList();
     }
 
-    public static void AccurateTargetHPPercentage(GameGui gameGui, TargetManager targetManager, string addonName, uint nodeId, int gaugeBarNodeIndex, bool isNodeVisible)
+    public static void AccurateTargetHPPercentage(IGameGui gameGui, ITargetManager targetManager, string addonName, uint nodeId, int gaugeBarNodeIndex, bool isNodeVisible)
     {
         var addon = (AtkUnitBase*)gameGui?.GetAddonByName(addonName, 1)!;
         if (addon == null)
@@ -157,7 +157,7 @@ public unsafe static partial class NodeUtility
         return 0;
     }
 
-    public static (bool, int, int) AetherpoolStatus(GameGui gameGui)
+    public static (bool, int, int) AetherpoolStatus(IGameGui gameGui)
     {
         var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonStatus", 1)!;
         return (addon != null) ? (true, NodeUtility.Aetherpool(addon, 73), NodeUtility.Aetherpool(addon, 72)) : (false, -1, -1);
@@ -177,7 +177,7 @@ public unsafe static partial class NodeUtility
         return (index < componentNode->Component->UldManager.NodeListCount) ? componentNode->Component->UldManager.NodeList[index] : null;
     }
 
-    public static int SaveSlotNumber(GameGui gameGui)
+    public static int SaveSlotNumber(IGameGui gameGui)
     {
         static AtkResNode* GetSlotNode(AtkUnitBase* addon, int index)
         {
@@ -207,7 +207,7 @@ public unsafe static partial class NodeUtility
         return saveSlotNumber;
     }
 
-    public static (bool, bool) SaveSlotDeletion(GameGui gameGui)
+    public static (bool, bool) SaveSlotDeletion(IGameGui gameGui)
     {
         static bool IsEmpty(AtkTextNode* node) => node->NodeText.ToString().IsNullOrWhitespace();
 
@@ -238,7 +238,7 @@ public unsafe static partial class NodeUtility
         return (false, false);
     }
 
-    public static (bool, int) MapFloorNumber(GameGui gameGui)
+    public static (bool, int) MapFloorNumber(IGameGui gameGui)
     {
         var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1)!;
         if (addon == null)
@@ -257,7 +257,7 @@ public unsafe static partial class NodeUtility
         return (false, -1);
     }
 
-    public static IImmutableList<Node>? MapRoom(GameGui gameGui)
+    public static IImmutableList<Node>? MapRoom(IGameGui gameGui)
     {
         var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1)!;
         if (addon == null)
@@ -291,7 +291,7 @@ public unsafe static partial class NodeUtility
         return nodes;
     }
 
-    public static bool CairnOfPassageActivation(GameGui gameGui)
+    public static bool CairnOfPassageActivation(IGameGui gameGui)
     {
         var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1)!;
         if (addon == null)
@@ -325,7 +325,7 @@ public unsafe static partial class NodeUtility
         return false;
     }
 
-    public static (bool, int) ScoreWindowKills(GameGui gameGui)
+    public static (bool, int) ScoreWindowKills(IGameGui gameGui)
     {
         static (bool, int) GetValue(AtkComponentNode* node)
         {
@@ -368,7 +368,7 @@ public unsafe static partial class NodeUtility
         return GetValue(killsNode);
     }
 
-    public static bool IsNowLoading(GameGui gameGui)
+    public static bool IsNowLoading(IGameGui gameGui)
     {
         var addon = (AtkUnitBase*)gameGui?.GetAddonByName("NowLoading", 1)!;
         return addon != null && addon->IsVisible;

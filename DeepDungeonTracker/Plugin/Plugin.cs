@@ -1,10 +1,10 @@
-﻿using Dalamud.Game;
-using Dalamud.Game.ClientState.Conditions;
+﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Network;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using System;
 using System.Linq;
 
@@ -12,7 +12,7 @@ namespace DeepDungeonTracker;
 
 public sealed class Plugin : IDalamudPlugin
 {
-    public string Name => "Deep Dungeon Tracker";
+    public static string Name => "Deep Dungeon Tracker";
 
     private Commands Commands { get; }
 
@@ -30,17 +30,17 @@ public sealed class Plugin : IDalamudPlugin
         this.Configuration.Initialize(Service.PluginInterface);
 
         this.Data = new(this.Configuration);
-        this.Commands = new(this.Name, this.OnConfigCommand, this.OnMainCommandd, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
+        this.Commands = new(Plugin.Name, this.OnConfigCommand, this.OnMainCommandd, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
 
-        this.WindowSystem = new(this.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
+        this.WindowSystem = new(Plugin.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
-        this.WindowSystem.AddWindow(new ConfigurationWindow(this.Name, this.Configuration, this.MainWindowToggleVisibility));
-        this.WindowSystem.AddWindow(new MainWindow(this.Name, this.Configuration, this.Data, this.OpenWindow<StatisticsWindow>));
-        this.WindowSystem.AddWindow(new TrackerWindow(this.Name, this.Configuration, this.Data));
-        this.WindowSystem.AddWindow(new FloorSetTimeWindow(this.Name, this.Configuration, this.Data));
-        this.WindowSystem.AddWindow(new ScoreWindow(this.Name, this.Configuration, this.Data));
-        this.WindowSystem.AddWindow(new StatisticsWindow(this.Name, this.Configuration, this.Data, this.MainWindowToggleVisibility, this.BossStatusTimerWindowToggleVisibility));
-        this.WindowSystem.AddWindow(new BossStatusTimerWindow(this.Name, this.Configuration, this.Data));
+        this.WindowSystem.AddWindow(new ConfigurationWindow(Plugin.Name, this.Configuration, this.MainWindowToggleVisibility));
+        this.WindowSystem.AddWindow(new MainWindow(Plugin.Name, this.Configuration, this.Data, this.OpenWindow<StatisticsWindow>));
+        this.WindowSystem.AddWindow(new TrackerWindow(Plugin.Name, this.Configuration, this.Data));
+        this.WindowSystem.AddWindow(new FloorSetTimeWindow(Plugin.Name, this.Configuration, this.Data));
+        this.WindowSystem.AddWindow(new ScoreWindow(Plugin.Name, this.Configuration, this.Data));
+        this.WindowSystem.AddWindow(new StatisticsWindow(Plugin.Name, this.Configuration, this.Data, this.MainWindowToggleVisibility, this.BossStatusTimerWindowToggleVisibility));
+        this.WindowSystem.AddWindow(new BossStatusTimerWindow(Plugin.Name, this.Configuration, this.Data));
 #pragma warning restore CA2000
 
         Service.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
@@ -139,11 +139,11 @@ public sealed class Plugin : IDalamudPlugin
 
     private void BuildFonts() => this.Data.UI.BuildFonts();
 
-    private void Update(Framework framework) => this.Data.Update(this.Configuration);
+    private void Update(IFramework framework) => this.Data.Update(this.Configuration);
 
-    private void Login(object? sender, EventArgs e) => this.Data.Login();
+    private void Login() => this.Data.Login();
 
-    private void TerritoryChanged(object? sender, ushort territoryType) => this.Data.TerritoryChanged(territoryType);
+    private void TerritoryChanged(ushort territoryType) => this.Data.TerritoryChanged(territoryType);
 
     private void ConditionChange(ConditionFlag flag, bool value) => this.Data.ConditionChange(flag, value);
 

@@ -1,7 +1,7 @@
 ﻿using Dalamud.Interface.GameFonts;
+using Dalamud.Interface.Internal;
 using DeepDungeonTracker.Properties;
 using ImGuiNET;
-using ImGuiScene;
 using System;
 
 namespace DeepDungeonTracker;
@@ -16,25 +16,25 @@ public sealed class ResourceUI : IDisposable
 
     public ImFontPtr TrumpGothic { get; set; }
 
-    public TextureWrap UI { get; }
+    public IDalamudTextureWrap UI { get; }
 
-    public TextureWrap DeepDungeon { get; }
+    public IDalamudTextureWrap DeepDungeon { get; }
 
-    public TextureWrap Job { get; }
+    public IDalamudTextureWrap Job { get; }
 
-    public TextureWrap Miscellaneous { get; }
+    public IDalamudTextureWrap Miscellaneous { get; }
 
-    public TextureWrap Coffer { get; }
+    public IDalamudTextureWrap Coffer { get; }
 
-    public TextureWrap Enchantment { get; }
+    public IDalamudTextureWrap Enchantment { get; }
 
-    public TextureWrap Trap { get; }
+    public IDalamudTextureWrap Trap { get; }
 
-    public TextureWrap BossStatusTimer { get; }
+    public IDalamudTextureWrap BossStatusTimer { get; }
 
-    public TextureWrap MapNormal { get; }
+    public IDalamudTextureWrap MapNormal { get; }
 
-    public TextureWrap MapHallOfFallacies { get; }
+    public IDalamudTextureWrap MapHallOfFallacies { get; }
 
     public ResourceUI()
     {
