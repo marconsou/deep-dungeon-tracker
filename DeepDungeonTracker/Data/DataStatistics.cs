@@ -294,6 +294,7 @@ public class DataStatistics
             new (Miscellaneous.Death, floorSet?.Deaths() ?? 0),
             new (Miscellaneous.RegenPotion, floorSet?.RegenPotions() ?? 0),
             new (Miscellaneous.Map, floorSet?.Maps() ?? 0),
+            new (Miscellaneous.HallOfFallacies, floorSet?.HallOfFallacies() ?? 0),
             new (Miscellaneous.TimeBonus, Convert.ToInt32(floorSet?.TimeBonus, CultureInfo.InvariantCulture))
         }).RemoveAll(x => x.Total == 0);
     }
@@ -311,6 +312,7 @@ public class DataStatistics
             new (Miscellaneous.Death, saveSlot?.Deaths() ?? 0),
             new (Miscellaneous.RegenPotion, saveSlot?.RegenPotions() ?? 0),
             new (Miscellaneous.Map, saveSlot?.Maps() ?? 0),
+            new (Miscellaneous.HallOfFallacies, saveSlot?.HallOfFallacies() ?? 0),
             new (Miscellaneous.TimeBonus, saveSlot?.TimeBonuses() ?? 0)
         }).RemoveAll(x => x.Total == 0);
     }

@@ -78,6 +78,8 @@ public class SaveSlot
 
     public int Maps() => this.FloorSets.Sum(x => x.Maps());
 
+    public int HallOfFallacies() => this.FloorSets.Sum(x => x.HallOfFallacies());
+
     public int TimeBonuses() => this.FloorSets.Sum(x => x.TimeBonus ? 1 : 0);
 
     public FloorSet? CurrentFloorSet() => this.FloorSets.LastOrDefault();

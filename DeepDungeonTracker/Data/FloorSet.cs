@@ -50,6 +50,8 @@ public class FloorSet
 
     public int Maps() => this.Floors.Sum(x => x.Map ? 1 : 0);
 
+    public int HallOfFallacies() => this.Floors.Sum(x => x.MapData.FloorType == FloorType.HallOfFallacies ? 1 : 0);
+
     public Floor? FirstFloor() => this.Floors.FirstOrDefault();
 
     public Floor? CurrentFloor() => this.Floors.LastOrDefault();

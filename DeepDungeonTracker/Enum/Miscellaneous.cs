@@ -11,5 +11,6 @@ public enum Miscellaneous
     Death,
     RegenPotion,
     Map,
-    TimeBonus
+    TimeBonus,
+    HallOfFallacies
 }
