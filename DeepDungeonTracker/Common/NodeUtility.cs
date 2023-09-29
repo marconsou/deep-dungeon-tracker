@@ -325,7 +325,7 @@ public unsafe static partial class NodeUtility
         return false;
     }
 
-    public static (bool, int) ScoreWindowKills(IGameGui gameGui)
+    private static (bool, int) ScoreWindowData(IGameGui gameGui, int index)
     {
         static (bool, int) GetValue(AtkComponentNode* node)
         {
@@ -361,12 +361,16 @@ public unsafe static partial class NodeUtility
         if (!result.Item1 || result.Item2 <= 0)
             return (false, -1);
 
-        var killsNode = addon->UldManager.NodeListCount > 11 ? addon->UldManager.NodeList[11]->GetAsAtkComponentNode() : null;
-        if (killsNode == null)
+        var node = addon->UldManager.NodeListCount > index ? addon->UldManager.NodeList[index]->GetAsAtkComponentNode() : null;
+        if (node == null)
             return (false, -1);
 
-        return GetValue(killsNode);
+        return GetValue(node);
     }
+
+    public static (bool, int) ScoreWindowKills(IGameGui gameGui) => NodeUtility.ScoreWindowData(gameGui, 11);
+
+    public static (bool, int) ScoreWindowScorePoints(IGameGui gameGui) => NodeUtility.ScoreWindowData(gameGui, 9);
 
     public static bool IsNowLoading(IGameGui gameGui)
     {

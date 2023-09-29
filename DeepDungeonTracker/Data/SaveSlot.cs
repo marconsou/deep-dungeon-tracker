@@ -120,15 +120,32 @@ public class SaveSlot
 
     public bool IsSpecialBossFloor(Floor? floor) => (this.DeepDungeon == DeepDungeon.EurekaOrthos && floor?.Number == 99);
 
-    public void AdditionalKills(int flootSetIndex, int additionalKills)
+    public void AdditionalKills(int flootSetIndex, int kills)
     {
+        if (kills <= 0)
+            return;
+
         var flootSet = flootSetIndex < this.FloorSets.Count ? this.FloorSets[flootSetIndex] : null;
         if (flootSet == null)
             return;
 
         var firstFloor = flootSet.FirstFloor();
-        for (var i = 0; i < additionalKills; i++)
+        for (var i = 0; i < kills; i++)
             firstFloor?.EnemyKilled();
+    }
+
+    public void AdditionalMimicKills(int flootSetIndex, int kills)
+    {
+        if (kills <= 0)
+            return;
+
+        var flootSet = flootSetIndex < this.FloorSets.Count ? this.FloorSets[flootSetIndex] : null;
+        if (flootSet == null)
+            return;
+
+        var firstFloor = flootSet.FirstFloor();
+        for (var i = 0; i < kills; i++)
+            firstFloor?.MimicKilled();
     }
 
     static public void Copy(SaveSlot? source, SaveSlot? dest, int maxFloor)

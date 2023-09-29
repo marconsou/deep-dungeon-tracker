@@ -117,8 +117,8 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextWrapped("When using a Magicite without enemies alive close to you (for example, a second Magicite being used to kill a respawn, but you moved away from the respawn), the functionality required to check for kills will not be called in this case (at least one enemy killed must be close to you when you use a Magicite). This is a very specific case (unlikely to happen), because every time you use a Magicite, there is at least one enemy alive close to you.");
             ImGui.TextWrapped("So, the more you move on a floor around the rooms before you decide to use a Magicite, more accurate it can be, potentially covering all enemies.");
             ImGui.TextColored(Color.Green, "Score Window Kills (Heaven-on-High only):");
-            ImGui.TextWrapped("When you see the Score Window on the screen, the detected kills so far will be adjusted based on the number shown on the Score Window. The kills will be added as normal enemies on floor 1/21 (lower floors) or 31 (higher floors).");
-            ImGui.TextWrapped("While opened, wait a bit until the final value of kills is shown, which is around when the exit button becomes available to click (avoid leaving before or it will not work).");
+            ImGui.TextWrapped("When you see the Score Window on the screen, the detected kills so far will be adjusted based on the number shown on the Score Window. The kills will be added as normal enemies or mimics on floor 1/21 (lower floors) or 31 (higher floors).");
+            ImGui.TextWrapped("While opened, wait a bit until the final value of score is calculated, which is around when the exit button becomes available to click (it will not work if you leave too soon).");
         }
 
         if (ImGui.CollapsingHeader("OpCodes"))

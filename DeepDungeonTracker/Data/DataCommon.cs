@@ -315,6 +315,15 @@ public sealed class DataCommon : IDisposable
 
     public void CheckForScoreWindowKills()
     {
+        static int CheckScoreForAdditionalMimicKills(int currentScore, int totalScore)
+        {
+            var mimicExtraPoints = 505;
+            var scoreDiff = totalScore - currentScore;
+            if ((scoreDiff > 0) && (currentScore > 0) && (scoreDiff % mimicExtraPoints == 0))
+                return scoreDiff / mimicExtraPoints;
+            return 0;
+        }
+
         if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.WasScoreWindowShown)
             return;
 
@@ -325,17 +334,33 @@ public sealed class DataCommon : IDisposable
             var totalKills = result.Item2;
             var additionalKills = totalKills - (this.CurrentSaveSlot?.Kills() ?? 0);
 
-            if (additionalKills <= 0)
-                return;
-
             var floorNumber = this.CurrentSaveSlot?.CurrentFloorNumber();
+            int? floorSetIndex = null;
 
             if (floorNumber <= 30)
-                this.CurrentSaveSlot?.AdditionalKills(0, additionalKills);
+                floorSetIndex = 0;
             else if (floorNumber <= 100)
             {
-                var startingFloorNumber = this.CurrentSaveSlot?.StartingFloorNumber() ?? 0;
-                this.CurrentSaveSlot?.AdditionalKills((startingFloorNumber == 1) ? 3 : (startingFloorNumber == 21) ? 1 : 0, additionalKills);
+                var startingFloorNumber = this.CurrentSaveSlot?.StartingFloorNumber() ?? null;
+                floorSetIndex = (startingFloorNumber == 1) ? 3 : (startingFloorNumber == 21) ? 1 : null;
+            }
+
+            if (!floorSetIndex.HasValue)
+                return;
+
+            this.CurrentSaveSlot?.AdditionalKills(floorSetIndex.Value, additionalKills);
+
+            result = NodeUtility.ScoreWindowScorePoints(Service.GameGui);
+            if (result.Item1)
+            {
+                var score = ScoreCreator.Create(this.CurrentSaveSlot ?? new(), true);
+                score?.TotalScoreCalculation(ServiceUtility.IsSolo, ScoreCalculationType.CurrentFloor);
+
+                var currentScore = score?.TotalScore ?? 0;
+                var totalScore = result.Item2;
+
+                var additionalMimicKills = CheckScoreForAdditionalMimicKills(currentScore, totalScore);
+                this.CurrentSaveSlot?.AdditionalMimicKills(floorSetIndex.Value, additionalMimicKills);
             }
         }
     }
