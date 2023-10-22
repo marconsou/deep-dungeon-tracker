@@ -94,6 +94,8 @@ public class Floor
 
     public void EnemyKilled() => this.Kills++;
 
+    public void EnemyUnkilled() => this.Kills--;
+
     public void CairnOfPassageShines() => this.CairnOfPassageKills++;
 
     public void MimicKilled() => this.Mimics++;

@@ -23,7 +23,7 @@ public sealed class ScoreWindow : WindowEx, IDisposable
     private void OptionsUpdate()
     {
         var config = this.Configuration.Score;
-        this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon);
+        this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon, this.Data.IsInDeepDungeonSubArea);
         this.Flags = config.Lock ? WindowEx.StaticNoBackground : WindowEx.StaticNoBackgroundMoveInputs;
     }
 

@@ -52,6 +52,11 @@ public sealed class Data : IDisposable
 
     public bool IsInsideDeepDungeon => this.InDeepDungeon.IsActivated;
 
+    public bool IsInDeepDungeonSubArea =>
+        this.Text.IsPalaceOfTheDeadRegion(Service.ClientState.TerritoryType, true) ||
+        this.Text.IsHeavenOnHighRegion(Service.ClientState.TerritoryType, true) ||
+        this.Text.IsEurekaOrthosRegion(Service.ClientState.TerritoryType, true);
+
     public Data(Configuration configuration)
     {
         this.OpCodes.Load(configuration).ConfigureAwait(true);

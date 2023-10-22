@@ -1,5 +1,6 @@
 ﻿using Dalamud;
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using Lumina.Data;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
@@ -10,11 +11,13 @@ using System.Linq;
 
 namespace DeepDungeonTracker;
 
-public class DataText
+public unsafe class DataText
 {
     private IDictionary<TextIndex, (uint, string)> Texts { get; } = new Dictionary<TextIndex, (uint, string)>();
 
     private IImmutableList<TerritoryType> Territories { get; }
+
+    private static TerritoryInfo* TerritoryData => TerritoryInfo.Instance();
 
     public DataText()
     {
@@ -119,11 +122,11 @@ public class DataText
 
     public (bool, TextIndex?) IsTrap(string name) => this.IsText(TextIndex.LandmineTrap, TextIndex.OwletTrap, name, null);
 
-    public bool IsPalaceOfTheDeadRegion(uint territoryType) => new uint[] { 56, 1793 }.Contains(this.RegionId(territoryType));
+    public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubArea = false) => new uint[] { 56, 1793 }.Contains(this.RegionId(territoryType)) && ((!checkForSubArea) || (checkForSubArea && DataText.TerritoryData != null && DataText.TerritoryData->SubAreaPlaceNameID == 129));
 
-    public bool IsHeavenOnHighRegion(uint territoryType) => new uint[] { 2409, 2775 }.Contains(this.RegionId(territoryType));
+    public bool IsHeavenOnHighRegion(uint territoryType, bool checkForSubArea = false) => new uint[] { 2409, 2775 }.Contains(this.RegionId(territoryType)) && ((!checkForSubArea) || (checkForSubArea && DataText.TerritoryData != null && DataText.TerritoryData->SubAreaPlaceNameID == 2774));
 
-    public bool IsEurekaOrthosRegion(uint territoryType) => new uint[] { 67, 2529 }.Contains(this.RegionId(territoryType));
+    public bool IsEurekaOrthosRegion(uint territoryType, bool checkForSubArea = false) => new uint[] { 67, 2529 }.Contains(this.RegionId(territoryType)) && ((!checkForSubArea) || (checkForSubArea && DataText.TerritoryData != null && DataText.TerritoryData->AreaPlaceNameID == 942));
 
-    private uint RegionId(uint territoryType) => this.Territories.FirstOrDefault(x => x.RowId == territoryType)!.PlaceName.Row;
+    private uint RegionId(uint territoryType) => this.Territories.FirstOrDefault(x => x.RowId == territoryType)?.PlaceName.Row ?? uint.MaxValue;
 }

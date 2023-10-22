@@ -29,9 +29,9 @@ public sealed class DataUI : IDisposable
         }
     }
 
-    public bool CommonWindowVisibility(bool show, bool showInBetweenFloors, bool isInDeepDungeonRegion, bool isInsideDeepDungeon)
+    public bool CommonWindowVisibility(bool show, bool showInBetweenFloors, bool isInDeepDungeonRegion, bool isInsideDeepDungeon, bool isInDeepDungeonSubArea)
     {
-        return this.ShowUI && show && isInDeepDungeonRegion &&
+        return this.ShowUI && show && isInDeepDungeonRegion && (isInsideDeepDungeon || (!isInsideDeepDungeon && isInDeepDungeonSubArea)) &&
             (showInBetweenFloors || (!showInBetweenFloors && !this.IsNowLoadingVisible)) &&
             (ServiceUtility.IsSolo || (!ServiceUtility.IsSolo && isInDeepDungeonRegion && !isInsideDeepDungeon));
     }

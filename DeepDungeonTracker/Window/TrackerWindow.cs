@@ -18,7 +18,7 @@ public sealed class TrackerWindow : WindowEx, IDisposable
     public override void PreOpenCheck()
     {
         var config = this.Configuration.Tracker;
-        this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon);
+        this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon, this.Data.IsInDeepDungeonSubArea);
         this.Flags = config.Lock ? WindowEx.StaticNoBackground : WindowEx.StaticNoBackgroundMoveInputs;
     }
 

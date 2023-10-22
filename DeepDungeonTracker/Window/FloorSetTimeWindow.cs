@@ -15,7 +15,7 @@ public sealed class FloorSetTimeWindow : WindowEx, IDisposable
     public override void PreOpenCheck()
     {
         var config = this.Configuration.FloorSetTime;
-        this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon);
+        this.IsOpen = this.Data.UI.CommonWindowVisibility(config.Show, config.ShowInBetweenFloors, this.Data.Common.IsInDeepDungeonRegion, this.Data.IsInsideDeepDungeon, this.Data.IsInDeepDungeonSubArea);
         this.Flags = config.Lock ? WindowEx.StaticNoBackground : WindowEx.StaticNoBackgroundMoveInputs;
     }
 

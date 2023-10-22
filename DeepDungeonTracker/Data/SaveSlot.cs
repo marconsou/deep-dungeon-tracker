@@ -124,7 +124,7 @@ public class SaveSlot
 
     public void AdditionalKills(int flootSetIndex, int kills)
     {
-        if (kills <= 0)
+        if (kills == 0)
             return;
 
         var flootSet = flootSetIndex < this.FloorSets.Count ? this.FloorSets[flootSetIndex] : null;
@@ -134,6 +134,9 @@ public class SaveSlot
         var firstFloor = flootSet.FirstFloor();
         for (var i = 0; i < kills; i++)
             firstFloor?.EnemyKilled();
+
+        for (var i = 0; i > kills; i--)
+            firstFloor?.EnemyUnkilled();
     }
 
     public void AdditionalMimicKills(int flootSetIndex, int kills)
