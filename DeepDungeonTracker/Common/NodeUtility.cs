@@ -1,5 +1,4 @@
 ﻿using Dalamud.Game.ClientState.Objects;
-using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
@@ -130,9 +129,9 @@ public unsafe static partial class NodeUtility
         accurateTargetHPPercentageNode->SetText($"{(target != null ? targetHPPercentage : string.Empty):F}");
 
         var isLevelHPAvailable = false;
-        var levelNode = targetHPPercentageNode->AtkResNode.PrevSiblingNode->GetAsAtkTextNode();
-        if (levelNode != null)
-            isLevelHPAvailable = levelNode->AtkResNode.X > 20;
+        var nameNode = targetHPPercentageNode->AtkResNode.PrevSiblingNode->GetAsAtkTextNode();
+        if (nameNode != null)
+            isLevelHPAvailable = nameNode->AtkResNode.X > 20;
 
         accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(isNodeVisible && isLevelHPAvailable && (targetHPPercentage > 0.0f && targetHPPercentage < 100.0f) && (accurateTargetHPPercentageNode->NodeText.ToString() != "100.00"));
         targetHPPercentageNode->AtkResNode.ToggleVisibility(!accurateTargetHPPercentageNode->AtkResNode.IsVisible && isLevelHPAvailable);
