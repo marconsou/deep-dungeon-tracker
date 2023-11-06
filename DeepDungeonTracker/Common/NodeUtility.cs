@@ -125,13 +125,17 @@ public unsafe static partial class NodeUtility
         if (character != null)
             targetHPPercentage = character.CurrentHp * 100.0f / character.MaxHp;
 
-        var isValidCharacter = character != null && character.ObjectKind != ObjectKind.EventNpc;
-
         accurateTargetHPPercentageNode->TextColor = targetHPPercentageNode->TextColor;
         accurateTargetHPPercentageNode->EdgeColor = targetHPPercentageNode->EdgeColor;
         accurateTargetHPPercentageNode->SetText($"{(target != null ? targetHPPercentage : string.Empty):F}");
-        accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(targetHPPercentage != 100.0f && accurateTargetHPPercentageNode->NodeText.ToString() != "100.00" && isNodeVisible && isValidCharacter);
-        targetHPPercentageNode->AtkResNode.ToggleVisibility((!accurateTargetHPPercentageNode->AtkResNode.IsVisible || !isNodeVisible) && isValidCharacter);
+
+        var isLevelHPAvailable = false;
+        var levelNode = targetHPPercentageNode->AtkResNode.PrevSiblingNode->GetAsAtkTextNode();
+        if (levelNode != null)
+            isLevelHPAvailable = levelNode->AtkResNode.X > 20;
+
+        accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(isNodeVisible && isLevelHPAvailable && (targetHPPercentage > 0.0f && targetHPPercentage < 100.0f) && (accurateTargetHPPercentageNode->NodeText.ToString() != "100.00"));
+        targetHPPercentageNode->AtkResNode.ToggleVisibility(!accurateTargetHPPercentageNode->AtkResNode.IsVisible && isLevelHPAvailable);
     }
 
     private static int Aetherpool(AtkUnitBase* addon, int index)
