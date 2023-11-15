@@ -9,7 +9,7 @@ public class SaveSlotSelection
 
     private static string FileName => $"_{nameof(SaveSlotSelection)}.json";
 
-    private IDictionary<string, SaveSlotSelectionData> Data { get; }
+    private Dictionary<string, SaveSlotSelectionData> Data { get; }
 
     private SaveSlotSelectionData? CurrrentSelectionData { get; set; }
 

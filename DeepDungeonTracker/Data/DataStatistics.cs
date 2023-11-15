@@ -261,7 +261,7 @@ public class DataStatistics
         }).RemoveAll(x => x.Total == 0);
     }
 
-    private static IImmutableList<IEnumerable<StatisticsItem<Miscellaneous>>>? GetMiscellaneousByFloorsList(IEnumerable<Floor>? floors)
+    private static ImmutableList<IEnumerable<StatisticsItem<Miscellaneous>>>? GetMiscellaneousByFloorsList(IEnumerable<Floor>? floors)
     {
         static IEnumerable<StatisticsItem<Miscellaneous>> GetStatisticsCommonFloor(Floor? floor)
         {

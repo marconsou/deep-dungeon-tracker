@@ -21,7 +21,9 @@ public class DataOpCodes
 
     private bool IsUnknownBronzeCofferOpenOpCodeFound { get; set; }
 
-    private ICollection<ushort> KnownOpCodes { get; } = new List<ushort>(100);
+    private List<ushort> KnownOpCodes { get; } = new List<ushort>(100);
+
+    private static readonly int[] BronzeCofferItemInfoOpCodeData = [3, 8];
 
     private bool IsKnownOpCode(ushort opCode) => this.KnownOpCodes.Contains(opCode);
 
@@ -78,7 +80,7 @@ public class DataOpCodes
         if (this.IsUnknownBronzeCofferItemInfoOpCodeFound || this.IsKnownOpCode(opCode))
             return;
 
-        if (new int[] { 3, 8 }.Contains(NetworkData.ExtractNumber(dataPtr, 0, 1)) && NetworkData.ExtractNumber(dataPtr, 4, 4) == targetActorId && this.IsUnknownBronzeCofferOpenOpCodeFound)
+        if (DataOpCodes.BronzeCofferItemInfoOpCodeData.Contains(NetworkData.ExtractNumber(dataPtr, 0, 1)) && NetworkData.ExtractNumber(dataPtr, 4, 4) == targetActorId && this.IsUnknownBronzeCofferOpenOpCodeFound)
         {
             this.IsUnknownBronzeCofferItemInfoOpCodeFound = true;
             if (configuration?.OpCodes.UnknownBronzeCofferItemInfo != opCode)

@@ -10,12 +10,13 @@ namespace DeepDungeonTracker;
 
 public static class LocalStream
 {
+    private static JsonSerializerOptions Options => new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
+
     public static async Task Save<T>(string directory, string fileName, T data)
     {
         Directory.CreateDirectory(directory);
         using FileStream fileStream = File.Create(Path.Combine(directory, fileName));
-        JsonSerializerOptions options = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
-        await JsonSerializer.SerializeAsync(fileStream, data, data!.GetType(), options).ConfigureAwait(true);
+        await JsonSerializer.SerializeAsync(fileStream, data, data!.GetType(), LocalStream.Options).ConfigureAwait(true);
         await fileStream.DisposeAsync().ConfigureAwait(true);
     }
 

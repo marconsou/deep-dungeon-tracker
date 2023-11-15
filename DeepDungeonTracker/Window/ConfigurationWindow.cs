@@ -11,10 +11,12 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
 
     private string[] FieldNames { get; }
 
+    private static JsonSerializerOptions Options => new() { WriteIndented = true, };
+
     public ConfigurationWindow(string id, Configuration configuration, Action mainWindowToggleVisibility) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
     {
         this.MainWindowToggleVisibility = mainWindowToggleVisibility;
-        this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds/Fragments", "Lurings", "Maps", "Time Bonuses" };
+        this.FieldNames = ["Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds/Fragments", "Lurings", "Maps", "Time Bonuses"];
         this.SizeConstraints = new() { MaximumSize = new(600.0f, 600.0f) };
     }
 
@@ -122,7 +124,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         }
 
         if (ImGui.CollapsingHeader("OpCodes"))
-            ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, new JsonSerializerOptions() { WriteIndented = true, })}");
+            ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, ConfigurationWindow.Options)}");
     }
 
     private void Main()

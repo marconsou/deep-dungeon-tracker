@@ -34,9 +34,9 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private CloseButton CloseButton { get; } = new();
 
-    private IList<TextButton> FloorSetSummaryButtons { get; } = new List<TextButton>();
+    private List<TextButton> FloorSetSummaryButtons { get; } = [];
 
-    private IList<NumberButton> PageNavigationButtons { get; } = new List<NumberButton>();
+    private List<NumberButton> PageNavigationButtons { get; } = [];
 
     public StatisticsWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility, Action bossStatusTimerWindowToggleVisibility) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
     {
