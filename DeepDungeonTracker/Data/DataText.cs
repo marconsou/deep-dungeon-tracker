@@ -13,7 +13,7 @@ namespace DeepDungeonTracker;
 
 public unsafe class DataText
 {
-    private IDictionary<TextIndex, (uint, string)> Texts { get; } = new Dictionary<TextIndex, (uint, string)>();
+    private Dictionary<TextIndex, (uint, string)> Texts { get; } = [];
 
     private IImmutableList<TerritoryType> Territories { get; }
 
@@ -122,11 +122,27 @@ public unsafe class DataText
 
     public (bool, TextIndex?) IsTrap(string name) => this.IsText(TextIndex.LandmineTrap, TextIndex.OwletTrap, name, null);
 
-    public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubArea = false) => new uint[] { 56, 1793 }.Contains(this.RegionId(territoryType)) && ((!checkForSubArea) || (checkForSubArea && DataText.TerritoryData != null && DataText.TerritoryData->SubAreaPlaceNameID == 129));
+    public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 56, 1793, checkForSubRegion, subAreaPlaceNameID: 129);
 
-    public bool IsHeavenOnHighRegion(uint territoryType, bool checkForSubArea = false) => new uint[] { 2409, 2775 }.Contains(this.RegionId(territoryType)) && ((!checkForSubArea) || (checkForSubArea && DataText.TerritoryData != null && DataText.TerritoryData->SubAreaPlaceNameID == 2774));
+    public bool IsHeavenOnHighRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 2409, 2775, checkForSubRegion, subAreaPlaceNameID: 2774);
 
-    public bool IsEurekaOrthosRegion(uint territoryType, bool checkForSubArea = false) => new uint[] { 67, 2529 }.Contains(this.RegionId(territoryType)) && ((!checkForSubArea) || (checkForSubArea && DataText.TerritoryData != null && DataText.TerritoryData->AreaPlaceNameID == 942));
+    public bool IsEurekaOrthosRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 67, 2529, checkForSubRegion, areaPlaceNameID: 942);
 
-    private uint RegionId(uint territoryType) => this.Territories.FirstOrDefault(x => x.RowId == territoryType)?.PlaceName.Row ?? uint.MaxValue;
+    private bool IsDeepDungeonRegion(uint territoryType, uint regionIdPrimary, uint regionIdSecondary, bool checkForSubRegion, uint areaPlaceNameID = uint.MaxValue, uint subAreaPlaceNameID = uint.MaxValue)
+    {
+        if (new uint[] { regionIdPrimary, regionIdSecondary }.Contains(this.Territories.FirstOrDefault(x => x.RowId == territoryType)?.PlaceName.Row ?? uint.MaxValue))
+        {
+            if (!checkForSubRegion)
+                return true;
+
+            if (DataText.TerritoryData != null)
+            {
+                if ((DataText.TerritoryData->AreaPlaceNameID == areaPlaceNameID && subAreaPlaceNameID == uint.MaxValue) ||
+                    (DataText.TerritoryData->SubAreaPlaceNameID == subAreaPlaceNameID && areaPlaceNameID == uint.MaxValue) ||
+                    (DataText.TerritoryData->AreaPlaceNameID == 0 && DataText.TerritoryData->SubAreaPlaceNameID == 0))
+                    return true;
+            }
+        }
+        return false;
+    }
 }
