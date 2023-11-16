@@ -6,10 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace DeepDungeonTracker;
 
-public class Floor(int number)
+public class Floor
 {
     [JsonInclude]
-    public int Number { get; private set; } = number;
+    public int Number { get; private set; }
 
     [JsonInclude]
     public TimeSpan Time { get; private set; } = new();
@@ -36,39 +36,39 @@ public class Floor(int number)
     public int DreadBeasts { get; private set; }
 
     [JsonIgnore]
-    public Collection<Coffer> Coffers { get; private set; } = [];
+    public Collection<Coffer> Coffers { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("Coffers")]
-    public Collection<Coffer>? SerializationCoffers { get => this.Coffers?.Count > 0 ? this.Coffers : null; private set => this.Coffers = value ?? []; }
+    public Collection<Coffer>? SerializationCoffers { get => this.Coffers?.Count > 0 ? this.Coffers : null; private set => this.Coffers = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<Enchantment> Enchantments { get; private set; } = [];
+    public Collection<Enchantment> Enchantments { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("Enchantments")]
-    public Collection<Enchantment>? SerializationEnchantments { get => this.Enchantments?.Count > 0 ? this.Enchantments : null; private set => this.Enchantments = value ?? []; }
+    public Collection<Enchantment>? SerializationEnchantments { get => this.Enchantments?.Count > 0 ? this.Enchantments : null; private set => this.Enchantments = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<Enchantment> EnchantmentsSerenized { get; private set; } = [];
+    public Collection<Enchantment> EnchantmentsSerenized { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("EnchantmentsSerenized")]
-    public Collection<Enchantment>? SerializationEnchantmentsSerenized { get => this.EnchantmentsSerenized?.Count > 0 ? this.EnchantmentsSerenized : null; private set => this.EnchantmentsSerenized = value ?? []; }
+    public Collection<Enchantment>? SerializationEnchantmentsSerenized { get => this.EnchantmentsSerenized?.Count > 0 ? this.EnchantmentsSerenized : null; private set => this.EnchantmentsSerenized = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<Trap> Traps { get; private set; } = [];
+    public Collection<Trap> Traps { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("Traps")]
-    public Collection<Trap>? SerializationTraps { get => this.Traps?.Count > 0 ? this.Traps : null; private set => this.Traps = value ?? []; }
+    public Collection<Trap>? SerializationTraps { get => this.Traps?.Count > 0 ? this.Traps : null; private set => this.Traps = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<Pomander> Pomanders { get; private set; } = [];
+    public Collection<Pomander> Pomanders { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("Pomanders")]
-    public Collection<Pomander>? SerializationPomanders { get => this.Pomanders?.Count > 0 ? this.Pomanders : null; private set => this.Pomanders = value ?? []; }
+    public Collection<Pomander>? SerializationPomanders { get => this.Pomanders?.Count > 0 ? this.Pomanders : null; private set => this.Pomanders = value ?? new(); }
 
     [JsonInclude]
     public int Deaths { get; private set; }
@@ -81,6 +81,8 @@ public class Floor(int number)
 
     [JsonInclude]
     public MapData MapData { get; private set; } = new();
+
+    public Floor(int number) => this.Number = number;
 
     public bool IsFirstFloor() => this.Number % 10 == 1;
 
@@ -135,5 +137,5 @@ public class Floor(int number)
 
     public int Lurings() => this.Traps.Count(x => x == Trap.Luring);
 
-    public IEnumerable<Enchantment> AdjustedEnchantments() => this.Enchantments.Count > 0 ? this.Enchantments : this.EnchantmentsSerenized.Count > 0 ? this.EnchantmentsSerenized : [];
+    public IEnumerable<Enchantment> AdjustedEnchantments() => this.Enchantments.Count > 0 ? this.Enchantments : this.EnchantmentsSerenized.Count > 0 ? this.EnchantmentsSerenized : new();
 }

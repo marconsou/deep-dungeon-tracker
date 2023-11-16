@@ -13,102 +13,102 @@ public class BossStatusTimerData
     public BossStatusTimerItem Combat { get; private set; } = new(BossStatusTimer.Combat);
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> Medicated { get; private set; } = [];
+    public Collection<BossStatusTimerItem> Medicated { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("Medicated")]
-    public Collection<BossStatusTimerItem>? SerializationMedicated { get => this.Medicated?.Count > 0 ? this.Medicated : null; private set => this.Medicated = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationMedicated { get => this.Medicated?.Count > 0 ? this.Medicated : null; private set => this.Medicated = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> AccursedPox { get; private set; } = [];
+    public Collection<BossStatusTimerItem> AccursedPox { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("AccursedPox")]
-    public Collection<BossStatusTimerItem>? SerializationAccursedPox { get => this.AccursedPox?.Count > 0 ? this.AccursedPox : null; private set => this.AccursedPox = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationAccursedPox { get => this.AccursedPox?.Count > 0 ? this.AccursedPox : null; private set => this.AccursedPox = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> Weakness { get; private set; } = [];
+    public Collection<BossStatusTimerItem> Weakness { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("Weakness")]
-    public Collection<BossStatusTimerItem>? SerializationWeakness { get => this.Weakness?.Count > 0 ? this.Weakness : null; private set => this.Weakness = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationWeakness { get => this.Weakness?.Count > 0 ? this.Weakness : null; private set => this.Weakness = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> BrinkOfDeath { get; private set; } = [];
+    public Collection<BossStatusTimerItem> BrinkOfDeath { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("BrinkOfDeath")]
-    public Collection<BossStatusTimerItem>? SerializationBrinkOfDeath { get => this.BrinkOfDeath?.Count > 0 ? this.BrinkOfDeath : null; private set => this.BrinkOfDeath = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationBrinkOfDeath { get => this.BrinkOfDeath?.Count > 0 ? this.BrinkOfDeath : null; private set => this.BrinkOfDeath = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> DamageUp { get; private set; } = [];
+    public Collection<BossStatusTimerItem> DamageUp { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("DamageUp")]
-    public Collection<BossStatusTimerItem>? SerializationDamageUp { get => this.DamageUp?.Count > 0 ? this.DamageUp : null; private set => this.DamageUp = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationDamageUp { get => this.DamageUp?.Count > 0 ? this.DamageUp : null; private set => this.DamageUp = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> VulnerabilityDown { get; private set; } = [];
+    public Collection<BossStatusTimerItem> VulnerabilityDown { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("VulnerabilityDown")]
-    public Collection<BossStatusTimerItem>? SerializationVulnerabilityDown { get => this.VulnerabilityDown?.Count > 0 ? this.VulnerabilityDown : null; private set => this.VulnerabilityDown = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationVulnerabilityDown { get => this.VulnerabilityDown?.Count > 0 ? this.VulnerabilityDown : null; private set => this.VulnerabilityDown = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> VulnerabilityUp { get; private set; } = [];
+    public Collection<BossStatusTimerItem> VulnerabilityUp { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("VulnerabilityUp")]
-    public Collection<BossStatusTimerItem>? SerializationVulnerabilityUp { get => this.VulnerabilityUp?.Count > 0 ? this.VulnerabilityUp : null; private set => this.VulnerabilityUp = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationVulnerabilityUp { get => this.VulnerabilityUp?.Count > 0 ? this.VulnerabilityUp : null; private set => this.VulnerabilityUp = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> Enervation { get; private set; } = [];
+    public Collection<BossStatusTimerItem> Enervation { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("Enervation")]
-    public Collection<BossStatusTimerItem>? SerializationEnervation { get => this.Enervation?.Count > 0 ? this.Enervation : null; private set => this.Enervation = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationEnervation { get => this.Enervation?.Count > 0 ? this.Enervation : null; private set => this.Enervation = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> DamageUpHeavenOnHigh { get; private set; } = [];
+    public Collection<BossStatusTimerItem> DamageUpHeavenOnHigh { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("DamageUpHeavenOnHigh")]
-    public Collection<BossStatusTimerItem>? SerializationDamageUpHeavenOnHigh { get => this.DamageUpHeavenOnHigh?.Count > 0 ? this.DamageUpHeavenOnHigh : null; private set => this.DamageUpHeavenOnHigh = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationDamageUpHeavenOnHigh { get => this.DamageUpHeavenOnHigh?.Count > 0 ? this.DamageUpHeavenOnHigh : null; private set => this.DamageUpHeavenOnHigh = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> VulnerabilityDownHeavenOnHigh { get; private set; } = [];
+    public Collection<BossStatusTimerItem> VulnerabilityDownHeavenOnHigh { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("VulnerabilityDownHeavenOnHigh")]
-    public Collection<BossStatusTimerItem>? SerializationVulnerabilityDownHeavenOnHigh { get => this.VulnerabilityDownHeavenOnHigh?.Count > 0 ? this.VulnerabilityDownHeavenOnHigh : null; private set => this.VulnerabilityDownHeavenOnHigh = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationVulnerabilityDownHeavenOnHigh { get => this.VulnerabilityDownHeavenOnHigh?.Count > 0 ? this.VulnerabilityDownHeavenOnHigh : null; private set => this.VulnerabilityDownHeavenOnHigh = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> RehabilitationHeavenOnHigh { get; private set; } = [];
+    public Collection<BossStatusTimerItem> RehabilitationHeavenOnHigh { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("RehabilitationHeavenOnHigh")]
-    public Collection<BossStatusTimerItem>? SerializationRehabilitationHeavenOnHigh { get => this.RehabilitationHeavenOnHigh?.Count > 0 ? this.RehabilitationHeavenOnHigh : null; private set => this.RehabilitationHeavenOnHigh = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationRehabilitationHeavenOnHigh { get => this.RehabilitationHeavenOnHigh?.Count > 0 ? this.RehabilitationHeavenOnHigh : null; private set => this.RehabilitationHeavenOnHigh = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> DamageUpEurekaOrthos { get; private set; } = [];
+    public Collection<BossStatusTimerItem> DamageUpEurekaOrthos { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("DamageUpEurekaOrthos")]
-    public Collection<BossStatusTimerItem>? SerializationDamageUpEurekaOrthos { get => this.DamageUpEurekaOrthos?.Count > 0 ? this.DamageUpEurekaOrthos : null; private set => this.DamageUpEurekaOrthos = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationDamageUpEurekaOrthos { get => this.DamageUpEurekaOrthos?.Count > 0 ? this.DamageUpEurekaOrthos : null; private set => this.DamageUpEurekaOrthos = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> VulnerabilityDownEurekaOrthos { get; private set; } = [];
+    public Collection<BossStatusTimerItem> VulnerabilityDownEurekaOrthos { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("VulnerabilityDownEurekaOrthos")]
-    public Collection<BossStatusTimerItem>? SerializationVulnerabilityDownEurekaOrthos { get => this.VulnerabilityDownEurekaOrthos?.Count > 0 ? this.VulnerabilityDownEurekaOrthos : null; private set => this.VulnerabilityDownEurekaOrthos = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationVulnerabilityDownEurekaOrthos { get => this.VulnerabilityDownEurekaOrthos?.Count > 0 ? this.VulnerabilityDownEurekaOrthos : null; private set => this.VulnerabilityDownEurekaOrthos = value ?? new(); }
 
     [JsonIgnore]
-    public Collection<BossStatusTimerItem> RehabilitationEurekaOrthos { get; private set; } = [];
+    public Collection<BossStatusTimerItem> RehabilitationEurekaOrthos { get; private set; } = new();
 
     [JsonInclude]
     [JsonPropertyName("RehabilitationEurekaOrthos")]
-    public Collection<BossStatusTimerItem>? SerializationRehabilitationEurekaOrthos { get => this.RehabilitationEurekaOrthos?.Count > 0 ? this.RehabilitationEurekaOrthos : null; private set => this.RehabilitationEurekaOrthos = value ?? []; }
+    public Collection<BossStatusTimerItem>? SerializationRehabilitationEurekaOrthos { get => this.RehabilitationEurekaOrthos?.Count > 0 ? this.RehabilitationEurekaOrthos : null; private set => this.RehabilitationEurekaOrthos = value ?? new(); }
 
     public void Update(BattleChara? enemy)
     {

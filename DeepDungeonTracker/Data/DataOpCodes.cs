@@ -23,7 +23,7 @@ public class DataOpCodes
 
     private List<ushort> KnownOpCodes { get; } = new List<ushort>(100);
 
-    private static readonly int[] BronzeCofferItemInfoOpCodeData = [3, 8];
+    private static readonly int[] BronzeCofferItemInfoOpCodeData = new int[] { 3, 8 };
 
     private bool IsKnownOpCode(ushort opCode) => this.KnownOpCodes.Contains(opCode);
 

@@ -199,7 +199,7 @@ public class DataStatistics
         {
             this.FloorSet = this.SaveSlot?.FloorSets.FirstOrDefault(x => x.FirstFloor()?.Number == ((int)this.FloorSetStatistics * 10) - 9);
 
-            this.MiscellaneousByFloor = DataStatistics.GetMiscellaneousByFloorsList(this.FloorSet?.Floors ?? []);
+            this.MiscellaneousByFloor = DataStatistics.GetMiscellaneousByFloorsList(this.FloorSet?.Floors ?? new());
             this.CoffersByFloor = this.CoffersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Coffers.GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Coffer>>>.Empty);
             this.EnchantmentsByFloor = this.EnchantmentsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.AdjustedEnchantments().GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count())).Take(3)) ?? ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty);
             this.TrapsByFloor = this.TrapsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Traps.GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count())).Take(6)) ?? ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty);

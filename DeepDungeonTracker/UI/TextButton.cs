@@ -1,7 +1,9 @@
 ﻿namespace DeepDungeonTracker;
 
-public sealed class TextButton(float width = 0.0f, float height = 0.0f) : Button(new(width, height))
+public sealed class TextButton : Button
 {
+    public TextButton(float width = 0.0f, float height = 0.0f) : base(new(width, height)) { }
+
     public override void Draw(DataUI ui, DataAudio audio)
     {
         base.Draw(ui, audio);

@@ -32,9 +32,9 @@ public sealed class DataCommon : IDisposable
 
     private bool WasScoreWindowShown { get; set; }
 
-    private HashSet<uint> CairnOfPassageKillIds { get; set; } = [];
+    private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
 
-    private Dictionary<uint, Enemy> NearbyEnemies { get; set; } = [];
+    private Dictionary<uint, Enemy> NearbyEnemies { get; set; } = new();
 
     public DeepDungeon DeepDungeon { get; private set; }
 
@@ -90,8 +90,8 @@ public sealed class DataCommon : IDisposable
         this.IsBossDead = false;
         this.WasMagiciteUsed = false;
         this.WasScoreWindowShown = false;
-        this.NearbyEnemies = [];
-        this.CairnOfPassageKillIds = [];
+        this.NearbyEnemies = new();
+        this.CairnOfPassageKillIds = new();
         this.DutyStatus = DutyStatus.None;
         this.CurrentSaveSlot?.ContentIdUpdate(0);
     }
@@ -602,7 +602,7 @@ public sealed class DataCommon : IDisposable
             this.SpecificFloors();
             this.IsTransferenceInitiated = false;
             this.IsCairnOfPassageActivated = false;
-            this.CairnOfPassageKillIds = [];
+            this.CairnOfPassageKillIds = new();
             var time = this.FloorSetTime.AddFloor();
             this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(time);
             this.FloorScoreUpdate();
@@ -725,7 +725,7 @@ public sealed class DataCommon : IDisposable
     {
         this.WasMagiciteUsed = false;
         this.WasScoreWindowShown = false;
-        this.NearbyEnemies = [];
+        this.NearbyEnemies = new();
         this.IsTransferenceInitiated = true;
     }
 

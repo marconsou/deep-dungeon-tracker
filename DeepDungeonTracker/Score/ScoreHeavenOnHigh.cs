@@ -2,8 +2,10 @@
 
 namespace DeepDungeonTracker;
 
-public sealed class ScoreHeavenOnHigh(SaveSlot saveSlot, bool isDutyComplete) : Score(saveSlot, isDutyComplete)
+public sealed class ScoreHeavenOnHigh : Score
 {
+    public ScoreHeavenOnHigh(SaveSlot saveSlot, bool isDutyComplete) : base(saveSlot, isDutyComplete) { }
+
     protected override int FloorCompletionScoreCalculation()
     {
         var total = 0;

@@ -5,11 +5,13 @@ using System.Numerics;
 
 namespace DeepDungeonTracker;
 
-public sealed class TrackerWindow(string id, Configuration configuration, Data data) : WindowEx(id, configuration), IDisposable
+public sealed class TrackerWindow : WindowEx, IDisposable
 {
-    private Data Data { get; } = data;
+    private Data Data { get; }
 
     private Action<float, float, float, SaveSlot, FloorSet, Floor>?[]? FieldCalls { get; set; }
+
+    public TrackerWindow(string id, Configuration configuration, Data data) : base(id, configuration) => this.Data = data;
 
     public void Dispose() { }
 
@@ -92,7 +94,7 @@ public sealed class TrackerWindow(string id, Configuration configuration, Data d
         var offsetX = 76.0f + spacing;
         width = columnX - 27.0f + (Convert.ToInt32(config.IsFloorNumberVisible) + Convert.ToInt32(config.IsSetNumberVisible) + Convert.ToInt32(config.IsTotalNumberVisible)) * offsetX;
 
-        this.FieldCalls = [Kills, Mimics, Mandragoras, Mimicgoras, ShowNPCs ? NPCs : ShowDreadBeasts ? DreadBeasts : null, Coffers, Enchantments, Traps, Deaths, RegenPotions, Potsherds, Lurings, Maps, TimeBonuses];
+        this.FieldCalls = new[] { Kills, Mimics, Mandragoras, Mimicgoras, ShowNPCs ? NPCs : ShowDreadBeasts ? DreadBeasts : null, Coffers, Enchantments, Traps, Deaths, RegenPotions, Potsherds, Lurings, Maps, TimeBonuses };
 
         ui.DrawBackground(width, height, (!config.SolidBackground && this.IsFocused) || config.SolidBackground);
 

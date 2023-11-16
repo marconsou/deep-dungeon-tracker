@@ -5,19 +5,19 @@ using System.Text.Json.Serialization;
 
 namespace DeepDungeonTracker;
 
-public class SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, uint classJobId = 0, int currentLevel = 0)
+public class SaveSlot
 {
     [JsonInclude]
-    public DeepDungeon DeepDungeon { get; private set; } = deepDungeon;
+    public DeepDungeon DeepDungeon { get; private set; }
 
     [JsonInclude]
-    public int ContentId { get; private set; } = contentId;
+    public int ContentId { get; private set; }
 
     [JsonInclude]
-    public uint ClassJobId { get; private set; } = classJobId;
+    public uint ClassJobId { get; private set; }
 
     [JsonInclude]
-    public int CurrentLevel { get; private set; } = currentLevel;
+    public int CurrentLevel { get; private set; }
 
     [JsonInclude]
     public int AetherpoolArm { get; private set; }
@@ -32,7 +32,15 @@ public class SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId 
     public int KOs { get { return this._KOs; } private set { this._KOs = Math.Min(value, 99); } }
 
     [JsonInclude]
-    public Collection<FloorSet> FloorSets { get; private set; } = [];
+    public Collection<FloorSet> FloorSets { get; private set; } = new();
+
+    public SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, uint classJobId = 0, int currentLevel = 0)
+    {
+        this.DeepDungeon = deepDungeon;
+        this.ContentId = contentId;
+        this.ClassJobId = classJobId;
+        this.CurrentLevel = currentLevel;
+    }
 
     public void KOed() => this.KOs++;
 

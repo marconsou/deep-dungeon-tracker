@@ -1,8 +1,10 @@
 ﻿namespace DeepDungeonTracker;
 
-public sealed class DoubleArrowButton(bool mirrorHorizontal) : Button(new(33.0f, 25.5f))
+public sealed class DoubleArrowButton : Button
 {
-    private bool MirrorHorizontal { get; } = mirrorHorizontal;
+    private bool MirrorHorizontal { get; }
+
+    public DoubleArrowButton(bool mirrorHorizontal) : base(new(33.0f, 25.5f)) => this.MirrorHorizontal = mirrorHorizontal;
 
     public override void Draw(DataUI ui, DataAudio audio)
     {

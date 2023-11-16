@@ -2,8 +2,10 @@
 
 namespace DeepDungeonTracker;
 
-public sealed class ScorePalaceOfTheDead(SaveSlot saveSlot, bool isDutyComplete) : Score(saveSlot, isDutyComplete)
+public sealed class ScorePalaceOfTheDead : Score
 {
+    public ScorePalaceOfTheDead(SaveSlot saveSlot, bool isDutyComplete) : base(saveSlot, isDutyComplete) { }
+
     protected override int FloorCompletionScoreCalculation()
     {
         var total = 0;

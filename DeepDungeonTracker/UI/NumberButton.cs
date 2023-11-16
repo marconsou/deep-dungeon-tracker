@@ -2,11 +2,13 @@
 
 namespace DeepDungeonTracker;
 
-public sealed class NumberButton(int number, float width = 0.0f, float height = 0.0f) : Button(new(width, height))
+public sealed class NumberButton : Button
 {
-    public int Number { get; set; } = number;
+    public int Number { get; set; }
 
     public Vector4 Color { get; set; }
+
+    public NumberButton(int number, float width = 0.0f, float height = 0.0f) : base(new(width, height)) => this.Number = number;
 
     public override void Draw(DataUI ui, DataAudio audio)
     {

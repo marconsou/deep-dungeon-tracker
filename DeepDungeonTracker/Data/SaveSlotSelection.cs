@@ -13,7 +13,7 @@ public class SaveSlotSelection
 
     private SaveSlotSelectionData? CurrrentSelectionData { get; set; }
 
-    public SaveSlotSelection() => this.Data = LocalStream.Load<Dictionary<string, SaveSlotSelectionData>>(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName) ?? [];
+    public SaveSlotSelection() => this.Data = LocalStream.Load<Dictionary<string, SaveSlotSelectionData>>(ServiceUtility.ConfigDirectory, SaveSlotSelection.FileName) ?? new();
 
     public void ResetSelectionData() => this.CurrrentSelectionData = null;
 

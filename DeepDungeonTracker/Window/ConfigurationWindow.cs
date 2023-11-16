@@ -16,7 +16,7 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
     public ConfigurationWindow(string id, Configuration configuration, Action mainWindowToggleVisibility) : base(id, configuration, ImGuiWindowFlags.AlwaysAutoResize)
     {
         this.MainWindowToggleVisibility = mainWindowToggleVisibility;
-        this.FieldNames = ["Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds/Fragments", "Lurings", "Maps", "Time Bonuses"];
+        this.FieldNames = new string[] { "Kills", "Mimics", "Mandragoras", "Mimicgoras", "NPCs/Dread Beasts", "Coffers", "Enchantments", "Traps", "Deaths", "Regen Potions", "Potsherds/Fragments", "Lurings", "Maps", "Time Bonuses" };
         this.SizeConstraints = new() { MaximumSize = new(600.0f, 600.0f) };
     }
 
