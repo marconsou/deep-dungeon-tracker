@@ -3,13 +3,13 @@ using System.Text.Json.Serialization;
 
 namespace DeepDungeonTracker;
 
-public class BossStatusTimerItem
+public class BossStatusTimerItem(BossStatusTimer bossStatusTimer)
 {
     [JsonInclude]
-    public BossStatusTimer BossStatusTimer { get; private set; }
+    public BossStatusTimer BossStatusTimer { get; private set; } = bossStatusTimer;
 
     [JsonInclude]
-    public DateTime Start { get; private set; }
+    public DateTime Start { get; private set; } = DateTime.Now;
 
     [JsonInclude]
     public DateTime End { get; private set; }
@@ -26,12 +26,6 @@ public class BossStatusTimerItem
     public TimeSpan Duration() => this.IsDataValid() ? (this.End - this.Start).Round() : default;
 
     public void StacksUpdate(byte stacks) => this.Stacks = stacks;
-
-    public BossStatusTimerItem(BossStatusTimer bossStatusTimer)
-    {
-        this.BossStatusTimer = bossStatusTimer;
-        this.Start = DateTime.Now;
-    }
 
     public void TimerEnd()
     {

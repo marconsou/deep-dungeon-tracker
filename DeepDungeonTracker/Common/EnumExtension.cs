@@ -19,7 +19,7 @@ public static class EnumExtension
         var names = new string[values.Length];
         for (var i = 0; i < values.Length; i++)
         {
-            if (methodInfo?.Invoke(null, new[] { values.GetValue(i) }) is string description)
+            if (methodInfo?.Invoke(null, [values.GetValue(i)]) is string description)
                 names[i] = description;
         }
         return names;

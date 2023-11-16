@@ -5,19 +5,19 @@ using System.Text.Json.Serialization;
 
 namespace DeepDungeonTracker;
 
-public class SaveSlot
+public class SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, uint classJobId = 0, int currentLevel = 0)
 {
     [JsonInclude]
-    public DeepDungeon DeepDungeon { get; private set; }
+    public DeepDungeon DeepDungeon { get; private set; } = deepDungeon;
 
     [JsonInclude]
-    public int ContentId { get; private set; }
+    public int ContentId { get; private set; } = contentId;
 
     [JsonInclude]
-    public uint ClassJobId { get; private set; }
+    public uint ClassJobId { get; private set; } = classJobId;
 
     [JsonInclude]
-    public int CurrentLevel { get; private set; }
+    public int CurrentLevel { get; private set; } = currentLevel;
 
     [JsonInclude]
     public int AetherpoolArm { get; private set; }
@@ -32,15 +32,7 @@ public class SaveSlot
     public int KOs { get { return this._KOs; } private set { this._KOs = Math.Min(value, 99); } }
 
     [JsonInclude]
-    public Collection<FloorSet> FloorSets { get; private set; } = new();
-
-    public SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId = 0, uint classJobId = 0, int currentLevel = 0)
-    {
-        this.DeepDungeon = deepDungeon;
-        this.ContentId = contentId;
-        this.ClassJobId = classJobId;
-        this.CurrentLevel = currentLevel;
-    }
+    public Collection<FloorSet> FloorSets { get; private set; } = [];
 
     public void KOed() => this.KOs++;
 
@@ -79,6 +71,18 @@ public class SaveSlot
     public int Maps() => this.FloorSets.Sum(x => x.Maps());
 
     public int HallOfFallacies() => this.FloorSets.Sum(x => x.HallOfFallacies());
+
+    public int ThreeRoomsFloor() => this.FloorSets.Sum(x => x.ThreeRoomsFloor());
+
+    public int FourRoomsFloor() => this.FloorSets.Sum(x => x.FourRoomsFloor());
+
+    public int FiveRoomsFloor() => this.FloorSets.Sum(x => x.FiveRoomsFloor());
+
+    public int SixRoomsFloor() => this.FloorSets.Sum(x => x.SixRoomsFloor());
+
+    public int SevenRoomsFloor() => this.FloorSets.Sum(x => x.SevenRoomsFloor());
+
+    public int EightRoomsFloor() => this.FloorSets.Sum(x => x.EightRoomsFloor());
 
     public int TimeBonuses() => this.FloorSets.Sum(x => x.TimeBonus ? 1 : 0);
 

@@ -249,6 +249,15 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         this.ColorEdit4(config.ScoreColor, x => config.ScoreColor = x, "Score");
         ImGui.SameLine();
         this.ColorEdit4(config.SummarySelectionColor, x => config.SummarySelectionColor = x, "Summary Selection");
+        this.CheckBox(config.ShowThreeRoomsFloor, x => config.ShowThreeRoomsFloor = x, "Show floor with 3 Rooms");
+        ImGui.SameLine();
+        this.CheckBox(config.ShowFourRoomsFloor, x => config.ShowFourRoomsFloor = x, "Show floor with 4 Rooms");
+        this.CheckBox(config.ShowFiveRoomsFloor, x => config.ShowFiveRoomsFloor = x, "Show floor with 5 Rooms");
+        ImGui.SameLine();
+        this.CheckBox(config.ShowSixRoomsFloor, x => config.ShowSixRoomsFloor = x, "Show floor with 6 Rooms");
+        this.CheckBox(config.ShowSevenRoomsFloor, x => config.ShowSevenRoomsFloor = x, "Show floor with 7 Rooms");
+        ImGui.SameLine();
+        this.CheckBox(config.ShowEightRoomsFloor, x => config.ShowEightRoomsFloor = x, "Show floor with 8 Rooms");
     }
 
     private void BossStatusTimer()

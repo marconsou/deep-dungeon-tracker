@@ -15,6 +15,18 @@ public class DataStatistics
 
     public string FloorSetTextSummary { get; private set; } = string.Empty;
 
+    public bool ShowThreeRoomsFloor { get; private set; }
+
+    public bool ShowFourRoomsFloor { get; private set; }
+
+    public bool ShowFiveRoomsFloor { get; private set; }
+
+    public bool ShowSixRoomsFloor { get; private set; }
+
+    public bool ShowSevenRoomsFloor { get; private set; }
+
+    public bool ShowEightRoomsFloor { get; private set; }
+
     public SaveSlot? SaveSlot { get; private set; }
 
     public SaveSlot? SaveSlotSummary { get; private set; }
@@ -79,6 +91,18 @@ public class DataStatistics
             Pomander.InfernoMagicite, Pomander.CragMagicite, Pomander.VortexMagicite, Pomander.ElderMagicite,
             Pomander.UneiDemiclone, Pomander.DogaDemiclone, Pomander.OnionKnightDemiclone
         };
+    }
+
+    public void Update(Configuration configuration)
+    {
+        var statistics = configuration?.Statistics ?? new();
+
+        this.ShowThreeRoomsFloor = statistics.ShowThreeRoomsFloor;
+        this.ShowFourRoomsFloor = statistics.ShowFourRoomsFloor;
+        this.ShowFiveRoomsFloor = statistics.ShowFiveRoomsFloor;
+        this.ShowSixRoomsFloor = statistics.ShowSixRoomsFloor;
+        this.ShowSevenRoomsFloor = statistics.ShowSevenRoomsFloor;
+        this.ShowEightRoomsFloor = statistics.ShowEightRoomsFloor;
     }
 
     public void FloorSetStatisticsSummary()
@@ -175,14 +199,14 @@ public class DataStatistics
         {
             this.FloorSet = this.SaveSlot?.FloorSets.FirstOrDefault(x => x.FirstFloor()?.Number == ((int)this.FloorSetStatistics * 10) - 9);
 
-            this.MiscellaneousByFloor = DataStatistics.GetMiscellaneousByFloorsList(this.FloorSet?.Floors ?? new());
+            this.MiscellaneousByFloor = DataStatistics.GetMiscellaneousByFloorsList(this.FloorSet?.Floors ?? []);
             this.CoffersByFloor = this.CoffersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Coffers.GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Coffer>>>.Empty);
             this.EnchantmentsByFloor = this.EnchantmentsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.AdjustedEnchantments().GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count())).Take(3)) ?? ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty);
             this.TrapsByFloor = this.TrapsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Traps.GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count())).Take(6)) ?? ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty);
             this.PomandersByFloor = this.PomandersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty);
 
             this.MiscellaneousLastFloor = (this.MiscellaneousByFloor?.Count == 10) ? this.MiscellaneousByFloor[^1] : default;
-            this.MiscellaneousTotal = DataStatistics.GetMiscellaneousByFloorSet(this.FloorSet);
+            this.MiscellaneousTotal = this.GetMiscellaneousByFloorSet(this.FloorSet);
             this.BossStatusTimerByFloorSet = DataStatistics.GetBossStatusTimerByFloorSet(this.FloorSet)?.Take(9);
 
             this.CoffersTotal = this.FloorSet?.Floors.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).OrderByDescending(x => x.Value != Coffer.Potsherd && x.Value != Coffer.Medicine && x.Value != Coffer.Aetherpool).ThenBy(x => x.Value).Take(22);
@@ -220,7 +244,7 @@ public class DataStatistics
             var lastFloors = floors?.Where(x => x.IsLastFloor());
 
             this.MiscellaneousLastFloor = DataStatistics.GetMiscellaneousByFloors(lastFloors);
-            this.MiscellaneousTotal = DataStatistics.GetMiscellaneousBySaveSlot(saveSlot);
+            this.MiscellaneousTotal = this.GetMiscellaneousBySaveSlot(saveSlot);
 
             this.CoffersTotal = floors?.SelectMany(x => x.Coffers).GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).OrderByDescending(x => x.Value != Coffer.Potsherd && x.Value != Coffer.Medicine && x.Value != Coffer.Aetherpool).ThenBy(x => x.Value).Take(22);
             this.EnchantmentsTotal = floors?.SelectMany(x => x.Enchantments).GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count()));
@@ -281,7 +305,7 @@ public class DataStatistics
         return floors?.SelectMany(x => ImmutableArray.Create(GetStatisticsCommonFloor(x))).ToImmutableList();
     }
 
-    private static IEnumerable<StatisticsItem<Miscellaneous>>? GetMiscellaneousByFloorSet(FloorSet? floorSet)
+    private IEnumerable<StatisticsItem<Miscellaneous>>? GetMiscellaneousByFloorSet(FloorSet? floorSet)
     {
         return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
         {
@@ -295,11 +319,17 @@ public class DataStatistics
             new (Miscellaneous.RegenPotion, floorSet?.RegenPotions() ?? 0),
             new (Miscellaneous.Map, floorSet?.Maps() ?? 0),
             new (Miscellaneous.HallOfFallacies, floorSet?.HallOfFallacies() ?? 0),
+            new (Miscellaneous.ThreeRoomsFloor, this.ShowThreeRoomsFloor ? (floorSet?.ThreeRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.FourRoomsFloor, this.ShowFourRoomsFloor ? (floorSet?.FourRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.FiveRoomsFloor, this.ShowFiveRoomsFloor ? (floorSet?.FiveRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.SixRoomsFloor, this.ShowSixRoomsFloor ? (floorSet?.SixRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.SevenRoomsFloor, this.ShowSevenRoomsFloor ? (floorSet?.SevenRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.EightRoomsFloor, this.ShowEightRoomsFloor ? (floorSet?.EightRoomsFloor() ?? 0) : 0),
             new (Miscellaneous.TimeBonus, Convert.ToInt32(floorSet?.TimeBonus, CultureInfo.InvariantCulture))
         }).RemoveAll(x => x.Total == 0);
     }
 
-    private static IEnumerable<StatisticsItem<Miscellaneous>>? GetMiscellaneousBySaveSlot(SaveSlot? saveSlot)
+    private IEnumerable<StatisticsItem<Miscellaneous>>? GetMiscellaneousBySaveSlot(SaveSlot? saveSlot)
     {
         return ImmutableArray.CreateRange(new StatisticsItem<Miscellaneous>[]
         {
@@ -313,6 +343,12 @@ public class DataStatistics
             new (Miscellaneous.RegenPotion, saveSlot?.RegenPotions() ?? 0),
             new (Miscellaneous.Map, saveSlot?.Maps() ?? 0),
             new (Miscellaneous.HallOfFallacies, saveSlot?.HallOfFallacies() ?? 0),
+            new (Miscellaneous.ThreeRoomsFloor, this.ShowThreeRoomsFloor ? (saveSlot?.ThreeRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.FourRoomsFloor, this.ShowFourRoomsFloor ? (saveSlot?.FourRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.FiveRoomsFloor, this.ShowFiveRoomsFloor ? (saveSlot?.FiveRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.SixRoomsFloor, this.ShowSixRoomsFloor ? (saveSlot?.SixRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.SevenRoomsFloor, this.ShowSevenRoomsFloor ? (saveSlot?.SevenRoomsFloor() ?? 0) : 0),
+            new (Miscellaneous.EightRoomsFloor, this.ShowEightRoomsFloor ? (saveSlot?.EightRoomsFloor() ?? 0) : 0),
             new (Miscellaneous.TimeBonus, saveSlot?.TimeBonuses() ?? 0)
         }).RemoveAll(x => x.Total == 0);
     }
@@ -320,7 +356,7 @@ public class DataStatistics
     private static IEnumerable<StatisticsItem<BossStatusTimer>>? GetBossStatusTimerByFloorSet(FloorSet? floorSet)
     {
         var bst = floorSet?.BossStatusTimerData;
-        var duration = (BossStatusTimerItem? item) => item?.Duration().TotalSeconds ?? 0;
+        static double duration(BossStatusTimerItem? item) => item?.Duration().TotalSeconds ?? 0;
         return ImmutableArray.CreateRange(new StatisticsItem<BossStatusTimer>[]
         {
             new (BossStatusTimer.Combat,(int) duration(bst?.Combat)),

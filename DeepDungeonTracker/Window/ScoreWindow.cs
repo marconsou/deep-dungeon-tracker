@@ -6,17 +6,15 @@ using System.Numerics;
 
 namespace DeepDungeonTracker;
 
-public sealed class ScoreWindow : WindowEx, IDisposable
+public sealed class ScoreWindow(string id, Configuration configuration, Data data) : WindowEx(id, configuration), IDisposable
 {
-    private Data Data { get; }
+    private Data Data { get; } = data;
 
     private int PreviousScore { get; set; }
 
     private int GradualScore { get; set; }
 
     private DateTime GradualScoreTime { get; set; }
-
-    public ScoreWindow(string id, Configuration configuration, Data data) : base(id, configuration) => this.Data = data;
 
     public void Dispose() { }
 

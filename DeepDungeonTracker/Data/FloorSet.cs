@@ -11,7 +11,7 @@ public class FloorSet
     public bool TimeBonus { get; private set; }
 
     [JsonInclude]
-    public Collection<Floor> Floors { get; private set; } = new();
+    public Collection<Floor> Floors { get; private set; } = [];
 
     [JsonInclude]
     public BossStatusTimerData? BossStatusTimerData { get; private set; }
@@ -51,6 +51,20 @@ public class FloorSet
     public int Maps() => this.Floors.Sum(x => x.Map ? 1 : 0);
 
     public int HallOfFallacies() => this.Floors.Sum(x => x.MapData.FloorType == FloorType.HallOfFallacies ? 1 : 0);
+
+    private int RoomsFloor(int rooms) => this.Floors.Sum(x => x.MapData.FloorType == FloorType.Normal && x.Map && x.MapData.RoomIds.Count(y => y != null) == rooms ? 1 : 0);
+
+    public int ThreeRoomsFloor() => this.RoomsFloor(3);
+
+    public int FourRoomsFloor() => this.RoomsFloor(4);
+
+    public int FiveRoomsFloor() => this.RoomsFloor(5);
+
+    public int SixRoomsFloor() => this.RoomsFloor(6);
+
+    public int SevenRoomsFloor() => this.RoomsFloor(7);
+
+    public int EightRoomsFloor() => this.RoomsFloor(8);
 
     public Floor? FirstFloor() => this.Floors.FirstOrDefault();
 

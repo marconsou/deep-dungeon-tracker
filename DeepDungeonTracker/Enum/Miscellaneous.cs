@@ -12,5 +12,11 @@ public enum Miscellaneous
     RegenPotion,
     Map,
     TimeBonus,
-    HallOfFallacies
+    HallOfFallacies,
+    ThreeRoomsFloor,
+    FourRoomsFloor,
+    FiveRoomsFloor,
+    SixRoomsFloor,
+    SevenRoomsFloor,
+    EightRoomsFloor
 }

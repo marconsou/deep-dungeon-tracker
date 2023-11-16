@@ -4,11 +4,9 @@ using System.Numerics;
 
 namespace DeepDungeonTracker;
 
-public sealed class FloorSetTimeWindow : WindowEx, IDisposable
+public sealed class FloorSetTimeWindow(string id, Configuration configuration, Data data) : WindowEx(id, configuration), IDisposable
 {
-    private Data Data { get; }
-
-    public FloorSetTimeWindow(string id, Configuration configuration, Data data) : base(id, configuration) => this.Data = data;
+    private Data Data { get; } = data;
 
     public void Dispose() { }
 

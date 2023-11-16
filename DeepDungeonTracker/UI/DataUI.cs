@@ -58,7 +58,7 @@ public sealed class DataUI : IDisposable
 
     public void DrawJob(float x, float y, uint jobId, float innerScale = 0.75f) => this.Render.DrawUIElement(this.ResourceUI.Job, x, y, innerScale, (int)jobId, 4, 6, align: Alignment.Center);
 
-    public void DrawMiscellaneous(float x, float y, Miscellaneous miscellaneous) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.5f, (int)miscellaneous, 4, 3);
+    public void DrawMiscellaneous(float x, float y, Miscellaneous miscellaneous) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.5f, (int)miscellaneous, 4, 5);
 
     public void DrawCoffer(float x, float y, Coffer coffer) => this.Render.DrawUIElement(this.ResourceUI.Coffer, x, y, 0.5f, (int)coffer, 10, 7);
 
@@ -106,7 +106,7 @@ public sealed class DataUI : IDisposable
 
     public void DrawPotsherdRegenPotion(float x, float y, int id) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.5f, id, 3, 1, new(2.0f, 153.0f), new(240.0f, 80.0f));
 
-    public void DrawEnemyIcon(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.333f, (int)Miscellaneous.Enemy, 4, 3);
+    public void DrawEnemyIcon(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.Miscellaneous, x, y, 0.333f, (int)Miscellaneous.Enemy, 4, 5);
 
     public void DrawArrowSelection(float x, float y) => this.Render.DrawUIElement(this.ResourceUI.UI, x, y, 0.25f, 0, 1, 1, new(377.0f, 236.0f), new(60.0f, 60.0f));
 

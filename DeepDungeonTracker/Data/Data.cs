@@ -109,6 +109,7 @@ public sealed class Data : IDisposable
     public void Update(Configuration configuration)
     {
         this.UI.Update(configuration?.General.ShowAccurateTargetHPPercentage ?? false);
+        this.Statistics.Update(configuration ?? new());
         this.CharacterUpdate();
 
         if (this.InDeepDungeon.IsActivated)

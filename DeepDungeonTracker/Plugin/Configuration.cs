@@ -143,6 +143,18 @@ public class Configuration : IPluginConfiguration
         public Vector4 ScoreColor { get; set; } = Color.Green;
 
         public Vector4 SummarySelectionColor { get; set; } = Color.Cyan;
+
+        public bool ShowThreeRoomsFloor { get; set; } = true;
+
+        public bool ShowFourRoomsFloor { get; set; } = true;
+
+        public bool ShowFiveRoomsFloor { get; set; } = true;
+
+        public bool ShowSixRoomsFloor { get; set; } = true;
+
+        public bool ShowSevenRoomsFloor { get; set; } = true;
+
+        public bool ShowEightRoomsFloor { get; set; } = true;
     }
 
     public class BossStatusTimerTab
