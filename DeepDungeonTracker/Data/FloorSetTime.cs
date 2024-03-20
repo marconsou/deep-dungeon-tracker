@@ -12,7 +12,7 @@ public class FloorSetTime
 
     private DateTime? PauseTime { get; set; }
 
-    public ICollection<TimeSpan> PreviousFloorsTime { get; } = new List<TimeSpan>();
+    public ICollection<TimeSpan> PreviousFloorsTime { get; } = [];
 
     public TimeSpan TotalTime => new(Math.Min(((this.PauseTime ?? DateTime.Now) - (this.StartTime ?? DateTime.Now)).Ticks, FloorSetTime.InstanceTime.Ticks));
 

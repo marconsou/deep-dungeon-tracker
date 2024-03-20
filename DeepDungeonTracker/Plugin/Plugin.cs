@@ -29,7 +29,7 @@ public sealed class Plugin : IDalamudPlugin
         this.Configuration = Service.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         this.Configuration.Initialize(Service.PluginInterface);
 
-        this.Data = new(this.Configuration);
+        this.Data = new(pluginInterface?.UiBuilder!, this.Configuration);
         this.Commands = new(Plugin.Name, this.OnConfigCommand, this.OnMainCommandd, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
 
         this.WindowSystem = new(Plugin.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
@@ -50,7 +50,6 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.PluginInterface.UiBuilder.Draw += this.Draw;
         Service.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
-        Service.PluginInterface.UiBuilder.BuildFonts += this.BuildFonts;
 
         Service.Framework.Update += this.Update;
         Service.ClientState.Login += this.Login;
@@ -58,15 +57,12 @@ public sealed class Plugin : IDalamudPlugin
         Service.Condition.ConditionChange += this.ConditionChange;
         Service.ChatGui.ChatMessage += this.ChatMessage;
         Service.GameNetwork.NetworkMessage += this.NetworkMessage;
-
-        this.BuildFonts();
     }
 
     public void Dispose()
     {
         Service.PluginInterface.UiBuilder.Draw -= this.Draw;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
-        Service.PluginInterface.UiBuilder.BuildFonts -= this.BuildFonts;
 
         Service.Framework.Update -= this.Update;
         Service.ClientState.Login -= this.Login;
@@ -136,8 +132,6 @@ public sealed class Plugin : IDalamudPlugin
     private void Draw() => this.WindowSystem.Draw();
 
     private void OpenConfigUi() => this.WindowSystem.Windows.FirstOrDefault(x => x is ConfigurationWindow)!.Toggle();
-
-    private void BuildFonts() => this.Data.UI.BuildFonts();
 
     private void Update(IFramework framework) => this.Data.Update(this.Configuration);
 

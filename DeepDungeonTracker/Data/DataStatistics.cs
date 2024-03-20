@@ -85,12 +85,12 @@ public class DataStatistics
 
     static DataStatistics()
     {
-        DataStatistics.BossRelevantPomanders = new List<Pomander>()
-        {
+        DataStatistics.BossRelevantPomanders =
+        [
             Pomander.Resolution,
             Pomander.InfernoMagicite, Pomander.CragMagicite, Pomander.VortexMagicite, Pomander.ElderMagicite,
             Pomander.UneiDemiclone, Pomander.DogaDemiclone, Pomander.OnionKnightDemiclone
-        };
+        ];
     }
 
     public void Update(Configuration configuration)
@@ -191,19 +191,19 @@ public class DataStatistics
         this.EnchantmentsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty;
         this.TrapsByFloor = ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty;
         this.PomandersByFloor = ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty;
-        this.BossStatusTimerByFloorSet = new List<StatisticsItem<BossStatusTimer>>();
-        this.PomandersBossStatusTimer = new List<StatisticsItem<Pomander>>();
-        this.Inventory = new List<StatisticsItem<Pomander>>();
+        this.BossStatusTimerByFloorSet = [];
+        this.PomandersBossStatusTimer = [];
+        this.Inventory = [];
 
         if (this.FloorSetStatistics != FloorSetStatistics.Summary)
         {
             this.FloorSet = this.SaveSlot?.FloorSets.FirstOrDefault(x => x.FirstFloor()?.Number == ((int)this.FloorSetStatistics * 10) - 9);
 
-            this.MiscellaneousByFloor = DataStatistics.GetMiscellaneousByFloorsList(this.FloorSet?.Floors ?? new());
-            this.CoffersByFloor = this.CoffersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Coffers.GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Coffer>>>.Empty);
-            this.EnchantmentsByFloor = this.EnchantmentsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.AdjustedEnchantments().GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count())).Take(3)) ?? ImmutableArray<IEnumerable<StatisticsItem<Enchantment>>>.Empty);
-            this.TrapsByFloor = this.TrapsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Traps.GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count())).Take(6)) ?? ImmutableArray<IEnumerable<StatisticsItem<Trap>>>.Empty);
-            this.PomandersByFloor = this.PomandersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9)) ?? ImmutableArray<IEnumerable<StatisticsItem<Pomander>>>.Empty);
+            this.MiscellaneousByFloor = DataStatistics.GetMiscellaneousByFloorsList(this.FloorSet?.Floors ?? []);
+            this.CoffersByFloor = this.CoffersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Coffers.GroupBy(x => x).Select(x => new StatisticsItem<Coffer>(x.Key, x.Count())).Take(9)) ?? []);
+            this.EnchantmentsByFloor = this.EnchantmentsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.AdjustedEnchantments().GroupBy(x => x).Select(x => new StatisticsItem<Enchantment>(x.Key, x.Count())).Take(3)) ?? []);
+            this.TrapsByFloor = this.TrapsByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Traps.GroupBy(x => x).Select(x => new StatisticsItem<Trap>(x.Key, x.Count())).Take(6)) ?? []);
+            this.PomandersByFloor = this.PomandersByFloor.AddRange(this.FloorSet?.Floors.Select(x => x.Pomanders.GroupBy(x => x).Select(x => new StatisticsItem<Pomander>(x.Key, x.Count())).Take(9)) ?? []);
 
             this.MiscellaneousLastFloor = (this.MiscellaneousByFloor?.Count == 10) ? this.MiscellaneousByFloor[^1] : default;
             this.MiscellaneousTotal = this.GetMiscellaneousByFloorSet(this.FloorSet);

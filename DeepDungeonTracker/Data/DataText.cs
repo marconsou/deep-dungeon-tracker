@@ -13,7 +13,7 @@ namespace DeepDungeonTracker;
 
 public unsafe class DataText
 {
-    private Dictionary<TextIndex, (uint, string)> Texts { get; } = new();
+    private Dictionary<TextIndex, (uint, string)> Texts { get; } = [];
 
     private IImmutableList<TerritoryType> Territories { get; }
 

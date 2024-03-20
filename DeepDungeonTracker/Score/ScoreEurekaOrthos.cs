@@ -2,10 +2,8 @@
 
 namespace DeepDungeonTracker;
 
-public sealed class ScoreEurekaOrthos : Score
+public sealed class ScoreEurekaOrthos(SaveSlot saveSlot, bool isDutyComplete) : Score(saveSlot, isDutyComplete)
 {
-    public ScoreEurekaOrthos(SaveSlot saveSlot, bool isDutyComplete) : base(saveSlot, isDutyComplete) { }
-
     protected override int FloorCompletionScoreCalculation()
     {
         var total = 0;

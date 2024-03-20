@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Dalamud.Interface;
+using System;
 using System.Numerics;
 
 namespace DeepDungeonTracker;
 
-public sealed class DataUI : IDisposable
+public sealed class DataUI(UiBuilder uiBuilder) : IDisposable
 {
     private bool ShowUI { get; set; }
 
     private bool IsNowLoadingVisible { get; set; }
 
-    private ResourceUI ResourceUI { get; } = new();
+    private ResourceUI ResourceUI { get; } = new(uiBuilder);
 
     private Render Render { get; } = new();
 
@@ -35,8 +36,6 @@ public sealed class DataUI : IDisposable
             (showInBetweenFloors || (!showInBetweenFloors && !this.IsNowLoadingVisible)) &&
             (ServiceUtility.IsSolo || (!ServiceUtility.IsSolo && isInDeepDungeonRegion && !isInsideDeepDungeon));
     }
-
-    public void BuildFonts() => this.ResourceUI.BuildFonts();
 
     public Vector2 DrawTextAxis(float x, float y, string text, Vector4 color, Alignment align = Alignment.Left, bool calcTextSize = false) => this.Render.DrawText(this.ResourceUI.Axis, x, y, text, color, align, calcTextSize);
 

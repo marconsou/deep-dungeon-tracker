@@ -34,9 +34,9 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private CloseButton CloseButton { get; } = new();
 
-    private List<TextButton> FloorSetSummaryButtons { get; } = new();
+    private List<TextButton> FloorSetSummaryButtons { get; } = [];
 
-    private List<NumberButton> PageNavigationButtons { get; } = new();
+    private List<NumberButton> PageNavigationButtons { get; } = [];
 
     public StatisticsWindow(string id, Configuration configuration, Data data, Action mainWindowToggleVisibility, Action bossStatusTimerWindowToggleVisibility) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs)
     {
@@ -114,7 +114,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawMiscellaneousIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, bool includeMapTotal)
     {
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Miscellaneous>>())
+        foreach (var item in data ?? [])
         {
             var value = (Miscellaneous)(Enum)item.Value;
             if ((!includeMapTotal && value != Miscellaneous.Map) || includeMapTotal)
@@ -135,7 +135,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawMiscellaneousMap(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, MapData? mapData, bool isMapRevealed)
     {
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Miscellaneous>>())
+        foreach (var item in data ?? [])
         {
             var value = (Miscellaneous)(Enum)item.Value;
             if (value == Miscellaneous.Map && mapData != null && mapData.FloorType != FloorType.None)
@@ -167,7 +167,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private void DrawMiscellaneousText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Miscellaneous>>? data, bool includeMapTotal)
     {
         var offset = 0.0f;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Miscellaneous>>())
+        foreach (var item in data ?? [])
         {
             var value = (Miscellaneous)(Enum)item.Value;
             if ((!includeMapTotal && value != Miscellaneous.Map) || includeMapTotal)
@@ -183,7 +183,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private void DrawCofferIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Coffer>>? data)
     {
         var offset = 4.0f;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Coffer>>())
+        foreach (var item in data ?? [])
         {
             var value = (Coffer)(Enum)item.Value;
 
@@ -206,7 +206,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private void DrawCofferText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Coffer>>? data)
     {
         var offset = 0.0f;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Coffer>>())
+        foreach (var item in data ?? [])
         {
             var total = item.Total;
             if (total > 1)
@@ -220,7 +220,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var offset = 4.0f;
         if (this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(floor) ?? false)
             y -= iconSize;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        foreach (var item in data ?? [])
         {
             this.Data.UI.DrawPomander(x + offset, y + offset, (Pomander)(Enum)item.Value);
             x += iconSize;
@@ -232,7 +232,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var offset = 0.0f;
         if (this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(floor) ?? false)
             y -= offset + iconSize;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        foreach (var item in data ?? [])
         {
             var total = item.Total;
             if (total > 1)
@@ -246,7 +246,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var offset = 4.0f;
         var baseX = x;
         var index = 0;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        foreach (var item in data ?? [])
         {
             this.Data.UI.DrawPomander(x + offset, y + offset, (Pomander)(Enum)item.Value);
             x += iconSize;
@@ -265,7 +265,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var offset = 0.0f;
         var baseX = x;
         var index = 0;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        foreach (var item in data ?? [])
         {
             var total = item.Total;
             if (total > 1)
@@ -283,7 +283,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
 
     private void DrawEnchantmentIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Enchantment>>? data, bool isEnchantmentSerenized)
     {
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Enchantment>>())
+        foreach (var item in data ?? [])
         {
             this.Data.UI.DrawEnchantment(x, y, (Enchantment)(Enum)item.Value, isEnchantmentSerenized);
             x += iconSize;
@@ -293,7 +293,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private void DrawEnchantmentText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Enchantment>>? data)
     {
         var offset = 0.0f;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Enchantment>>())
+        foreach (var item in data ?? [])
         {
             var total = item.Total;
             if (total > 1)
@@ -305,7 +305,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private void DrawTrapIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Trap>>? data)
     {
         var offset = 8.0f;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Trap>>())
+        foreach (var item in data ?? [])
         {
             this.Data.UI.DrawTrap(x + offset, y + offset, (Trap)(Enum)item.Value);
             x += iconSize;
@@ -315,7 +315,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
     private void DrawTrapText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Trap>>? data)
     {
         var offset = 0.0f;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Trap>>())
+        foreach (var item in data ?? [])
         {
             var total = item.Total;
             if (total > 1)
@@ -343,7 +343,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var offsetY = 8.0f;
         var adjustY = (floors?.Any(x => this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(x) ?? false) ?? false) ? -floorHeight : 0.0f;
 
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<BossStatusTimer>>())
+        foreach (var item in data ?? [])
         {
             var value = (BossStatusTimer)(Enum)item.Value;
             this.Data.UI.DrawBossStatusTimer(x + offsetX, y + offsetY + adjustY, value);
@@ -357,7 +357,7 @@ public sealed class StatisticsWindow : WindowEx, IDisposable
         var adjustY = (floors?.Any(x => this.Data.Statistics.SaveSlot?.IsSpecialBossFloor(x) ?? false) ?? false) ? -floorHeight : 0.0f;
         var combatTotalSeconds = data?.FirstOrDefault()?.Total ?? 0;
 
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<BossStatusTimer>>())
+        foreach (var item in data ?? [])
         {
             var value = (BossStatusTimer)(Enum)item.Value;
             var total = item.Total;

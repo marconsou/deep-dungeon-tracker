@@ -1,63 +1,41 @@
-﻿using Dalamud.Interface.GameFonts;
+﻿using Dalamud.Interface;
+using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Internal;
+using Dalamud.Interface.ManagedFontAtlas;
 using DeepDungeonTracker.Properties;
-using ImGuiNET;
 using System;
 
 namespace DeepDungeonTracker;
 
-public sealed class ResourceUI : IDisposable
+public sealed class ResourceUI(UiBuilder uiBuilder) : IDisposable
 {
-    public ImFontPtr Axis { get; set; }
+    public IDalamudTextureWrap UI { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.UI);
 
-    public ImFontPtr MiedingerMid { get; set; }
+    public IDalamudTextureWrap DeepDungeon { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.DeepDungeon);
 
-    public ImFontPtr MiedingerMidLarge { get; set; }
+    public IDalamudTextureWrap Job { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Job);
 
-    public ImFontPtr TrumpGothic { get; set; }
+    public IDalamudTextureWrap Miscellaneous { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Miscellaneous);
 
-    public IDalamudTextureWrap UI { get; }
+    public IDalamudTextureWrap Coffer { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Coffer);
 
-    public IDalamudTextureWrap DeepDungeon { get; }
+    public IDalamudTextureWrap Enchantment { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Enchantment);
 
-    public IDalamudTextureWrap Job { get; }
+    public IDalamudTextureWrap Trap { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Trap);
 
-    public IDalamudTextureWrap Miscellaneous { get; }
+    public IDalamudTextureWrap BossStatusTimer { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.BossStatusTimer);
 
-    public IDalamudTextureWrap Coffer { get; }
+    public IDalamudTextureWrap MapNormal { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapNormal);
 
-    public IDalamudTextureWrap Enchantment { get; }
+    public IDalamudTextureWrap MapHallOfFallacies { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapHallOfFallacies);
 
-    public IDalamudTextureWrap Trap { get; }
+    public IFontHandle Axis { get; } = ResourceUI.LoadFont(uiBuilder, GameFontFamily.Axis, 19.25f);
 
-    public IDalamudTextureWrap BossStatusTimer { get; }
+    public IFontHandle MiedingerMid { get; } = ResourceUI.LoadFont(uiBuilder, GameFontFamily.MiedingerMid, 16.0f);
 
-    public IDalamudTextureWrap MapNormal { get; }
+    public IFontHandle MiedingerMidLarge { get; } = ResourceUI.LoadFont(uiBuilder, GameFontFamily.MiedingerMid, 22.0f);
 
-    public IDalamudTextureWrap MapHallOfFallacies { get; }
-
-    public ResourceUI()
-    {
-        this.UI = Service.PluginInterface.UiBuilder.LoadImage(Resources.UI);
-        this.DeepDungeon = Service.PluginInterface.UiBuilder.LoadImage(Resources.DeepDungeon);
-        this.Job = Service.PluginInterface.UiBuilder.LoadImage(Resources.Job);
-        this.Miscellaneous = Service.PluginInterface.UiBuilder.LoadImage(Resources.Miscellaneous);
-        this.Coffer = Service.PluginInterface.UiBuilder.LoadImage(Resources.Coffer);
-        this.Enchantment = Service.PluginInterface.UiBuilder.LoadImage(Resources.Enchantment);
-        this.Trap = Service.PluginInterface.UiBuilder.LoadImage(Resources.Trap);
-        this.BossStatusTimer = Service.PluginInterface.UiBuilder.LoadImage(Resources.BossStatusTimer);
-        this.MapNormal = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapNormal);
-        this.MapHallOfFallacies = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapHallOfFallacies);
-    }
-
-    public void BuildFonts()
-    {
-        var scale = 1.0f / ImGui.GetIO().FontGlobalScale;
-        this.Axis = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.Axis, 19.25f * scale)).ImFont;
-        this.MiedingerMid = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.MiedingerMid, 16.0f * scale)).ImFont;
-        this.MiedingerMidLarge = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.MiedingerMid, 22.0f * scale)).ImFont;
-        this.TrumpGothic = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamily.TrumpGothic, 32.0f * scale)).ImFont;
-    }
+    public IFontHandle TrumpGothic { get; } = ResourceUI.LoadFont(uiBuilder, GameFontFamily.TrumpGothic, 32.0f);
 
     public void Dispose()
     {
@@ -71,5 +49,18 @@ public sealed class ResourceUI : IDisposable
         this.BossStatusTimer.Dispose();
         this.MapNormal.Dispose();
         this.MapHallOfFallacies.Dispose();
+        this.Axis.Dispose();
+        this.MiedingerMid.Dispose();
+        this.MiedingerMidLarge.Dispose();
+        this.TrumpGothic.Dispose();
+    }
+
+    private static IFontHandle LoadFont(UiBuilder uiBuilder, GameFontFamily family, float sizePx)
+    {
+        return uiBuilder.FontAtlas.NewDelegateFontHandle(x => x.OnPreBuild(toolkit =>
+        {
+            var fontPtr = toolkit.AddGameGlyphs(new(family, sizePx), null, null);
+            toolkit.SetFontScaleMode(fontPtr, FontScaleMode.UndoGlobalScale);
+        }));
     }
 }

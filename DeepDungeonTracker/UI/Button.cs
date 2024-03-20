@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace DeepDungeonTracker;
 
-public abstract class Button
+public abstract class Button(Vector2 size)
 {
     protected bool IsMouseOver { get; private set; }
 
@@ -13,9 +13,7 @@ public abstract class Button
 
     public Vector2 Position { get; set; }
 
-    public Vector2 Size { get; set; }
-
-    protected Button(Vector2 size) => this.Size = size;
+    public Vector2 Size { get; set; } = size;
 
     public bool OnMouseLeftClick() => this.Show && this.IsMouseOver && ImGui.IsMouseClicked(ImGuiMouseButton.Left);
 

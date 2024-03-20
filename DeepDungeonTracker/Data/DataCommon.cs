@@ -32,9 +32,9 @@ public sealed class DataCommon : IDisposable
 
     private bool WasScoreWindowShown { get; set; }
 
-    private HashSet<uint> CairnOfPassageKillIds { get; set; } = new();
+    private HashSet<uint> CairnOfPassageKillIds { get; set; } = [];
 
-    private Dictionary<uint, Enemy> NearbyEnemies { get; set; } = new();
+    private Dictionary<uint, Enemy> NearbyEnemies { get; set; } = [];
 
     public DeepDungeon DeepDungeon { get; private set; }
 
@@ -68,7 +68,7 @@ public sealed class DataCommon : IDisposable
 
     public bool IsBossFloor => this.IsLastFloor || this.IsSpecialBossFloor;
 
-    private static Pomander[] SharedPomanders => new[] { Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising };
+    private static Pomander[] SharedPomanders => [Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising];
 
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
@@ -90,8 +90,8 @@ public sealed class DataCommon : IDisposable
         this.IsBossDead = false;
         this.WasMagiciteUsed = false;
         this.WasScoreWindowShown = false;
-        this.NearbyEnemies = new();
-        this.CairnOfPassageKillIds = new();
+        this.NearbyEnemies = [];
+        this.CairnOfPassageKillIds = [];
         this.DutyStatus = DutyStatus.None;
         this.CurrentSaveSlot?.ContentIdUpdate(0);
     }
@@ -602,7 +602,7 @@ public sealed class DataCommon : IDisposable
             this.SpecificFloors();
             this.IsTransferenceInitiated = false;
             this.IsCairnOfPassageActivated = false;
-            this.CairnOfPassageKillIds = new();
+            this.CairnOfPassageKillIds = [];
             var time = this.FloorSetTime.AddFloor();
             this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(time);
             this.FloorScoreUpdate();
@@ -725,7 +725,7 @@ public sealed class DataCommon : IDisposable
     {
         this.WasMagiciteUsed = false;
         this.WasScoreWindowShown = false;
-        this.NearbyEnemies = new();
+        this.NearbyEnemies = [];
         this.IsTransferenceInitiated = true;
     }
 

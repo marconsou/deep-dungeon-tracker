@@ -33,17 +33,17 @@ public sealed class MainWindow : WindowEx, IDisposable
 
     private CloseButton CloseButton { get; } = new();
 
-    private List<TextButton> SaveSlotButtons { get; } = new();
+    private List<TextButton> SaveSlotButtons { get; } = [];
 
-    private List<BackupButton> SaveSlotBackupButtons { get; } = new();
+    private List<BackupButton> SaveSlotBackupButtons { get; } = [];
 
-    private List<TextButton> LastSaveButtons { get; } = new();
+    private List<TextButton> LastSaveButtons { get; } = [];
 
-    private List<BackupButton> LastSaveBackupButtons { get; } = new();
+    private List<BackupButton> LastSaveBackupButtons { get; } = [];
 
-    private List<TextButton> BackupFileButtons { get; } = new();
+    private List<TextButton> BackupFileButtons { get; } = [];
 
-    private List<DeleteButton> BackupDeleteButtons { get; } = new();
+    private List<DeleteButton> BackupDeleteButtons { get; } = [];
 
     private static int BackupFilesPerPage => 10;
 

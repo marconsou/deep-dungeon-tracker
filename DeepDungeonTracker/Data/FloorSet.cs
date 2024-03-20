@@ -11,7 +11,7 @@ public class FloorSet
     public bool TimeBonus { get; private set; }
 
     [JsonInclude]
-    public Collection<Floor> Floors { get; private set; } = new();
+    public Collection<Floor> Floors { get; private set; } = [];
 
     [JsonInclude]
     public BossStatusTimerData? BossStatusTimerData { get; private set; }

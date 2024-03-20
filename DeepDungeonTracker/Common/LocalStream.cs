@@ -73,7 +73,7 @@ public static class LocalStream
         return false;
     }
 
-    public static string[] GetFileNamesFromDirectory(string directory) => LocalStream.Exists(directory) ? Directory.EnumerateFiles(directory).ToArray() : Array.Empty<string>();
+    public static string[] GetFileNamesFromDirectory(string directory) => LocalStream.Exists(directory) ? Directory.EnumerateFiles(directory).ToArray() : [];
 
     public static void OpenFolder(string directory)
     {

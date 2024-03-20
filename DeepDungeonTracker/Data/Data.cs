@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Interface;
 using System;
 using System.Linq;
 
@@ -12,7 +13,7 @@ public sealed class Data : IDisposable
 
     private DataOpCodes OpCodes { get; } = new();
 
-    public DataUI UI { get; } = new();
+    public DataUI UI { get; }
 
     public DataAudio Audio { get; } = new();
 
@@ -57,8 +58,9 @@ public sealed class Data : IDisposable
         this.Text.IsHeavenOnHighRegion(Service.ClientState.TerritoryType, true) ||
         this.Text.IsEurekaOrthosRegion(Service.ClientState.TerritoryType, true);
 
-    public Data(Configuration configuration)
+    public Data(UiBuilder uiBuilder, Configuration configuration)
     {
+        this.UI = new(uiBuilder);
         this.OpCodes.Load(configuration).ConfigureAwait(true);
 
         this.InDeepDungeon.AddActivating(this.DeepDungeonActivating);

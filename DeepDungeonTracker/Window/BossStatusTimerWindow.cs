@@ -8,17 +8,15 @@ using static DeepDungeonTracker.DataStatistics;
 
 namespace DeepDungeonTracker;
 
-public sealed class BossStatusTimerWindow : WindowEx, IDisposable
+public sealed class BossStatusTimerWindow(string id, Configuration configuration, Data data) : WindowEx(id, configuration, WindowEx.StaticNoBackgroundMoveInputs), IDisposable
 {
-    private Data Data { get; }
+    private Data Data { get; } = data;
 
     private ScreenshotButton ScreenshotButton { get; } = new();
 
     private OpenFolderButton ScreenshotFolderButton { get; } = new();
 
     private CloseButton CloseButton { get; } = new();
-
-    public BossStatusTimerWindow(string id, Configuration configuration, Data data) : base(id, configuration, WindowEx.StaticNoBackgroundMoveInputs) => this.Data = data;
 
     public void Dispose() { }
 
@@ -62,7 +60,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
     private void DrawPomanderIcon(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data)
     {
         var offset = 4.0f;
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        foreach (var item in data ?? [])
         {
             var pomander = (Pomander)(Enum)item.Value;
             this.Data.UI.DrawPomander(x + offset, y + offset, pomander);
@@ -72,7 +70,7 @@ public sealed class BossStatusTimerWindow : WindowEx, IDisposable
 
     private void DrawPomanderText(float x, float y, float iconSize, IEnumerable<StatisticsItem<Pomander>>? data)
     {
-        foreach (var item in data ?? Enumerable.Empty<StatisticsItem<Pomander>>())
+        foreach (var item in data ?? [])
         {
             var pomander = (Pomander)(Enum)item.Value;
             var total = item.Total;
