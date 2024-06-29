@@ -18,7 +18,7 @@ public sealed class Commands : IDisposable
 
     public static string LoadCommand => $"{Commands.ConfigCommand}load";
 
-    public Commands(string pluginName, HandlerDelegate onConfigCommand, HandlerDelegate onMainCommand, HandlerDelegate onTrackerCommand, HandlerDelegate onTimeCommand, HandlerDelegate onScoreCommand, HandlerDelegate onLoadCommand)
+    public Commands(string pluginName, IReadOnlyCommandInfo.HandlerDelegate onConfigCommand, IReadOnlyCommandInfo.HandlerDelegate onMainCommand, IReadOnlyCommandInfo.HandlerDelegate onTrackerCommand, IReadOnlyCommandInfo.HandlerDelegate onTimeCommand, IReadOnlyCommandInfo.HandlerDelegate onScoreCommand, IReadOnlyCommandInfo.HandlerDelegate onLoadCommand)
     {
         Service.CommandManager.AddHandler(Commands.ConfigCommand, new CommandInfo(onConfigCommand) { HelpMessage = $"Opens the {pluginName} configuration menu." });
         Service.CommandManager.AddHandler(Commands.MainCommand, new CommandInfo(onMainCommand) { HelpMessage = "Opens the Main Window showing saved files and backups." });

@@ -23,7 +23,7 @@ public sealed class Data : IDisposable
 
     private ConditionEvent BetweenAreas { get; } = new();
 
-    private ConditionEvent BoundToDuty97 { get; } = new();
+    private ConditionEvent InDutyQueue { get; } = new();
 
     private ConditionEvent InDeepDungeon { get; } = new();
 
@@ -58,7 +58,7 @@ public sealed class Data : IDisposable
         this.Text.IsHeavenOnHighRegion(Service.ClientState.TerritoryType, true) ||
         this.Text.IsEurekaOrthosRegion(Service.ClientState.TerritoryType, true);
 
-    public Data(UiBuilder uiBuilder, Configuration configuration)
+    public Data(IUiBuilder uiBuilder, Configuration configuration)
     {
         this.UI = new(uiBuilder);
         this.OpCodes.Load(configuration).ConfigureAwait(true);
@@ -80,7 +80,7 @@ public sealed class Data : IDisposable
         if (Service.ClientState.IsLoggedIn)
         {
             this.ConditionChange(ConditionFlag.BetweenAreas, Service.Condition[ConditionFlag.BetweenAreas]);
-            this.ConditionChange(ConditionFlag.BoundToDuty97, Service.Condition[ConditionFlag.BoundToDuty97]);
+            this.ConditionChange(ConditionFlag.InDutyQueue, Service.Condition[ConditionFlag.InDutyQueue]);
             this.ConditionChange(ConditionFlag.InDeepDungeon, Service.Condition[ConditionFlag.InDeepDungeon]);
             this.ConditionChange(ConditionFlag.Occupied33, Service.Condition[ConditionFlag.Occupied33]);
             this.ConditionChange(ConditionFlag.InCombat, Service.Condition[ConditionFlag.InCombat]);
@@ -134,7 +134,7 @@ public sealed class Data : IDisposable
 
                 if (ServiceUtility.IsSolo)
                 {
-                    if (!this.BoundToDuty97.IsActivated)
+                    if (!this.InDutyQueue.IsActivated)
                         this.Common.CheckForSaveSlotSelection();
                 }
                 else
@@ -216,8 +216,8 @@ public sealed class Data : IDisposable
             case ConditionFlag.BetweenAreas:
                 this.BetweenAreas.Update(value);
                 break;
-            case ConditionFlag.BoundToDuty97:
-                this.BoundToDuty97.Update(value);
+            case ConditionFlag.InDutyQueue:
+                this.InDutyQueue.Update(value);
                 break;
             case ConditionFlag.InDeepDungeon:
                 this.InDeepDungeon.Update(value);
@@ -288,7 +288,7 @@ public sealed class Data : IDisposable
         if (NetworkData.ExtractNumber(data.Item1, 0, 1) == defeat)
         {
             var id = data.Item2;
-            var character = Service.ObjectTable.SearchById(id) as Character;
+            var character = Service.ObjectTable.SearchById(id) as ICharacter;
             var name = character?.Name.TextValue ?? string.Empty;
             if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || this.Text.IsMandragora(name).Item1))
             {

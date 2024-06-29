@@ -22,7 +22,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private Data Data { get; }
 
-    public Plugin(DalamudPluginInterface pluginInterface)
+    public Plugin(IDalamudPluginInterface pluginInterface)
     {
         pluginInterface?.Create<Service>();
 
@@ -141,7 +141,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void ConditionChange(ConditionFlag flag, bool value) => this.Data.ConditionChange(flag, value);
 
-    private void ChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled) => this.Data.ChatMessage(message.TextValue);
+    private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) => this.Data.ChatMessage(message.TextValue);
 
     private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
     {

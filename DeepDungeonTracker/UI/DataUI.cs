@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace DeepDungeonTracker;
 
-public sealed class DataUI(UiBuilder uiBuilder) : IDisposable
+public sealed class DataUI(IUiBuilder uiBuilder) : IDisposable
 {
     private bool ShowUI { get; set; }
 

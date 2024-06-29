@@ -29,7 +29,7 @@ public unsafe static partial class NodeUtility
         Marshal.Copy(bytes, 0, allocation, bytes.Length);
 
         var createdTextNode = (AtkTextNode*)allocation;
-        createdTextNode->AtkResNode.NodeID = nodeId;
+        createdTextNode->AtkResNode.NodeId = nodeId;
         createdTextNode->AtkResNode.ParentNode = null;
         createdTextNode->AtkResNode.ChildNode = null;
         createdTextNode->AtkResNode.ChildCount = 0;
@@ -98,7 +98,7 @@ public unsafe static partial class NodeUtility
         for (var i = 0; i < manager.NodeListCount; i++)
         {
             var node = manager.NodeList[i]->GetAsAtkTextNode();
-            if (node != null && node->AtkResNode.NodeID == nodeId)
+            if (node != null && node->AtkResNode.NodeId == nodeId)
             {
                 accurateTargetHPPercentageNode = node;
                 break;
@@ -118,7 +118,7 @@ public unsafe static partial class NodeUtility
         }
 
         var target = targetManager?.SoftTarget ?? targetManager?.Target;
-        var character = target as Character;
+        var character = target as ICharacter;
 
         var targetHPPercentage = 0.0f;
         if (character != null)
@@ -134,7 +134,7 @@ public unsafe static partial class NodeUtility
             isLevelHPAvailable = nameNode->AtkResNode.X > 20;
 
         accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(isNodeVisible && isLevelHPAvailable && (targetHPPercentage > 0.0f && targetHPPercentage < 100.0f) && (accurateTargetHPPercentageNode->NodeText.ToString() != "100.00"));
-        targetHPPercentageNode->AtkResNode.ToggleVisibility(!accurateTargetHPPercentageNode->AtkResNode.IsVisible && isLevelHPAvailable);
+        targetHPPercentageNode->AtkResNode.ToggleVisibility(!accurateTargetHPPercentageNode->AtkResNode.IsVisible() && isLevelHPAvailable);
     }
 
     private static int Aetherpool(AtkUnitBase* addon, int index)

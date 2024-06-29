@@ -1,4 +1,4 @@
-﻿using Dalamud;
+﻿using Dalamud.Game;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using Lumina.Data;
@@ -122,13 +122,13 @@ public unsafe class DataText
 
     public (bool, TextIndex?) IsTrap(string name) => this.IsText(TextIndex.LandmineTrap, TextIndex.OwletTrap, name, null);
 
-    public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 56, 1793, checkForSubRegion, subAreaPlaceNameID: 129);
+    public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 56, 1793, checkForSubRegion, subAreaPlaceNameId: 129);
 
-    public bool IsHeavenOnHighRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 2409, 2775, checkForSubRegion, subAreaPlaceNameID: 2774);
+    public bool IsHeavenOnHighRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 2409, 2775, checkForSubRegion, subAreaPlaceNameId: 2774);
 
-    public bool IsEurekaOrthosRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 67, 2529, checkForSubRegion, areaPlaceNameID: 942);
+    public bool IsEurekaOrthosRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 67, 2529, checkForSubRegion, areaPlaceNameId: 942);
 
-    private bool IsDeepDungeonRegion(uint territoryType, uint regionIdPrimary, uint regionIdSecondary, bool checkForSubRegion, uint areaPlaceNameID = uint.MaxValue, uint subAreaPlaceNameID = uint.MaxValue)
+    private bool IsDeepDungeonRegion(uint territoryType, uint regionIdPrimary, uint regionIdSecondary, bool checkForSubRegion, uint areaPlaceNameId = uint.MaxValue, uint subAreaPlaceNameId = uint.MaxValue)
     {
         if (new uint[] { regionIdPrimary, regionIdSecondary }.Contains(this.Territories.FirstOrDefault(x => x.RowId == territoryType)?.PlaceName.Row ?? uint.MaxValue))
         {
@@ -137,9 +137,9 @@ public unsafe class DataText
 
             if (DataText.TerritoryData != null)
             {
-                if ((DataText.TerritoryData->AreaPlaceNameID == areaPlaceNameID && subAreaPlaceNameID == uint.MaxValue) ||
-                    (DataText.TerritoryData->SubAreaPlaceNameID == subAreaPlaceNameID && areaPlaceNameID == uint.MaxValue) ||
-                    (DataText.TerritoryData->AreaPlaceNameID == 0 && DataText.TerritoryData->SubAreaPlaceNameID == 0))
+                if ((DataText.TerritoryData->AreaPlaceNameId == areaPlaceNameId && subAreaPlaceNameId == uint.MaxValue) ||
+                    (DataText.TerritoryData->SubAreaPlaceNameId == subAreaPlaceNameId && areaPlaceNameId == uint.MaxValue) ||
+                    (DataText.TerritoryData->AreaPlaceNameId == 0 && DataText.TerritoryData->SubAreaPlaceNameId == 0))
                     return true;
             }
         }
