@@ -28,7 +28,9 @@ public static class ClassJobIds
             {37, (18, "GNB")},
             {38, (19, "DNC")},
             {39, (20, "RPR")},
-            {40, (21, "SGE")}
+            {40, (21, "SGE")},
+            {41, (22, "VPR")},
+            {42, (23, "PCT")}
         };
     }
 }
