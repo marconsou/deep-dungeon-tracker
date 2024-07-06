@@ -80,7 +80,7 @@ public sealed class Data : IDisposable
         if (Service.ClientState.IsLoggedIn)
         {
             this.ConditionChange(ConditionFlag.BetweenAreas, Service.Condition[ConditionFlag.BetweenAreas]);
-            this.ConditionChange(ConditionFlag.BoundToDuty97, Service.Condition[ConditionFlag.BoundToDuty97]);
+            this.ConditionChange(ConditionFlag.InDutyQueue, Service.Condition[ConditionFlag.InDutyQueue]);
             this.ConditionChange(ConditionFlag.InDeepDungeon, Service.Condition[ConditionFlag.InDeepDungeon]);
             this.ConditionChange(ConditionFlag.Occupied33, Service.Condition[ConditionFlag.Occupied33]);
             this.ConditionChange(ConditionFlag.InCombat, Service.Condition[ConditionFlag.InCombat]);
@@ -216,7 +216,7 @@ public sealed class Data : IDisposable
             case ConditionFlag.BetweenAreas:
                 this.BetweenAreas.Update(value);
                 break;
-            case ConditionFlag.BoundToDuty97:
+            case ConditionFlag.InDutyQueue:
                 this.BoundToDuty97.Update(value);
                 break;
             case ConditionFlag.InDeepDungeon:
