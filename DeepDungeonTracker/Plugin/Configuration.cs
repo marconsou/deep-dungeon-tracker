@@ -14,8 +14,6 @@ public class Configuration : IPluginConfiguration
     [NonSerialized]
     private IDalamudPluginInterface? PluginInterface;
 
-    public GeneralTab General { get; set; } = new();
-
     public MainTab Main { get; set; } = new();
 
     public TrackerTab Tracker { get; set; } = new();
@@ -29,11 +27,6 @@ public class Configuration : IPluginConfiguration
     public BossStatusTimerTab BossStatusTimer { get; set; } = new();
 
     public OpCodeValues OpCodes { get; set; } = new();
-
-    public class GeneralTab
-    {
-        public bool ShowAccurateTargetHPPercentage { get; set; }
-    }
 
     public class MainTab
     {
@@ -199,7 +192,6 @@ public class Configuration : IPluginConfiguration
 
     public void Reset()
     {
-        this.General = new();
         this.Main = new();
         this.Tracker = new();
         this.FloorSetTime = new();

@@ -1,6 +1,5 @@
 ﻿using Dalamud.Game.Command;
 using System;
-using static Dalamud.Game.Command.CommandInfo;
 
 namespace DeepDungeonTracker;
 

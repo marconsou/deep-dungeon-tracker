@@ -1,13 +1,8 @@
-﻿using Dalamud.Game.ClientState.Objects;
-using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Plugin.Services;
+﻿using Dalamud.Plugin.Services;
 using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
 using System.Collections.Immutable;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace DeepDungeonTracker;
@@ -18,124 +13,6 @@ public unsafe static partial class NodeUtility
 
     [GeneratedRegex("\\d+")]
     private static partial Regex NumberRegex();
-
-    private static AtkTextNode* CreateTextNode(AtkTextNode* sourceNode, uint nodeId)
-    {
-        var alignment = 8ul;
-        var size = (ulong)sizeof(AtkTextNode);
-        var allocation = new IntPtr(IMemorySpace.GetUISpace()->Malloc(size, alignment));
-        var bytes = new byte[size];
-        Marshal.Copy(new IntPtr(sourceNode), bytes, 0, bytes.Length);
-        Marshal.Copy(bytes, 0, allocation, bytes.Length);
-
-        var createdTextNode = (AtkTextNode*)allocation;
-        createdTextNode->AtkResNode.NodeId = nodeId;
-        createdTextNode->AtkResNode.ParentNode = null;
-        createdTextNode->AtkResNode.ChildNode = null;
-        createdTextNode->AtkResNode.ChildCount = 0;
-        createdTextNode->AtkResNode.PrevSiblingNode = null;
-        createdTextNode->AtkResNode.NextSiblingNode = null;
-
-        size = 512;
-        createdTextNode->NodeText.StringPtr = (byte*)new IntPtr(IMemorySpace.GetUISpace()->Malloc(size, alignment));
-        createdTextNode->NodeText.BufSize = (long)size;
-        createdTextNode->SetText(string.Empty);
-
-        return createdTextNode;
-    }
-
-    private static void AttachTextNode(AtkUnitBase* addon, AtkTextNode* targetNode)
-    {
-        var lastNode = addon->RootNode;
-
-        if (lastNode == null)
-            return;
-
-        if (lastNode->ChildNode != null)
-        {
-            lastNode = lastNode->ChildNode;
-            while (lastNode->PrevSiblingNode != null)
-            {
-                lastNode = lastNode->PrevSiblingNode;
-            }
-
-            targetNode->AtkResNode.NextSiblingNode = lastNode;
-            targetNode->AtkResNode.ParentNode = addon->RootNode;
-            lastNode->PrevSiblingNode = (AtkResNode*)targetNode;
-        }
-        else
-        {
-            lastNode->ChildNode = (AtkResNode*)targetNode;
-            targetNode->AtkResNode.ParentNode = lastNode;
-        }
-        addon->UldManager.UpdateDrawNodeList();
-    }
-
-    public static void AccurateTargetHPPercentage(IGameGui gameGui, ITargetManager targetManager, string addonName, uint nodeId, int gaugeBarNodeIndex, bool isNodeVisible)
-    {
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName(addonName, 1)!;
-        if (addon == null)
-            return;
-
-        var manager = addon->UldManager;
-        AtkComponentNode* gaugeBarNode = null;
-        AtkTextNode* targetHPPercentageNode = null;
-        var indexOffset = 2;
-        if (gaugeBarNodeIndex < manager.NodeListCount - indexOffset)
-        {
-            var node = manager.NodeList[gaugeBarNodeIndex]->GetAsAtkComponentNode();
-            if (node != null)
-            {
-                gaugeBarNode = node;
-                targetHPPercentageNode = manager.NodeList[gaugeBarNodeIndex + indexOffset]->GetAsAtkTextNode();
-            }
-        }
-
-        if (gaugeBarNode == null || targetHPPercentageNode == null)
-            return;
-
-        AtkTextNode* accurateTargetHPPercentageNode = null;
-        for (var i = 0; i < manager.NodeListCount; i++)
-        {
-            var node = manager.NodeList[i]->GetAsAtkTextNode();
-            if (node != null && node->AtkResNode.NodeId == nodeId)
-            {
-                accurateTargetHPPercentageNode = node;
-                break;
-            }
-        }
-
-        if (accurateTargetHPPercentageNode == null)
-        {
-            var createdTextNode = NodeUtility.CreateTextNode(targetHPPercentageNode, nodeId);
-            if (createdTextNode != null)
-            {
-                NodeUtility.AttachTextNode(addon, createdTextNode);
-                accurateTargetHPPercentageNode = createdTextNode;
-            }
-            else
-                return;
-        }
-
-        var target = targetManager?.SoftTarget ?? targetManager?.Target;
-        var character = target as ICharacter;
-
-        var targetHPPercentage = 0.0f;
-        if (character != null)
-            targetHPPercentage = character.CurrentHp * 100.0f / character.MaxHp;
-
-        accurateTargetHPPercentageNode->TextColor = targetHPPercentageNode->TextColor;
-        accurateTargetHPPercentageNode->EdgeColor = targetHPPercentageNode->EdgeColor;
-        accurateTargetHPPercentageNode->SetText($"{(target != null ? targetHPPercentage : string.Empty):F}");
-
-        var isLevelHPAvailable = false;
-        var nameNode = targetHPPercentageNode->AtkResNode.PrevSiblingNode->GetAsAtkTextNode();
-        if (nameNode != null)
-            isLevelHPAvailable = nameNode->AtkResNode.X > 20;
-
-        accurateTargetHPPercentageNode->AtkResNode.ToggleVisibility(isNodeVisible && isLevelHPAvailable && (targetHPPercentage > 0.0f && targetHPPercentage < 100.0f) && (accurateTargetHPPercentageNode->NodeText.ToString() != "100.00"));
-        targetHPPercentageNode->AtkResNode.ToggleVisibility(!accurateTargetHPPercentageNode->AtkResNode.IsVisible() && isLevelHPAvailable);
-    }
 
     private static int Aetherpool(AtkUnitBase* addon, int index)
     {

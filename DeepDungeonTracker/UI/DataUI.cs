@@ -18,16 +18,10 @@ public sealed class DataUI(IUiBuilder uiBuilder) : IDisposable
 
     public void Dispose() => this.ResourceUI.Dispose();
 
-    public void Update(bool showAccurateTargetHPPercentage)
+    public void Update()
     {
         this.ShowUI = Service.ClientState.IsLoggedIn;
         this.IsNowLoadingVisible = NodeUtility.IsNowLoading(Service.GameGui);
-
-        if (Service.ClientState.IsLoggedIn)
-        {
-            NodeUtility.AccurateTargetHPPercentage(Service.GameGui, Service.TargetManager, "_TargetInfo", 999001888u, 36, showAccurateTargetHPPercentage);
-            NodeUtility.AccurateTargetHPPercentage(Service.GameGui, Service.TargetManager, "_TargetInfoMainTarget", 999002888u, 5, showAccurateTargetHPPercentage);
-        }
     }
 
     public bool CommonWindowVisibility(bool show, bool showInBetweenFloors, bool isInDeepDungeonRegion, bool isInsideDeepDungeon, bool isInDeepDungeonSubArea)

@@ -71,14 +71,11 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
 
     private void General()
     {
-        var config = this.Configuration.General;
         ImGui.Text($"Click to open the");
         ImGui.SameLine();
         this.SmallButton(() => this.MainWindowToggleVisibility(), "Main Window");
         ImGui.SameLine();
         ImGui.Text($"or type {Commands.MainCommand}");
-        this.CheckBox(config.ShowAccurateTargetHPPercentage, x => config.ShowAccurateTargetHPPercentage = x, "Show accurate target HP %");
-        WindowEx.Tooltip("It doesn't apply to Focus Target.");
 
         if (ImGui.CollapsingHeader("Information (Recommended)"))
         {
