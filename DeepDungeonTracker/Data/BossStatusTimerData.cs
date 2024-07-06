@@ -110,7 +110,7 @@ public class BossStatusTimerData
     [JsonPropertyName("RehabilitationEurekaOrthos")]
     public Collection<BossStatusTimerItem>? SerializationRehabilitationEurekaOrthos { get => this.RehabilitationEurekaOrthos?.Count > 0 ? this.RehabilitationEurekaOrthos : null; private set => this.RehabilitationEurekaOrthos = value ?? []; }
 
-    public void Update(BattleChara? enemy)
+    public void Update(IBattleChara? enemy)
     {
         var vulnerabilityUp = this.VulnerabilityUp.LastOrDefault();
         if (vulnerabilityUp != null)

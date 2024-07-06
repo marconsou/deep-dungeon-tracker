@@ -1,33 +1,33 @@
 ﻿using Dalamud.Interface;
 using Dalamud.Interface.GameFonts;
-using Dalamud.Interface.Internal;
 using Dalamud.Interface.ManagedFontAtlas;
+using Dalamud.Interface.Textures.TextureWraps;
 using DeepDungeonTracker.Properties;
 using System;
 
 namespace DeepDungeonTracker;
 
-public sealed class ResourceUI(UiBuilder uiBuilder) : IDisposable
+public sealed class ResourceUI(IUiBuilder uiBuilder) : IDisposable
 {
-    public IDalamudTextureWrap UI { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.UI);
+    public IDalamudTextureWrap UI { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.UI).Result;
 
-    public IDalamudTextureWrap DeepDungeon { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.DeepDungeon);
+    public IDalamudTextureWrap DeepDungeon { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.DeepDungeon).Result;
 
-    public IDalamudTextureWrap Job { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Job);
+    public IDalamudTextureWrap Job { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.Job).Result;
 
-    public IDalamudTextureWrap Miscellaneous { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Miscellaneous);
+    public IDalamudTextureWrap Miscellaneous { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.Miscellaneous).Result;
 
-    public IDalamudTextureWrap Coffer { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Coffer);
+    public IDalamudTextureWrap Coffer { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.Coffer).Result;
 
-    public IDalamudTextureWrap Enchantment { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Enchantment);
+    public IDalamudTextureWrap Enchantment { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.Enchantment).Result;
 
-    public IDalamudTextureWrap Trap { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.Trap);
+    public IDalamudTextureWrap Trap { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.Trap).Result;
 
-    public IDalamudTextureWrap BossStatusTimer { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.BossStatusTimer);
+    public IDalamudTextureWrap BossStatusTimer { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.BossStatusTimer).Result;
 
-    public IDalamudTextureWrap MapNormal { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapNormal);
+    public IDalamudTextureWrap MapNormal { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.MapNormal).Result;
 
-    public IDalamudTextureWrap MapHallOfFallacies { get; } = Service.PluginInterface.UiBuilder.LoadImage(Resources.MapHallOfFallacies);
+    public IDalamudTextureWrap MapHallOfFallacies { get; } = Service.TextureProvider.CreateFromImageAsync(Resources.MapHallOfFallacies).Result;
 
     public IFontHandle Axis { get; } = ResourceUI.LoadFont(uiBuilder, GameFontFamily.Axis, 19.25f);
 
@@ -55,7 +55,7 @@ public sealed class ResourceUI(UiBuilder uiBuilder) : IDisposable
         this.TrumpGothic.Dispose();
     }
 
-    private static IFontHandle LoadFont(UiBuilder uiBuilder, GameFontFamily family, float sizePx)
+    private static IFontHandle LoadFont(IUiBuilder uiBuilder, GameFontFamily family, float sizePx)
     {
         return uiBuilder.FontAtlas.NewDelegateFontHandle(x => x.OnPreBuild(toolkit =>
         {

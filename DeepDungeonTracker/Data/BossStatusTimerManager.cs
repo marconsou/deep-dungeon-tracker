@@ -167,7 +167,7 @@ public sealed class BossStatusTimerManager : IDisposable
 
     public void RehabilitationEurekaOrthosDeactivating() => this.BossStatusTimerData?.RehabilitationEurekaOrthos?.LastOrDefault()?.TimerEnd();
 
-    public void Update(BattleChara? enemy)
+    public void Update(IBattleChara? enemy)
     {
         var player = Service.ClientState.LocalPlayer;
         if (player == null)

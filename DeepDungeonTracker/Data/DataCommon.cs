@@ -222,7 +222,7 @@ public sealed class DataCommon : IDisposable
         {
             foreach (var enemy in Service.ObjectTable)
             {
-                var character = enemy as Character;
+                var character = enemy as ICharacter;
                 if (character == null)
                     continue;
 
@@ -267,13 +267,13 @@ public sealed class DataCommon : IDisposable
 
         foreach (var enemy in Service.ObjectTable)
         {
-            var character = enemy as Character;
+            var character = enemy as ICharacter;
             if (character == null)
                 continue;
 
             if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(character.Name.TextValue).Item1 ?? false)))
             {
-                if (!this.IsCairnOfPassageActivated && this.CairnOfPassageKillIds.Add(character.ObjectId))
+                if (!this.IsCairnOfPassageActivated && this.CairnOfPassageKillIds.Add(character.EntityId))
                 {
                     this.CurrentSaveSlot?.CurrentFloor()?.CairnOfPassageShines();
                     break;
@@ -290,7 +290,7 @@ public sealed class DataCommon : IDisposable
         {
             unsafe
             {
-                var enemy = Service.ObjectTable.Where(x => ((FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)x.Address)->GetIsTargetable()).MaxBy(x => (x as Character)?.MaxHp) as BattleChara;
+                var enemy = Service.ObjectTable.Where(x => ((FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)x.Address)->GetIsTargetable()).MaxBy(x => (x as ICharacter)?.MaxHp) as IBattleChara;
                 this.BossStatusTimerManager?.Update(enemy);
             }
         }
@@ -303,13 +303,13 @@ public sealed class DataCommon : IDisposable
 
         foreach (var enemy in Service.ObjectTable)
         {
-            var character = enemy as Character;
+            var character = enemy as ICharacter;
             if (character == null)
                 continue;
 
             var name = character.Name.TextValue;
             if ((character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(name).Item1 ?? false)))
-                this.NearbyEnemies.TryAdd(character.ObjectId, new() { Name = name, IsDead = character.IsDead });
+                this.NearbyEnemies.TryAdd(character.EntityId, new() { Name = name, IsDead = character.IsDead });
         }
     }
 
@@ -523,7 +523,7 @@ public sealed class DataCommon : IDisposable
             currentFloor?.DreadBeastKilled();
     }
 
-    public void CheckForPlayerKilled(Character character)
+    public void CheckForPlayerKilled(ICharacter character)
     {
         if (ServiceUtility.IsSolo)
         {

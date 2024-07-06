@@ -9,7 +9,7 @@ namespace DeepDungeonTracker;
 public class Service
 {
     [PluginService]
-    public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
+    public static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
 
     [PluginService]
     public static IChatGui ChatGui { get; private set; } = null!;
@@ -52,4 +52,7 @@ public class Service
 
     [PluginService]
     public static ITargetManager TargetManager { get; private set; } = null!;
+
+    [PluginService]
+    public static ITextureProvider TextureProvider { get; private set; } = null!;
 }
