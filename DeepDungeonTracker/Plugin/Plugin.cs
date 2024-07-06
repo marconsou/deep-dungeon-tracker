@@ -50,6 +50,7 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.PluginInterface.UiBuilder.Draw += this.Draw;
         Service.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
+        Service.PluginInterface.UiBuilder.OpenMainUi += this.OpenMainUi;
 
         Service.Framework.Update += this.Update;
         Service.ClientState.Login += this.Login;
@@ -63,6 +64,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         Service.PluginInterface.UiBuilder.Draw -= this.Draw;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
+        Service.PluginInterface.UiBuilder.OpenMainUi -= this.OpenMainUi;
 
         Service.Framework.Update -= this.Update;
         Service.ClientState.Login -= this.Login;
@@ -132,6 +134,8 @@ public sealed class Plugin : IDalamudPlugin
     private void Draw() => this.WindowSystem.Draw();
 
     private void OpenConfigUi() => this.WindowSystem.Windows.FirstOrDefault(x => x is ConfigurationWindow)!.Toggle();
+
+    private void OpenMainUi() => this.MainWindowToggleVisibility();
 
     private void Update(IFramework framework) => this.Data.Update(this.Configuration);
 
