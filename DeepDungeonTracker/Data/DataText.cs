@@ -51,7 +51,7 @@ public unsafe class DataText
         for (var i = 0; i < indices.Length; i++)
         {
             var id = indices[i];
-            this.AddText(TextIndex.GelmorranPotsherd + i, id, sheet!.GetRow(id)!.Singular.ExtractText());
+            this.AddText(TextIndex.GelmorranPotsherd + i, id, sheet!.GetRow(id)!.Singular);
         }
     }
 
