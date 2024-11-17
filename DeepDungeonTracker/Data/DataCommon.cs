@@ -181,7 +181,7 @@ public sealed class DataCommon : IDisposable
 
         var serverName = this.ServerName;
         if (string.IsNullOrWhiteSpace(this.ServerName))
-            this.ServerName = Service.ClientState.LocalPlayer?.HomeWorld.GameData?.Name.ToString() ?? string.Empty;
+            this.ServerName = Service.ClientState.LocalPlayer?.HomeWorld.Value.Name.ToString() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) && string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
         {
@@ -555,7 +555,7 @@ public sealed class DataCommon : IDisposable
     {
         void CreateSaveSlot(int floorNumber)
         {
-            this.CurrentSaveSlot = new(this.DeepDungeon, contentId, Service.ClientState?.LocalPlayer?.ClassJob.Id ?? 0);
+            this.CurrentSaveSlot = new(this.DeepDungeon, contentId, Service.ClientState.LocalPlayer?.ClassJob.Value.RowId ?? 0);
             this.CurrentSaveSlot.AddFloorSet(floorNumber);
         }
 

@@ -2,8 +2,8 @@
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using Lumina.Data;
-using Lumina.Excel.GeneratedSheets;
-using Lumina.Text;
+using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -41,7 +41,7 @@ public unsafe class DataText
         };
     }
 
-    private void AddText(TextIndex key, uint id, SeString seString) => this.Texts.Add(key, (id, seString.ToDalamudString().ToString()));
+    private void AddText(TextIndex key, uint id, ReadOnlySeString seString) => this.Texts.Add(key, (id, seString.ToDalamudString().ToString()));
 
     private void LoadItems(Language language)
     {
@@ -51,7 +51,7 @@ public unsafe class DataText
         for (var i = 0; i < indices.Length; i++)
         {
             var id = indices[i];
-            this.AddText(TextIndex.GelmorranPotsherd + i, id, sheet!.GetRow(id)!.Singular);
+            this.AddText(TextIndex.GelmorranPotsherd + i, id, sheet!.GetRow(id)!.Singular.ExtractText());
         }
     }
 
@@ -130,7 +130,11 @@ public unsafe class DataText
 
     private bool IsDeepDungeonRegion(uint territoryType, uint regionIdPrimary, uint regionIdSecondary, bool checkForSubRegion, uint areaPlaceNameId = uint.MaxValue, uint subAreaPlaceNameId = uint.MaxValue)
     {
-        if (new uint[] { regionIdPrimary, regionIdSecondary }.Contains(this.Territories.FirstOrDefault(x => x.RowId == territoryType)?.PlaceName.Row ?? uint.MaxValue))
+        var territory = this.Territories.FirstOrDefault(x => x.RowId == territoryType);
+        if (territory.RowId == 0 || territory.Name.ExtractText().IsNullOrWhitespace())
+            return false;
+
+        if (new uint[] { regionIdPrimary, regionIdSecondary }.Contains(territory.PlaceName.Value.RowId))
         {
             if (!checkForSubRegion)
                 return true;
