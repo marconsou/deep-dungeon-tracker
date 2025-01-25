@@ -22,7 +22,7 @@
                     </p>
                     <p>
                     <p>
-                        Click on the <span class="fw-bolder">Transference Initiated</span> button when you see this message in the game chat. Offset in seconds will be added here in case you want to adjust the time (for example, pressing this button when you actually enter another floor).
+                        Click on the <span class="fw-bolder">Transference Initiated</span> button when you see this message in the game chat. Offset in seconds will be added here in case you want to adjust the time.
                     </p>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <label for="offsetSecondsRange" id="offsetSecondsLabel" class="form-label"></label>
-                                        <input type="range" id="offsetSecondsRange" class="form-range" value="0" min="0" max="15" step="1.0" oninput="OffsetSecondsRangeUpdate(this.value)">
+                                        <input type="range" id="offsetSecondsRange" class="form-range" value="4" min="-10" max="10" step="1.0" oninput="OffsetSecondsRangeUpdate(this.value)">
                                     </div>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@
         document.getElementById("transferenceInitiatedButton").addEventListener("click", function ()
         {
             const offsetSeconds = Number(offsetSecondsRange.value);
-            StartTimer(offsetSeconds + 4);
+            StartTimer(offsetSeconds);
         });
 
         function GetIntervalSelectTime()
@@ -185,7 +185,7 @@
 
         function OffsetSecondsRangeUpdate(value)
         {
-            document.getElementById("offsetSecondsLabel").innerHTML = `Offset in seconds: (+${value}s)`;
+            document.getElementById("offsetSecondsLabel").innerHTML = `Offset in seconds: (${value}s)`;
         }
 
         function StartTimer(additionalSeconds = 0)
