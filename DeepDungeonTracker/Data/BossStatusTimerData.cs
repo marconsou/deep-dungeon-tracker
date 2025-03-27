@@ -115,8 +115,8 @@ public class BossStatusTimerData
         var vulnerabilityUp = this.VulnerabilityUp.LastOrDefault();
         if (vulnerabilityUp != null)
         {
-            var stacks = enemy?.StatusList.FirstOrDefault(x => x.StatusId == 714)?.StackCount ?? 0;
-            vulnerabilityUp.StacksUpdate(Math.Max(vulnerabilityUp.Stacks, stacks));
+            var stacks = enemy?.StatusList.FirstOrDefault(x => x.StatusId == 714)?.Param ?? 0;
+            vulnerabilityUp.StacksUpdate((byte)Math.Max(vulnerabilityUp.Stacks, stacks));
         }
     }
 
