@@ -173,7 +173,7 @@ public class Configuration : IPluginConfiguration
 
         public ushort ActorControlSelf { get; set; }
 
-        public ushort Effect { get; set; }
+        public ushort EffectResult { get; set; }
 
         public ushort EventStart { get; set; }
 

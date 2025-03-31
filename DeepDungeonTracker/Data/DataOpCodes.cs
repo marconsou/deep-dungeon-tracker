@@ -31,7 +31,7 @@ public class DataOpCodes
     {
         ushort actorControl = 0;
         ushort actorControlSelf = 0;
-        ushort effect = 0;
+        ushort effectResult = 0;
         ushort eventStart = 0;
         ushort systemLogMessage = 0;
 
@@ -47,8 +47,8 @@ public class DataOpCodes
                 actorControl = item.OpCode;
             else if (item.Name == "ActorControlSelf")
                 actorControlSelf = item.OpCode;
-            else if (item.Name == "Effect")
-                effect = item.OpCode;
+            else if (item.Name == "EffectResult")
+                effectResult = item.OpCode;
             else if (item.Name == "EventStart")
                 eventStart = item.OpCode;
             else if (item.Name == "SystemLogMessage")
@@ -57,17 +57,17 @@ public class DataOpCodes
             this.KnownOpCodes.Add(item.OpCode);
         }
 
-        if (actorControl != 0 && actorControlSelf != 0 && effect != 0 && eventStart != 0 && systemLogMessage != 0)
+        if (actorControl != 0 && actorControlSelf != 0 && effectResult != 0 && eventStart != 0 && systemLogMessage != 0)
         {
             if (configuration?.OpCodes.ActorControl != actorControl ||
                 configuration.OpCodes.ActorControlSelf != actorControlSelf ||
-                configuration.OpCodes.Effect != effect ||
+                configuration.OpCodes.EffectResult != effectResult ||
                 configuration.OpCodes.EventStart != eventStart ||
                 configuration.OpCodes.SystemLogMessage != systemLogMessage)
             {
                 configuration!.OpCodes.ActorControl = actorControl;
                 configuration.OpCodes.ActorControlSelf = actorControlSelf;
-                configuration.OpCodes.Effect = effect;
+                configuration.OpCodes.EffectResult = effectResult;
                 configuration.OpCodes.EventStart = eventStart;
                 configuration.OpCodes.SystemLogMessage = systemLogMessage;
                 configuration.Save();

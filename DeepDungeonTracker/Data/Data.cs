@@ -39,7 +39,7 @@ public sealed class Data : IDisposable
 
     private Event<(IntPtr, uint)> ActorControlSelf { get; } = new();
 
-    private Event<(IntPtr, uint)> Effect { get; } = new();
+    private Event<(IntPtr, uint)> EffectResult { get; } = new();
 
     private Event<(IntPtr, uint)> EventStart { get; } = new();
 
@@ -71,7 +71,7 @@ public sealed class Data : IDisposable
         this.TrapMessage.Add(this.TrapMessageReceived);
         this.ActorControl.Add(this.ActorControlAction);
         this.ActorControlSelf.Add(this.ActorControlSelfAction);
-        this.Effect.Add(this.EffectAction);
+        this.EffectResult.Add(this.EffectAction);
         this.EventStart.Add(this.EventStartAction);
         this.SystemLogMessage.Add(this.SystemLogMessageAction);
         this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
@@ -99,7 +99,7 @@ public sealed class Data : IDisposable
         this.TrapMessage.Remove(this.TrapMessageReceived);
         this.ActorControl.Remove(this.ActorControlAction);
         this.ActorControlSelf.Remove(this.ActorControlSelfAction);
-        this.Effect.Remove(this.EffectAction);
+        this.EffectResult.Remove(this.EffectAction);
         this.EventStart.Remove(this.EventStartAction);
         this.SystemLogMessage.Remove(this.SystemLogMessageAction);
         this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
@@ -257,8 +257,8 @@ public sealed class Data : IDisposable
                 this.ActorControl.Execute((dataPtr, targetActorId));
             else if (opCode == opCodes.ActorControlSelf)
                 this.ActorControlSelf.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.Effect)
-                this.Effect.Execute((dataPtr, targetActorId));
+            else if (opCode == opCodes.EffectResult)
+                this.EffectResult.Execute((dataPtr, targetActorId));
             else if (opCode == opCodes.EventStart)
                 this.EventStart.Execute((dataPtr, targetActorId));
             else if (opCode == opCodes.SystemLogMessage)
@@ -324,10 +324,13 @@ public sealed class Data : IDisposable
 
     private void EffectAction((IntPtr, uint) data)
     {
+        var targetActorId = data.Item2;
+        if (targetActorId != Service.ClientState?.LocalPlayer?.EntityId)
+            return;
+
         var dataPtr = data.Item1;
-        var id = NetworkData.ExtractNumber(dataPtr, 8, 2);
-        var regenPotionIds = new int[] { 20309, 23163, 38944 };
-        if (regenPotionIds.Contains(id))
+        var id = NetworkData.ExtractNumber(dataPtr, 30, 2);
+        if (id == 648)
             this.Common.RegenPotionConsumed();
     }
 
