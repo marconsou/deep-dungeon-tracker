@@ -1,5 +1,5 @@
 ﻿using Dalamud.Game.Gui.FlyText;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Globalization;
 using System.Numerics;

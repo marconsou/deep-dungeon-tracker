@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
+using Dalamud.Hooking;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -13,6 +14,9 @@ public class Service
 
     [PluginService]
     public static IChatGui ChatGui { get; private set; } = null!;
+    
+    [PluginService]
+    public static IGameInventory GameInventory { get; private set; } = null!;
 
     [PluginService]
     public static IClientState ClientState { get; private set; } = null!;
@@ -36,7 +40,7 @@ public class Service
     public static IGameGui GameGui { get; private set; } = null!;
 
     [PluginService]
-    public static IGameNetwork GameNetwork { get; private set; } = null!;
+    public static IGameInteropProvider GameInteropProvider { get; private set; } = null!;
 
     [PluginService]
     public static IObjectTable ObjectTable { get; private set; } = null!;

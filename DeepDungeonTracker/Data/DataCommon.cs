@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using DeepDungeonTracker.Event;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
+using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 
 namespace DeepDungeonTracker;
 
-public sealed class DataCommon : IDisposable
+public sealed unsafe class DataCommon : IDisposable
 {
     private string CharacterName { get; set; } = string.Empty;
 
@@ -69,6 +72,11 @@ public sealed class DataCommon : IDisposable
     public bool IsBossFloor => this.IsLastFloor || this.IsSpecialBossFloor;
 
     private static Pomander[] SharedPomanders => [Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising];
+    
+    // (itemId, count)
+    private SortedDictionary<byte, byte> SavedPomanderItems { get; set; } = new();
+    
+    private byte[] SavedMagicites { get; set; } = new byte[3];
 
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
@@ -365,6 +373,66 @@ public sealed class DataCommon : IDisposable
         }
     }
 
+    public void CheckForPomanderChanged()
+    {
+        var eventFramework = EventFramework.Instance();
+        var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
+        if (deepDungeonInstance == null)
+        {
+            this.SavedPomanderItems.Clear();
+            return;
+        }
+            
+        var currentItems = deepDungeonInstance->Items;
+        foreach (var item in currentItems)
+        {
+            var currentCount = item.Count;
+            var savedCount = this.SavedPomanderItems.GetValueOrDefault(item.ItemId, (byte) 0);
+            if (currentCount > savedCount)
+            {
+                Service.PluginLog.Info("Pomander obtain: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
+                PomanderChangedEvents.Publish(PomanderChangedType.PomanderObtained, item.ItemId);
+                this.SavedPomanderItems[item.ItemId] = currentCount;
+            }
+            else if (currentCount < savedCount)
+            {
+                Service.PluginLog.Info("Pomander used: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
+                PomanderChangedEvents.Publish(PomanderChangedType.PomanderUsed, item.ItemId);
+                this.SavedPomanderItems[item.ItemId] = currentCount;
+            }
+        }
+    }
+
+    public void CheckForMagiciteChanged()
+    {
+        var eventFramework = EventFramework.Instance();
+        var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
+        if (deepDungeonInstance == null)
+        {
+            this.SavedPomanderItems.Clear();
+            return;
+        }
+            
+        var currentItems = deepDungeonInstance->Items;
+        foreach (var item in currentItems)
+        {
+            var currentCount = item.Count;
+            var savedCount = this.SavedPomanderItems.GetValueOrDefault(item.ItemId, (byte) 0);
+            if (currentCount > savedCount)
+            {
+                Service.PluginLog.Info("Pomander obtain: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
+                PomanderChangedEvents.Publish(PomanderChangedType.PomanderObtained, item.ItemId);
+                this.SavedPomanderItems[item.ItemId] = currentCount;
+            }
+            else if (currentCount < savedCount)
+            {
+                Service.PluginLog.Info("Pomander used: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
+                PomanderChangedEvents.Publish(PomanderChangedType.PomanderUsed, item.ItemId);
+                this.SavedPomanderItems[item.ItemId] = currentCount;
+            }
+        }
+    }
+
     private bool CheckForMagiciteKills(DataText dataText, uint id)
     {
         if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.IsLastFloor)
@@ -437,12 +505,21 @@ public sealed class DataCommon : IDisposable
     public void DeepDungeonUpdate(DataText dataText, ushort territoryType)
     {
         var deepDungeon = this.DeepDungeon;
-        if (dataText?.IsPalaceOfTheDeadRegion(territoryType) ?? false)
+        if (dataText?.IsPalaceOfTheDeadRegion(territoryType) ?? false) {
+            Service.PluginLog.Info("Detected PotD region.");
             this.DeepDungeon = DeepDungeon.PalaceOfTheDead;
+        }
         else if (dataText?.IsHeavenOnHighRegion(territoryType) ?? false)
+        {
+            Service.PluginLog.Info("Detected HoH region.");
             this.DeepDungeon = DeepDungeon.HeavenOnHigh;
+        }
         else if (dataText?.IsEurekaOrthosRegion(territoryType) ?? false)
+
+        {
+            Service.PluginLog.Info("Detected EO region.");
             this.DeepDungeon = DeepDungeon.EurekaOrthos;
+        }
         else
             this.DeepDungeon = DeepDungeon.None;
 
@@ -561,6 +638,7 @@ public sealed class DataCommon : IDisposable
 
         if (this.ContentId == 0)
         {
+            Service.PluginLog.Info("No content ID has been set");
             this.FloorEffect = new();
             this.ShowFloorSetTimeValues = true;
             this.FloorSetTime.Start();
@@ -571,18 +649,27 @@ public sealed class DataCommon : IDisposable
 
             if (this.IsSoloSaveSlot)
             {
+                Service.PluginLog.Info("Creating a new solo save.");
                 var saveSlotSelection = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
                 if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(saveSlotSelection)))
+                {
+                    Service.PluginLog.Info("A: No save slot file found, creating a new one.");
                     CreateSaveSlot(floorNumber);
+                }
                 else
                 {
+                    Service.PluginLog.Info("Loading dd data.");
                     this.LoadDeepDungeonData(true);
                     if (this.CurrentSaveSlot?.ContentId != contentId)
                     {
+                        Service.PluginLog.Info("Wrong content ID, updating save slot.");
                         if (this.CurrentSaveSlot?.CurrentFloorNumber() + 1 == floorNumber)
                             this.CurrentSaveSlot?.AddFloorSet(floorNumber);
                         else
+                        {
+                            Service.PluginLog.Info("B: Creating a new save slot.");
                             CreateSaveSlot(floorNumber);
+                        }
                     }
                     else
                         this.CurrentSaveSlot.ResetFloorSet();
@@ -591,7 +678,10 @@ public sealed class DataCommon : IDisposable
                 Task.Delay(2000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
             }
             else
+            {
+                Service.PluginLog.Info("Creating a new group save.");
                 CreateSaveSlot(floorNumber);
+            }
         }
     }
 

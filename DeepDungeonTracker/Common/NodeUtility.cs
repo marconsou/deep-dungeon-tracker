@@ -39,7 +39,7 @@ public unsafe static partial class NodeUtility
 
     public static (bool, int, int) AetherpoolStatus(IGameGui gameGui)
     {
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonStatus", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonStatus", 1).Address!;
         return (addon != null) ? (true, NodeUtility.Aetherpool(addon, 73), NodeUtility.Aetherpool(addon, 72)) : (false, -1, -1);
     }
 
@@ -67,7 +67,7 @@ public unsafe static partial class NodeUtility
         }
 
         var saveSlotNumber = 0;
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonSaveData", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonSaveData", 1).Address!;
         if (addon == null)
             return saveSlotNumber;
 
@@ -105,7 +105,7 @@ public unsafe static partial class NodeUtility
             return null;
         }
 
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonSaveData", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonSaveData", 1).Address!;
         if (addon == null)
             return (false, false);
 
@@ -120,7 +120,7 @@ public unsafe static partial class NodeUtility
 
     public static (bool, int) MapFloorNumber(IGameGui gameGui)
     {
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1).Address!;
         if (addon == null)
             return (false, -1);
 
@@ -139,7 +139,7 @@ public unsafe static partial class NodeUtility
 
     public static IImmutableList<Node>? MapRoom(IGameGui gameGui)
     {
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1).Address!;
         if (addon == null)
             return null;
 
@@ -173,7 +173,7 @@ public unsafe static partial class NodeUtility
 
     public static bool CairnOfPassageActivation(IGameGui gameGui)
     {
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonMap", 1).Address!;
         if (addon == null)
             return false;
 
@@ -225,7 +225,7 @@ public unsafe static partial class NodeUtility
             return int.TryParse(buffer, out int value) ? (true, value) : (false, -1);
         }
 
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonResult", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("DeepDungeonResult", 1).Address!;
         if (addon == null)
             return (false, -1);
 
@@ -254,7 +254,7 @@ public unsafe static partial class NodeUtility
 
     public static bool IsNowLoading(IGameGui gameGui)
     {
-        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("NowLoading", 1)!;
+        var addon = (AtkUnitBase*)gameGui?.GetAddonByName("NowLoading", 1).Address!;
         return addon != null && addon->IsVisible;
     }
 }

@@ -6,11 +6,19 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.Inventory;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using Dalamud.Hooking;
+using DeepDungeonTracker.Hook;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
+using FFXIVClientStructs.FFXIV.Client.System.String;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace DeepDungeonTracker;
 
-public sealed class Plugin : IDalamudPlugin
+public sealed unsafe class Plugin : IDalamudPlugin
 {
     public static string Name => "Deep Dungeon Tracker";
 
@@ -21,7 +29,9 @@ public sealed class Plugin : IDalamudPlugin
     private Configuration Configuration { get; }
 
     private Data Data { get; }
-
+    
+    private static PrintMessageHook _printMessageHook;
+    
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
         pluginInterface?.Create<Service>();
@@ -57,7 +67,22 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged += this.TerritoryChanged;
         Service.Condition.ConditionChange += this.ConditionChange;
         Service.ChatGui.ChatMessage += this.ChatMessage;
-        Service.GameNetwork.NetworkMessage += this.NetworkMessage;
+        Service.GameInventory.InventoryChanged += this.InventoryChanged;
+        _printMessageHook = new PrintMessageHook();
+        var eventFramework = EventFramework.Instance();
+        var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
+        if (deepDungeonInstance != null)
+        {
+            Service.PluginLog.Info($"Deep Dungeon Tracker: Deep Dungeon Instance found, hooking network messages. ({deepDungeonInstance->ContentId})");
+            foreach (var deepDungeonItemInfo in deepDungeonInstance->Items)
+            {
+                Service.PluginLog.Info($"Deep Dungeon Tracker: Found item {deepDungeonItemInfo.ItemId} at count {deepDungeonItemInfo.Count} with flags {deepDungeonItemInfo.Flags} in deep dungeon instance.");
+            }
+            foreach (var chest in deepDungeonInstance->Chests)
+            {
+                Service.PluginLog.Info($"Deep Dungeon Tracker: Found chest of type {chest.ChestType} at room index {chest.RoomIndex} in deep dungeon instance.");
+            }
+        }
     }
 
     public void Dispose()
@@ -71,13 +96,13 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged -= this.TerritoryChanged;
         Service.Condition.ConditionChange -= this.ConditionChange;
         Service.ChatGui.ChatMessage -= this.ChatMessage;
-        Service.GameNetwork.NetworkMessage -= this.NetworkMessage;
 
         WindowEx.DisposeWindows(this.WindowSystem.Windows);
         this.WindowSystem.RemoveAllWindows();
 
         this.Commands.Dispose();
         this.Data.Dispose();
+        _printMessageHook.Dispose();
     }
 
     private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
@@ -146,6 +171,8 @@ public sealed class Plugin : IDalamudPlugin
     private void ConditionChange(ConditionFlag flag, bool value) => this.Data.ConditionChange(flag, value);
 
     private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) => this.Data.ChatMessage(message.TextValue);
+
+    private void InventoryChanged(IReadOnlyCollection<InventoryEventArgs> events) => this.Data.InventoryChanged(events);
 
     private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
     {

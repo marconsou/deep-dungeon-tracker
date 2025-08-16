@@ -3,11 +3,17 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.Inventory;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using DeepDungeonTracker.Event;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
+using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 
 namespace DeepDungeonTracker;
 
-public sealed class Data : IDisposable
+public sealed unsafe class Data : IDisposable
 {
     public DataCommon Common { get; } = new();
 
@@ -76,6 +82,7 @@ public sealed class Data : IDisposable
         this.SystemLogMessage.Add(this.SystemLogMessageAction);
         this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
+        PomanderChangedEvents.PomanderChanged += this.PomanderChangedAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -104,6 +111,7 @@ public sealed class Data : IDisposable
         this.SystemLogMessage.Remove(this.SystemLogMessageAction);
         this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
+        PomanderChangedEvents.PomanderChanged -= this.PomanderChangedAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -125,6 +133,7 @@ public sealed class Data : IDisposable
             this.CheckForBossStatusTimer();
             this.CheckForNearbyEnemies();
             this.CheckForScoreWindowKills();
+            this.CheckForPomanderChanged();
         }
         else
         {
@@ -135,10 +144,14 @@ public sealed class Data : IDisposable
                 if (ServiceUtility.IsSolo)
                 {
                     if (!this.InDutyQueue.IsActivated)
+                    {
                         this.Common.CheckForSaveSlotSelection();
+                    }
                 }
                 else
+                {
                     this.Common.ResetSaveSlotSelection();
+                }
             }
         }
     }
@@ -204,6 +217,8 @@ public sealed class Data : IDisposable
     }
 
     private void CheckForScoreWindowKills() => this.Common.CheckForScoreWindowKills();
+    
+    private void CheckForPomanderChanged() => this.Common.CheckForPomanderChanged();
 
     public void Login() => this.Common.ResetCharacterData();
 
@@ -240,6 +255,15 @@ public sealed class Data : IDisposable
             this.EnchantmentMessage.Execute(message);
             this.TrapMessage.Execute(message);
         }
+    }
+    
+    public void InventoryChanged(IReadOnlyCollection<InventoryEventArgs> events)
+    {
+        foreach (var i in events)
+        {
+            Service.PluginLog.Info($"type: {i.Type}, address: {i.Item.Address}, itemId: {i.Item.ItemId}, quantity: {i.Item.Quantity}, containerType: {i.Item.ContainerType}");
+        }
+        
     }
 
     public void NetworkMessage(IntPtr dataPtr, ushort opCode, uint targetActorId, Configuration configuration)
@@ -375,4 +399,18 @@ public sealed class Data : IDisposable
     private void UnknownBronzeCofferItemInfoAction((IntPtr, uint) data) => this.Common.BronzeCofferUpdate(this.Text, NetworkData.ExtractNumber(data.Item1, 8, 2));
 
     private void UnknownBronzeCofferOpenAction((IntPtr, uint) data) => this.Common.BronzeCofferOpened();
+    
+    private void PomanderChangedAction(object? sender, PomanderChangedEventArgs args)
+    {
+        Service.PluginLog.Info("DeepDungeonTracker: Pomander changed: " + args.ItemId);
+        if (args.Type == PomanderChangedType.PomanderObtained)
+        {
+            Service.PluginLog.Info("DeepDungeonTracker: Pomander obtained: " + args.ItemId);
+            this.Common.PomanderObtained(args.ItemId);
+        } else if (args.Type == PomanderChangedType.PomanderUsed)
+        {
+            Service.PluginLog.Info("DeepDungeonTracker: Pomander used: " + args.ItemId);
+            this.Common.PomanderUsed(args.ItemId);
+        }
+    }
 }
