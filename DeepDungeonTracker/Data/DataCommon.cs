@@ -373,13 +373,12 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
-    public void CheckForPomanderChanged()
+    public void CheckForPomandersChanged()
     {
         var eventFramework = EventFramework.Instance();
         var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
         if (deepDungeonInstance == null)
         {
-            this.SavedPomanderItems.Clear();
             return;
         }
             
@@ -403,34 +402,58 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
-    public void CheckForMagiciteChanged()
+    public void CheckForMagicitesChanged()
     {
         var eventFramework = EventFramework.Instance();
         var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
         if (deepDungeonInstance == null)
         {
-            this.SavedPomanderItems.Clear();
             return;
         }
             
-        var currentItems = deepDungeonInstance->Items;
-        foreach (var item in currentItems)
+        var currentMagicites = deepDungeonInstance->Magicite;
+        if (this.SavedMagicites[0] == currentMagicites[0] &&
+            this.SavedMagicites[1] == currentMagicites[1] &&
+            this.SavedMagicites[2] == currentMagicites[2])
         {
-            var currentCount = item.Count;
-            var savedCount = this.SavedPomanderItems.GetValueOrDefault(item.ItemId, (byte) 0);
-            if (currentCount > savedCount)
+            return;
+        }
+
+        int nbSavedMagicites = (this.SavedMagicites[0]!=0?1:0) + (this.SavedMagicites[1]!=0?1:0) + (this.SavedMagicites[2]!=0?1:0);
+        int nbCurrentMagicites = (currentMagicites[0]!=0?1:0) + (currentMagicites[1]!=0?1:0) + (currentMagicites[2]!=0?1:0);
+        
+        // Check for magicite obtained
+        if (nbCurrentMagicites == nbSavedMagicites + 1)
+        {
+            for (int i = 0; i < 3; i++)
             {
-                Service.PluginLog.Info("Pomander obtain: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
-                PomanderChangedEvents.Publish(PomanderChangedType.PomanderObtained, item.ItemId);
-                this.SavedPomanderItems[item.ItemId] = currentCount;
-            }
-            else if (currentCount < savedCount)
-            {
-                Service.PluginLog.Info("Pomander used: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
-                PomanderChangedEvents.Publish(PomanderChangedType.PomanderUsed, item.ItemId);
-                this.SavedPomanderItems[item.ItemId] = currentCount;
+                if (this.SavedMagicites[i] == 0 && currentMagicites[i] != 0)
+                {
+                    Service.PluginLog.Info("Magicite obtained: {0} (current: {1}, saved: {2})", i, currentMagicites[i], this.SavedMagicites[i]);
+                    break;
+                }
             }
         }
+        
+        // Check for magicite used
+        if (nbCurrentMagicites == nbSavedMagicites - 1)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (this.SavedMagicites[i] != currentMagicites[i])
+                {
+                    Service.PluginLog.Info("Magicite used: {0} (current: {1}, saved: {2})", i, currentMagicites[i], this.SavedMagicites[i]);
+                    break;
+                }
+            }
+        }
+        
+        // Save magicites
+        for (int i = 0; i < 3; i++)
+        {
+            this.SavedMagicites[i] = currentMagicites[i];
+        }
+        
     }
 
     private bool CheckForMagiciteKills(DataText dataText, uint id)

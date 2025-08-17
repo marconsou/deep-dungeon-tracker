@@ -133,7 +133,7 @@ public sealed unsafe class Data : IDisposable
             this.CheckForBossStatusTimer();
             this.CheckForNearbyEnemies();
             this.CheckForScoreWindowKills();
-            this.CheckForPomanderChanged();
+            this.CheckForPomandersChanged();
         }
         else
         {
@@ -218,7 +218,7 @@ public sealed unsafe class Data : IDisposable
 
     private void CheckForScoreWindowKills() => this.Common.CheckForScoreWindowKills();
     
-    private void CheckForPomanderChanged() => this.Common.CheckForPomanderChanged();
+    private void CheckForPomandersChanged() => this.Common.CheckForPomandersChanged();
 
     public void Login() => this.Common.ResetCharacterData();
 
