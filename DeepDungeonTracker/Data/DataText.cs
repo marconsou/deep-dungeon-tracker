@@ -122,6 +122,12 @@ public unsafe class DataText
 
     public (bool, TextIndex?) IsTrap(string name) => this.IsText(TextIndex.LandmineTrap, TextIndex.OwletTrap, name, null);
 
+    public (bool, TextIndex?) IsAetherpoolUpgrade(string name) => this.IsText(TextIndex.PoTDAetherpoolArmObtain, TextIndex.EoAetherpoolArmorAlreadyMax, name, null);
+
+    public (bool, TextIndex?) IsTransferenceInitiated(string name) => this.IsText(TextIndex.TransferenceInitiated, TextIndex.TransferenceInitiated, name, null);
+
+    public (bool, TextIndex?) IsDutyFailed(string name) => this.IsText(TextIndex.DutyFailed, TextIndex.DutyFailed, name, null);
+
     public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 56, 1793, checkForSubRegion, subAreaPlaceNameId: 129);
 
     public bool IsHeavenOnHighRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 2409, 2775, checkForSubRegion, subAreaPlaceNameId: 2774);

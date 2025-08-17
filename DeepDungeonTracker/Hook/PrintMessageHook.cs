@@ -8,7 +8,7 @@ namespace DeepDungeonTracker.Hook
     public unsafe class PrintMessageHook : IDisposable
     {
         private readonly Hook<PrintMessageDelegate>? _getLogMessageHook;
-        
+
         public PrintMessageHook()
         {
             _getLogMessageHook = Service.GameInteropProvider.HookFromAddress<PrintMessageDelegate>(

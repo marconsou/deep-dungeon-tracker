@@ -7,14 +7,14 @@ namespace DeepDungeonTracker.Event
         PomanderObtained,
         PomanderUsed,
     }
-    
+
     public enum StoneChangedType
     {
         StoneObtained,
         StoneUsed,
     }
-    
-    
+
+
     public class ItemChangedEventArgs<TChangeType>(TChangeType type, byte itemId) : EventArgs
         where TChangeType : Enum
     {
