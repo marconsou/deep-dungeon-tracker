@@ -82,7 +82,8 @@ public sealed unsafe class Data : IDisposable
         this.SystemLogMessage.Add(this.SystemLogMessageAction);
         this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
-        PomanderChangedEvents.PomanderChanged += this.PomanderChangedAction;
+        ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
+        ItemChangedEvents<StoneChangedType>.Changed += this.StoneChangedAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -111,7 +112,8 @@ public sealed unsafe class Data : IDisposable
         this.SystemLogMessage.Remove(this.SystemLogMessageAction);
         this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
-        PomanderChangedEvents.PomanderChanged -= this.PomanderChangedAction;
+        ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
+        ItemChangedEvents<StoneChangedType>.Changed -= this.StoneChangedAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -134,6 +136,7 @@ public sealed unsafe class Data : IDisposable
             this.CheckForNearbyEnemies();
             this.CheckForScoreWindowKills();
             this.CheckForPomandersChanged();
+            this.CheckForStonesChanged();
         }
         else
         {
@@ -219,6 +222,8 @@ public sealed unsafe class Data : IDisposable
     private void CheckForScoreWindowKills() => this.Common.CheckForScoreWindowKills();
     
     private void CheckForPomandersChanged() => this.Common.CheckForPomandersChanged();
+    
+    private void CheckForStonesChanged() => this.Common.CheckForStonesChanged();
 
     public void Login() => this.Common.ResetCharacterData();
 
@@ -400,7 +405,7 @@ public sealed unsafe class Data : IDisposable
 
     private void UnknownBronzeCofferOpenAction((IntPtr, uint) data) => this.Common.BronzeCofferOpened();
     
-    private void PomanderChangedAction(object? sender, PomanderChangedEventArgs args)
+    private void PomanderChangedAction(object? sender, ItemChangedEventArgs<PomanderChangedType> args)
     {
         Service.PluginLog.Info("DeepDungeonTracker: Pomander changed: " + args.ItemId);
         if (args.Type == PomanderChangedType.PomanderObtained)
@@ -411,6 +416,20 @@ public sealed unsafe class Data : IDisposable
         {
             Service.PluginLog.Info("DeepDungeonTracker: Pomander used: " + args.ItemId);
             this.Common.PomanderUsed(args.ItemId);
+        }
+    }
+    
+    private void StoneChangedAction(object? sender, ItemChangedEventArgs<StoneChangedType> args)
+    {
+        Service.PluginLog.Info("DeepDungeonTracker: Stone changed: " + args.ItemId);
+        if (args.Type == StoneChangedType.StoneObtained)
+        {
+            Service.PluginLog.Info("DeepDungeonTracker: Stone obtained: " + args.ItemId);
+            this.Common.StoneObtained(args.ItemId);
+        } else if (args.Type == StoneChangedType.StoneUsed)
+        {
+            Service.PluginLog.Info("DeepDungeonTracker: Stone used: " + args.ItemId);
+            this.Common.StoneUsed(args.ItemId);
         }
     }
 }

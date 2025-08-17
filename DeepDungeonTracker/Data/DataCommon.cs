@@ -76,7 +76,7 @@ public sealed unsafe class DataCommon : IDisposable
     // (itemId, count)
     private SortedDictionary<byte, byte> SavedPomanderItems { get; set; } = new();
     
-    private byte[] SavedMagicites { get; set; } = new byte[3];
+    private byte[] SavedStones { get; set; } = new byte[3];
 
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
@@ -390,19 +390,19 @@ public sealed unsafe class DataCommon : IDisposable
             if (currentCount > savedCount)
             {
                 Service.PluginLog.Info("Pomander obtain: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
-                PomanderChangedEvents.Publish(PomanderChangedType.PomanderObtained, item.ItemId);
+                ItemChangedEvents<PomanderChangedType>.Publish(PomanderChangedType.PomanderObtained, item.ItemId);
                 this.SavedPomanderItems[item.ItemId] = currentCount;
             }
             else if (currentCount < savedCount)
             {
                 Service.PluginLog.Info("Pomander used: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
-                PomanderChangedEvents.Publish(PomanderChangedType.PomanderUsed, item.ItemId);
+                ItemChangedEvents<PomanderChangedType>.Publish(PomanderChangedType.PomanderUsed, item.ItemId);
                 this.SavedPomanderItems[item.ItemId] = currentCount;
             }
         }
     }
 
-    public void CheckForMagicitesChanged()
+    public void CheckForStonesChanged()
     {
         var eventFramework = EventFramework.Instance();
         var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
@@ -411,38 +411,40 @@ public sealed unsafe class DataCommon : IDisposable
             return;
         }
             
-        var currentMagicites = deepDungeonInstance->Magicite;
-        if (this.SavedMagicites[0] == currentMagicites[0] &&
-            this.SavedMagicites[1] == currentMagicites[1] &&
-            this.SavedMagicites[2] == currentMagicites[2])
+        var currentStones = deepDungeonInstance->Magicite;
+        if (this.SavedStones[0] == currentStones[0] &&
+            this.SavedStones[1] == currentStones[1] &&
+            this.SavedStones[2] == currentStones[2])
         {
             return;
         }
 
-        int nbSavedMagicites = (this.SavedMagicites[0]!=0?1:0) + (this.SavedMagicites[1]!=0?1:0) + (this.SavedMagicites[2]!=0?1:0);
-        int nbCurrentMagicites = (currentMagicites[0]!=0?1:0) + (currentMagicites[1]!=0?1:0) + (currentMagicites[2]!=0?1:0);
+        int nbSavedStones = (this.SavedStones[0]!=0?1:0) + (this.SavedStones[1]!=0?1:0) + (this.SavedStones[2]!=0?1:0);
+        int nbCurrentStones = (currentStones[0]!=0?1:0) + (currentStones[1]!=0?1:0) + (currentStones[2]!=0?1:0);
         
-        // Check for magicite obtained
-        if (nbCurrentMagicites == nbSavedMagicites + 1)
+        // Check for stone obtained
+        if (nbCurrentStones == nbSavedStones + 1)
         {
             for (int i = 0; i < 3; i++)
             {
-                if (this.SavedMagicites[i] == 0 && currentMagicites[i] != 0)
+                if (this.SavedStones[i] == 0 && currentStones[i] != 0)
                 {
-                    Service.PluginLog.Info("Magicite obtained: {0} (current: {1}, saved: {2})", i, currentMagicites[i], this.SavedMagicites[i]);
+                    Service.PluginLog.Info("Magicite obtained: {0} (current: {1}, saved: {2})", i, currentStones[i], this.SavedStones[i]);
+                    ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneObtained, currentStones[i]);
                     break;
                 }
             }
         }
         
-        // Check for magicite used
-        if (nbCurrentMagicites == nbSavedMagicites - 1)
+        // Check for stone used
+        if (nbCurrentStones == nbSavedStones - 1)
         {
             for (int i = 0; i < 3; i++)
             {
-                if (this.SavedMagicites[i] != currentMagicites[i])
+                if (this.SavedStones[i] != currentStones[i])
                 {
-                    Service.PluginLog.Info("Magicite used: {0} (current: {1}, saved: {2})", i, currentMagicites[i], this.SavedMagicites[i]);
+                    Service.PluginLog.Info("Magicite used: {0} (current: {1}, saved: {2})", i, currentStones[i], this.SavedStones[i]);
+                    ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneUsed, this.SavedStones[i]);
                     break;
                 }
             }
@@ -451,7 +453,7 @@ public sealed unsafe class DataCommon : IDisposable
         // Save magicites
         for (int i = 0; i < 3; i++)
         {
-            this.SavedMagicites[i] = currentMagicites[i];
+            this.SavedStones[i] = currentStones[i];
         }
         
     }
@@ -790,6 +792,17 @@ public sealed unsafe class DataCommon : IDisposable
             this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Aetherpool);
     }
 
+    public void StoneObtained(int itemId)
+    {
+        if (this.DeepDungeon == DeepDungeon.HeavenOnHigh)
+        {
+            MagiciteObtained(itemId);
+        } else if (this.DeepDungeon == DeepDungeon.EurekaOrthos)
+        {
+            DemicloneObtained(itemId);
+        }
+    }
+
     public void MagiciteObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
 
     public void DemicloneObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.UneiDemiclone);
@@ -816,6 +829,18 @@ public sealed unsafe class DataCommon : IDisposable
             this.FloorEffect.IsPomanderOfAlterationUsed = true;
 
         this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);
+    }
+    
+    public void StoneUsed(int itemId)
+    {
+        if (this.DeepDungeon == DeepDungeon.HeavenOnHigh)
+        {
+            this.MagiciteUsed(itemId);
+        }
+        else if (this.DeepDungeon == DeepDungeon.EurekaOrthos)
+        {
+            this.DemicloneUsed(itemId);
+        }
     }
 
     public void MagiciteUsed(int itemId)
