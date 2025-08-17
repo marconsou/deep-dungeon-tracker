@@ -109,5 +109,6 @@ public enum TextIndex
     EoAetherpoolArmorObtain,
     EoAetherpoolArmorAlreadyMax,
     TransferenceInitiated,
+    DutyFailedTimeout,
     DutyFailed,
 }

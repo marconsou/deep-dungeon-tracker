@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DeepDungeonTracker;
 
@@ -26,6 +27,8 @@ public unsafe class DataText
         this.LoadEnemies(language);
         this.LoadEnchantments(language);
         this.LoadTraps(language);
+        this.LoadTransference(language);
+        this.LoadDutyFailed(language);
         this.Territories = Service.DataManager.GetExcelSheet<TerritoryType>(Service.ClientState.ClientLanguage)!.ToImmutableList();
     }
 
@@ -82,6 +85,12 @@ public unsafe class DataText
             var id = indices[i];
             this.AddText(TextIndex.BlindnessEnchantment + i, id, sheet!.GetRow(id)!.Text);
         }
+        
+        // var sheet2 = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(Language.English);
+        // for (var i = 0; i < 11351; i++)
+        // {
+        //     Service.PluginLog.Info("{0} {1}", i, sheet2!.GetRow((uint)i)!.Text.ExtractText());
+        // }
     }
 
     private void LoadTraps(Language language)
@@ -93,6 +102,25 @@ public unsafe class DataText
         {
             var id = indices[i];
             this.AddText(TextIndex.LandmineTrap + i, id, sheet!.GetRow(id)!.Text);
+        }
+    }
+
+    private void LoadTransference(Language language)
+    {
+        var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(language);
+        const uint id = 7248;
+        this.AddText(TextIndex.TransferenceInitiated, id, sheet!.GetRow(id)!.Text);
+    }
+    
+    private void LoadDutyFailed(Language language)
+    {
+        var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(language);
+        var indices = new uint[] { 1533, 1534 };
+        
+        for (var i = 0; i < indices.Length; i++)
+        {
+            var id = indices[i];
+            this.AddText(TextIndex.DutyFailedTimeout + i, id, sheet!.GetRow(id)!.Text);
         }
     }
 
@@ -126,7 +154,7 @@ public unsafe class DataText
 
     public (bool, TextIndex?) IsTransferenceInitiated(string name) => this.IsText(TextIndex.TransferenceInitiated, TextIndex.TransferenceInitiated, name, null);
 
-    public (bool, TextIndex?) IsDutyFailed(string name) => this.IsText(TextIndex.DutyFailed, TextIndex.DutyFailed, name, null);
+    public (bool, TextIndex?) IsDutyFailed(string name) => this.IsText(TextIndex.DutyFailedTimeout, TextIndex.DutyFailed, name, null);
 
     public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 56, 1793, checkForSubRegion, subAreaPlaceNameId: 129);
 

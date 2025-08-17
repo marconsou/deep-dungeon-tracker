@@ -45,14 +45,14 @@ public sealed unsafe class Data : IDisposable
     private Event<string> AetherpoolMessage { get; } = new();
 
     private Event<string> TransferenceInitiatedMessage { get; } = new();
+    
+    private Event<string> PlayerKilledMessage { get; } = new();
+    
+    private Event<string> EnemyKilledMessage { get; } = new();
 
     private Event<string> DutyFailedMessage { get; } = new();
 
     private Event<(IntPtr, uint)> ActorControl { get; } = new();
-
-    private Event<(IntPtr, uint)> ActorControlSelf { get; } = new();
-
-    private Event<(IntPtr, uint)> EventStart { get; } = new();
 
     private Event<(IntPtr, uint)> UnknownBronzeCofferItemInfo { get; } = new();
 
@@ -82,7 +82,6 @@ public sealed unsafe class Data : IDisposable
         this.TransferenceInitiatedMessage.Add(this.TransferenceInitiatedMessageReceived);
         this.DutyFailedMessage.Add(this.DutyFailedMessageReceived);
         this.ActorControl.Add(this.ActorControlAction);
-        this.ActorControlSelf.Add(this.ActorControlSelfAction);
         this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
@@ -112,7 +111,6 @@ public sealed unsafe class Data : IDisposable
         this.AetherpoolMessage.Remove(this.AetherpoolMessageReceived);
         this.TransferenceInitiatedMessage.Remove(this.TransferenceInitiatedMessageReceived);
         this.ActorControl.Remove(this.ActorControlAction);
-        this.ActorControlSelf.Remove(this.ActorControlSelfAction);
         this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
@@ -263,6 +261,9 @@ public sealed unsafe class Data : IDisposable
         {
             this.EnchantmentMessage.Execute(message);
             this.TrapMessage.Execute(message);
+            //this.AetherpoolMessage.Execute(message);
+            this.TransferenceInitiatedMessage.Execute(message);
+            this.DutyFailedMessage.Execute(message);
         }
     }
 
@@ -328,10 +329,6 @@ public sealed unsafe class Data : IDisposable
             var opCodes = configuration?.OpCodes;
             if (opCode == opCodes!.ActorControl)
                 this.ActorControl.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.ActorControlSelf)
-                this.ActorControlSelf.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.EventStart)
-                this.EventStart.Execute((dataPtr, targetActorId));
             else if (opCode == opCodes.UnknownBronzeCofferItemInfo)
                 this.UnknownBronzeCofferItemInfo.Execute((dataPtr, targetActorId));
             else if (opCode == opCodes.UnknownBronzeCofferOpen)
@@ -372,28 +369,6 @@ public sealed unsafe class Data : IDisposable
             }
             else if (character?.ObjectKind == ObjectKind.Player)
                 this.Common.CheckForPlayerKilled(character);
-        }
-    }
-
-    private void ActorControlSelfAction((IntPtr, uint) data)
-    {
-        var directorUpdate = 109;
-        var dutyCommenced = 1;
-        var dutyRecommence = 6;
-        var deepDungeonIdFirst = 60001;
-        var deepDungeonIdLast = 60000 + (Enum.GetNames(typeof(DeepDungeon)).Length * 10);
-        var dataPtr = data.Item1;
-        if (NetworkData.ExtractNumber(dataPtr, 0, 1) == directorUpdate)
-        {
-            var type = NetworkData.ExtractNumber(dataPtr, 8, 1);
-            if (type == dutyCommenced)
-            {
-                var contentId = NetworkData.ExtractNumber(dataPtr, 4, 2);
-                if (contentId >= deepDungeonIdFirst && contentId <= deepDungeonIdLast)
-                    this.Common.StartFirstFloor(contentId);
-            }
-            else if (type == dutyRecommence)
-                this.Common.StartNextFloor();
         }
     }
 

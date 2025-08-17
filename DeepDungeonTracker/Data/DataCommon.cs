@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DeepDungeonTracker.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
@@ -631,6 +632,10 @@ public sealed unsafe class DataCommon : IDisposable
 
     public void DutyFailedMessageReceived(DataText dataText, string message)
     {
+        
+        Service.PluginLog.Info($"Try to detect duty fail. Message: {message}");
+        var cleanedMessage = Regex.Replace(message, "“.*?”", "“”");
+        Service.PluginLog.Info($"Try to detect duty fail. Message after regex: {cleanedMessage}");
         var result = dataText?.IsDutyFailed(message) ?? new();
         if (result.Item1)
         {

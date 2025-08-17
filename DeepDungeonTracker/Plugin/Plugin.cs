@@ -166,9 +166,6 @@ public sealed unsafe class Plugin : IDalamudPlugin
     private void InventoryChanged(IReadOnlyCollection<InventoryEventArgs> events) => this.Data.InventoryChanged(events);
 
     private void DutyStarted(object? sender, ushort e) => this.Data.DutyStarted(e);
-    
-    // Teleport to new floor
-    private void DutyRecommenced(object? sender, ushort e) => this.Data.DutyRecommenced();
 
     private void DutyCompleted(object? sender, ushort e) => this.Data.DutyCompleted();
 
