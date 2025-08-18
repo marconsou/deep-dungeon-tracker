@@ -299,15 +299,6 @@ public sealed unsafe class Data : IDisposable
             this.Common.DutyStarted();
         }
     }
-    
-    public void DutyRecommenced()
-    {
-        if (this.InDeepDungeon.IsActivated)
-        {
-            Service.PluginLog.Info($"DeepDungeonTracker: Duty recommence");
-            this.Common.StartNextFloor();
-        }
-    }
 
     public void DutyCompleted()
     {

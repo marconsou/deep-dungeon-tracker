@@ -82,10 +82,6 @@ public sealed unsafe class DataCommon : IDisposable
 
     private byte[] SavedStones { get; set; } = new byte[3];
 
-    private List<uint> EnemyKilledIds { get; set; } = [];
-
-    private DateTime raisingTime;
-
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
     public void ResetCharacterData()
@@ -110,6 +106,29 @@ public sealed unsafe class DataCommon : IDisposable
         this.CairnOfPassageKillIds = [];
         this.DutyStatus = DutyStatus.None;
         this.CurrentSaveSlot?.ContentIdUpdate(0);
+        
+        this.SavedPomanderItems = new SortedDictionary<byte, byte>();
+        this.SavedStones = new byte[3];
+        
+        var eventFramework = EventFramework.Instance();
+        var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
+        if (deepDungeonInstance == null)
+        {
+            return;
+        }
+        
+        var currentItems = deepDungeonInstance->Items;
+        foreach (var item in currentItems)
+        {
+            this.SavedPomanderItems[item.ItemId] = item.Count;
+        }
+
+        var currentStones = deepDungeonInstance->Magicite;
+        for (int i = 0; i < 3; i++)
+        {
+            this.SavedStones[i] = currentStones[i];
+        }
+        
     }
 
     public void ExitingDeepDungeon()
@@ -213,6 +232,7 @@ public sealed unsafe class DataCommon : IDisposable
         {
             if (this.IsInDeepDungeonRegion)
             {
+                
                 this.SaveSlotSelection.ResetSelectionData();
                 if (!this.SaveSlotSelection.GetData().ContainsKey(this.CharacterKey))
                 {
@@ -458,7 +478,7 @@ public sealed unsafe class DataCommon : IDisposable
             {
                 if (this.SavedStones[i] == 0 && currentStones[i] != 0)
                 {
-                    Service.PluginLog.Info("Magicite obtained: {0} (current: {1}, saved: {2})", i, currentStones[i],
+                    Service.PluginLog.Info("Stone obtained: {0} (current: {1}, saved: {2})", i, currentStones[i],
                         this.SavedStones[i]);
                     ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneObtained, currentStones[i]);
                     break;
@@ -473,7 +493,7 @@ public sealed unsafe class DataCommon : IDisposable
             {
                 if (this.SavedStones[i] != currentStones[i])
                 {
-                    Service.PluginLog.Info("Magicite used: {0} (current: {1}, saved: {2})", i, currentStones[i],
+                    Service.PluginLog.Info("Stone used: {0} (current: {1}, saved: {2})", i, currentStones[i],
                         this.SavedStones[i]);
                     ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneUsed, this.SavedStones[i]);
                     break;
@@ -767,7 +787,6 @@ public sealed unsafe class DataCommon : IDisposable
 
         if (this.ContentId == 0)
         {
-            Service.PluginLog.Info("No content ID has been set");
             this.FloorEffect = new();
             this.ShowFloorSetTimeValues = true;
             this.FloorSetTime.Start();
@@ -778,30 +797,28 @@ public sealed unsafe class DataCommon : IDisposable
 
             if (this.IsSoloSaveSlot)
             {
-                Service.PluginLog.Info("Creating a new solo save.");
                 var saveSlotSelection = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
+                Service.PluginLog.Info($"{saveSlotSelection?.DeepDungeon} - {saveSlotSelection?.SaveSlotNumber}");
                 if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(saveSlotSelection)))
                 {
-                    Service.PluginLog.Info("A: No save slot file found, creating a new one.");
                     CreateSaveSlot(floorNumber);
                 }
                 else
                 {
-                    Service.PluginLog.Info("Loading dd data.");
                     this.LoadDeepDungeonData(true);
                     if (this.CurrentSaveSlot?.ContentId != contentId)
                     {
-                        Service.PluginLog.Info("Wrong content ID, updating save slot.");
                         if (this.CurrentSaveSlot?.CurrentFloorNumber() + 1 == floorNumber)
                             this.CurrentSaveSlot?.AddFloorSet(floorNumber);
                         else
                         {
-                            Service.PluginLog.Info("B: Creating a new save slot.");
                             CreateSaveSlot(floorNumber);
                         }
                     }
                     else
+                    {
                         this.CurrentSaveSlot.ResetFloorSet();
+                    }
 
                     this.CurrentSaveSlot?.ContentIdUpdate(contentId);
                 }
@@ -853,18 +870,7 @@ public sealed unsafe class DataCommon : IDisposable
 
     public void DutyStarted()
     {
-        if (this.DeepDungeon == DeepDungeon.PalaceOfTheDead)
-        {
-            this.StartFirstFloor(60001);
-        }
-        else if (this.DeepDungeon == DeepDungeon.HeavenOnHigh)
-        {
-            this.StartFirstFloor(60002);
-        }
-        else if (this.DeepDungeon == DeepDungeon.EurekaOrthos)
-        {
-            this.StartFirstFloor(60003);
-        }
+        this.StartFirstFloor((int)EventFramework.Instance()->GetContentDirector()->ContentId);
     }
 
     public void DutyCompleted()
