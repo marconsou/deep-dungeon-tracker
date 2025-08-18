@@ -2,13 +2,10 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DeepDungeonTracker.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
-using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 
 namespace DeepDungeonTracker;
 
@@ -66,21 +63,27 @@ public sealed unsafe class DataCommon : IDisposable
 
     public bool IsLastFloor => this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false;
 
-    private bool IsEurekaOrthosFloor99 => this.DeepDungeon == DeepDungeon.EurekaOrthos && this.CurrentSaveSlot?.CurrentFloorNumber() == 99;
+    private bool IsEurekaOrthosFloor99 => this.DeepDungeon == DeepDungeon.EurekaOrthos &&
+                                          this.CurrentSaveSlot?.CurrentFloorNumber() == 99;
 
     public bool IsSpecialBossFloor => this.IsEurekaOrthosFloor99;
 
     public bool IsBossFloor => this.IsLastFloor || this.IsSpecialBossFloor;
 
-    private static Pomander[] SharedPomanders => [Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising];
+    private static Pomander[] SharedPomanders =>
+    [
+        Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight,
+        Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity,
+        Pomander.Intuition, Pomander.Raising
+    ];
 
     // (itemId, count)
     private SortedDictionary<byte, byte> SavedPomanderItems { get; set; } = new();
 
     private byte[] SavedStones { get; set; } = new byte[3];
-    
+
     private List<uint> EnemyKilledIds { get; set; } = [];
-    
+
     private DateTime raisingTime;
 
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
@@ -131,7 +134,8 @@ public sealed unsafe class DataCommon : IDisposable
     public void EnteringCombat()
     {
         if (this.IsBossFloor)
-            this.BossStatusTimerManager = this.CurrentSaveSlot?.CurrentFloorSet()?.StartBossStatusTimer(this.ExitingCombat);
+            this.BossStatusTimerManager =
+                this.CurrentSaveSlot?.CurrentFloorSet()?.StartBossStatusTimer(this.ExitingCombat);
     }
 
     public void ExitingCombat()
@@ -140,13 +144,17 @@ public sealed unsafe class DataCommon : IDisposable
             this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
     }
 
-    public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
+    public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) =>
+        data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
 
-    public static string GetLastSaveFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}Last.json" : string.Empty;
+    public static string GetLastSaveFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) =>
+        data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}Last.json" : string.Empty;
 
-    public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data) => DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
+    public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data) =>
+        DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
 
-    public string GetLastSaveFileName(SaveSlotSelection.SaveSlotSelectionData? data) => DataCommon.GetLastSaveFileName(this.CharacterKey, data);
+    public string GetLastSaveFileName(SaveSlotSelection.SaveSlotSelectionData? data) =>
+        DataCommon.GetLastSaveFileName(this.CharacterKey, data);
 
     private void SaveDeepDungeonData()
     {
@@ -174,7 +182,11 @@ public sealed unsafe class DataCommon : IDisposable
     {
         var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
         var fileName = DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
-        this.CurrentSaveSlot = ((!ignoreDeepDungeonRegion && (data?.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) && (data?.SaveSlotNumber != 0) ? this.LoadDeepDungeonData(showFloorSetTimeValues, fileName) : new();
+        this.CurrentSaveSlot =
+            ((!ignoreDeepDungeonRegion && (data?.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) &&
+            (data?.SaveSlotNumber != 0)
+                ? this.LoadDeepDungeonData(showFloorSetTimeValues, fileName)
+                : new();
     }
 
     public void CheckForSaveSlotSelection()
@@ -196,7 +208,8 @@ public sealed unsafe class DataCommon : IDisposable
         if (string.IsNullOrWhiteSpace(this.ServerName))
             this.ServerName = Service.ClientState.LocalPlayer?.HomeWorld.Value.Name.ToString() ?? string.Empty;
 
-        if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) && string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
+        if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) &&
+            string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
         {
             if (this.IsInDeepDungeonRegion)
             {
@@ -206,6 +219,7 @@ public sealed unsafe class DataCommon : IDisposable
                     this.SaveSlotSelection.SetSelectionData(this.DeepDungeon, 0);
                     this.SaveSlotSelection.Save(this.CharacterKey);
                 }
+
                 this.LoadDeepDungeonData(false);
             }
         }
@@ -239,7 +253,8 @@ public sealed unsafe class DataCommon : IDisposable
                 if (character == null)
                     continue;
 
-                if (character.IsDead && character.ObjectKind == ObjectKind.BattleNpc && character.StatusFlags.HasFlag(StatusFlags.Hostile))
+                if (character.IsDead && character.ObjectKind == ObjectKind.BattleNpc &&
+                    character.StatusFlags.HasFlag(StatusFlags.Hostile))
                 {
                     if (dataText?.IsBoss(character.Name.TextValue).Item1 ?? false)
                     {
@@ -284,7 +299,9 @@ public sealed unsafe class DataCommon : IDisposable
             if (character == null)
                 continue;
 
-            if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(character.Name.TextValue).Item1 ?? false)))
+            if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) &&
+                (character.StatusFlags.HasFlag(StatusFlags.Hostile) ||
+                 (dataText?.IsMandragora(character.Name.TextValue).Item1 ?? false)))
             {
                 if (!this.IsCairnOfPassageActivated && this.CairnOfPassageKillIds.Add(character.EntityId))
                 {
@@ -303,7 +320,9 @@ public sealed unsafe class DataCommon : IDisposable
         {
             unsafe
             {
-                var enemy = Service.ObjectTable.Where(x => ((FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)x.Address)->GetIsTargetable()).MaxBy(x => (x as ICharacter)?.MaxHp) as IBattleChara;
+                var enemy = Service.ObjectTable
+                    .Where(x => ((FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)x.Address)->GetIsTargetable())
+                    .MaxBy(x => (x as ICharacter)?.MaxHp) as IBattleChara;
                 this.BossStatusTimerManager?.Update(enemy);
             }
         }
@@ -321,7 +340,8 @@ public sealed unsafe class DataCommon : IDisposable
                 continue;
 
             var name = character.Name.TextValue;
-            if ((character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(name).Item1 ?? false)))
+            if ((character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) ||
+                                                                   (dataText?.IsMandragora(name).Item1 ?? false)))
                 this.NearbyEnemies.TryAdd(character.EntityId, new() { Name = name, IsDead = character.IsDead });
         }
     }
@@ -394,13 +414,15 @@ public sealed unsafe class DataCommon : IDisposable
             var savedCount = this.SavedPomanderItems.GetValueOrDefault(item.ItemId, (byte)0);
             if (currentCount > savedCount)
             {
-                Service.PluginLog.Info("Pomander obtain: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
+                Service.PluginLog.Info("Pomander obtain: {0} (current: {1}, saved: {2})", item.ItemId, currentCount,
+                    savedCount);
                 ItemChangedEvents<PomanderChangedType>.Publish(PomanderChangedType.PomanderObtained, item.ItemId);
                 this.SavedPomanderItems[item.ItemId] = currentCount;
             }
             else if (currentCount < savedCount)
             {
-                Service.PluginLog.Info("Pomander used: {0} (current: {1}, saved: {2})", item.ItemId, currentCount, savedCount);
+                Service.PluginLog.Info("Pomander used: {0} (current: {1}, saved: {2})", item.ItemId, currentCount,
+                    savedCount);
                 ItemChangedEvents<PomanderChangedType>.Publish(PomanderChangedType.PomanderUsed, item.ItemId);
                 this.SavedPomanderItems[item.ItemId] = currentCount;
             }
@@ -424,8 +446,10 @@ public sealed unsafe class DataCommon : IDisposable
             return;
         }
 
-        int nbSavedStones = (this.SavedStones[0] != 0 ? 1 : 0) + (this.SavedStones[1] != 0 ? 1 : 0) + (this.SavedStones[2] != 0 ? 1 : 0);
-        int nbCurrentStones = (currentStones[0] != 0 ? 1 : 0) + (currentStones[1] != 0 ? 1 : 0) + (currentStones[2] != 0 ? 1 : 0);
+        int nbSavedStones = (this.SavedStones[0] != 0 ? 1 : 0) + (this.SavedStones[1] != 0 ? 1 : 0) +
+                            (this.SavedStones[2] != 0 ? 1 : 0);
+        int nbCurrentStones = (currentStones[0] != 0 ? 1 : 0) + (currentStones[1] != 0 ? 1 : 0) +
+                              (currentStones[2] != 0 ? 1 : 0);
 
         // Check for stone obtained
         if (nbCurrentStones == nbSavedStones + 1)
@@ -434,7 +458,8 @@ public sealed unsafe class DataCommon : IDisposable
             {
                 if (this.SavedStones[i] == 0 && currentStones[i] != 0)
                 {
-                    Service.PluginLog.Info("Magicite obtained: {0} (current: {1}, saved: {2})", i, currentStones[i], this.SavedStones[i]);
+                    Service.PluginLog.Info("Magicite obtained: {0} (current: {1}, saved: {2})", i, currentStones[i],
+                        this.SavedStones[i]);
                     ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneObtained, currentStones[i]);
                     break;
                 }
@@ -448,7 +473,8 @@ public sealed unsafe class DataCommon : IDisposable
             {
                 if (this.SavedStones[i] != currentStones[i])
                 {
-                    Service.PluginLog.Info("Magicite used: {0} (current: {1}, saved: {2})", i, currentStones[i], this.SavedStones[i]);
+                    Service.PluginLog.Info("Magicite used: {0} (current: {1}, saved: {2})", i, currentStones[i],
+                        this.SavedStones[i]);
                     ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneUsed, this.SavedStones[i]);
                     break;
                 }
@@ -461,58 +487,8 @@ public sealed unsafe class DataCommon : IDisposable
             this.SavedStones[i] = currentStones[i];
         }
     }
-    
-    public void CheckForEnemyKilled()
-    {
-        if (!this.IsBossFloor)
-        {
-            foreach (var enemy in Service.ObjectTable)
-            {
-                var character = enemy as ICharacter;
-                if (character == null)
-                    continue;
 
-                if (character.IsDead && character.ObjectKind == ObjectKind.BattleNpc && character.StatusFlags.HasFlag(StatusFlags.Hostile) && !this.EnemyKilledIds.Contains(character.EntityId))
-                {
-                    this.EnemyKilledIds.Add(character.EntityId);
-                    EnemyKilledEvents.Publish(enemy.Name.ToString());
-                }
-            }
-        }
-    }
-    
-    public void CheckForPlayerKilled()
-    {
-        var character = Service.ClientState.LocalPlayer;
-        if (ServiceUtility.IsSolo)
-        {
-            Service.PluginLog.Info("Check if player killed");
-            Service.PluginLog.Info("Character name: {0}", character?.Name.ToString());
-            Service.PluginLog.Info("Character HP: {0}", character?.CurrentHp);
-            Service.PluginLog.Info("Raising time: {0}", raisingTime.AddSeconds(10) < DateTime.Now);
-            if (string.Equals(character?.Name.ToString(), this.CharacterName, StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0 && raisingTime.AddSeconds(10) < DateTime.Now)
-            {
-                Service.PluginLog.Info("player killed solo");
-                raisingTime = new DateTime();
-                PlayerKilledEvents.Publish();
-            }
-
-        }
-        else
-        {
-            foreach (var item in Service.PartyList)
-            {
-                if (string.Equals(character?.Name.ToString(), item.Name.ToString(), StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0 && raisingTime.AddSeconds(10) < DateTime.Now)
-                {
-                    Service.PluginLog.Info("player killed party");
-                    raisingTime = new DateTime();
-                    PlayerKilledEvents.Publish();
-                }
-            }
-        }
-    }
-
-    private bool CheckForMagiciteKills(DataText dataText)
+    private bool CheckForMagiciteKills(DataText dataText, uint id)
     {
         if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.IsLastFloor)
             return false;
@@ -536,9 +512,24 @@ public sealed unsafe class DataCommon : IDisposable
                         currentFloor?.MandragoraKilled();
                 }
             }
+
             this.WasMagiciteUsed = false;
             return true;
         }
+        else
+        {
+            if (this.NearbyEnemies.TryGetValue(id, out var enemy))
+            {
+                if (!enemy.IsDead)
+                {
+                    enemy.IsDead = true;
+                    this.NearbyEnemies[id] = enemy;
+                }
+                else
+                    return true;
+            }
+        }
+
         return false;
     }
 
@@ -554,7 +545,8 @@ public sealed unsafe class DataCommon : IDisposable
                 var saveSlotFileName = this.GetSaveSlotFileName(new(this.DeepDungeon, saveSlotNumber));
                 if (LocalStream.Exists(ServiceUtility.ConfigDirectory, saveSlotFileName))
                 {
-                    if (LocalStream.Move(ServiceUtility.ConfigDirectory, ServiceUtility.ConfigDirectory, saveSlotFileName, this.GetLastSaveFileName(new(this.DeepDungeon, saveSlotNumber))))
+                    if (LocalStream.Move(ServiceUtility.ConfigDirectory, ServiceUtility.ConfigDirectory,
+                            saveSlotFileName, this.GetLastSaveFileName(new(this.DeepDungeon, saveSlotNumber))))
                     {
                         var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
                         if (data?.DeepDungeon == this.DeepDungeon && data.SaveSlotNumber == saveSlotNumber)
@@ -632,6 +624,7 @@ public sealed unsafe class DataCommon : IDisposable
             else if (floorNumber >= 31 && floorNumber <= 98)
                 return TimeSpan.FromMinutes(10);
         }
+
         return default;
     }
 
@@ -639,7 +632,8 @@ public sealed unsafe class DataCommon : IDisposable
     {
         var result = dataText?.IsEnchantment(message) ?? new();
         if (result.Item1)
-            this.CurrentSaveSlot?.CurrentFloor()?.EnchantmentAffected((Enchantment)(result.Item2! - TextIndex.BlindnessEnchantment));
+            this.CurrentSaveSlot?.CurrentFloor()
+                ?.EnchantmentAffected((Enchantment)(result.Item2! - TextIndex.BlindnessEnchantment));
     }
 
     public void TrapMessageReceived(DataText dataText, string message)
@@ -679,6 +673,60 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
+    public void CheckForEnemyKilled(DataText dataText, string name, uint id)
+    {
+        if (this.CheckForMagiciteKills(dataText, id))
+            return;
+
+        var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
+
+        currentFloor?.EnemyKilled();
+        if (dataText?.IsMimic(name).Item1 ?? false)
+            currentFloor?.MimicKilled();
+        else if (dataText?.IsMandragora(name).Item1 ?? false)
+            currentFloor?.MandragoraKilled();
+        else if (dataText?.IsNPC(name).Item1 ?? false)
+            currentFloor?.NPCKilled();
+        else if (dataText?.IsDreadBeast(name).Item1 ?? false)
+            currentFloor?.DreadBeastKilled();
+    }
+
+    public void CheckForPlayerKilled(ICharacter character)
+    {
+        if (ServiceUtility.IsSolo)
+        {
+            if (string.Equals(character?.Name.ToString(), this.CharacterName, StringComparison.OrdinalIgnoreCase) &&
+                character?.CurrentHp == 0)
+                this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
+        }
+        else
+        {
+            foreach (var item in Service.PartyList)
+            {
+                if (string.Equals(character?.Name.ToString(), item.Name.ToString(),
+                        StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
+                {
+                    this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
+                    break;
+                }
+            }
+        }
+    }
+
+    public void CharacterKilledAction(DataText dataText, uint entityId)
+    {
+        var character = Service.ObjectTable.SearchById(entityId) as ICharacter;
+        var name = character?.Name.TextValue ?? string.Empty;
+        if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) ||
+                                                                dataText.IsMandragora(name).Item1))
+        {
+            if (!this.IsBossFloor)
+                this.CheckForEnemyKilled(dataText, name, entityId);
+        }
+        else if (character?.ObjectKind == ObjectKind.Player)
+            this.CheckForPlayerKilled(character);
+    }
+
     public void EnemyKilled(DataText dataText, string name)
     {
         var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
@@ -699,7 +747,8 @@ public sealed unsafe class DataCommon : IDisposable
         this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
     }
 
-    private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
+    private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()
+        ?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
 
     public void CalculateScore(ScoreCalculationType scoreCalculationType)
     {
@@ -711,7 +760,8 @@ public sealed unsafe class DataCommon : IDisposable
     {
         void CreateSaveSlot(int floorNumber)
         {
-            this.CurrentSaveSlot = new(this.DeepDungeon, contentId, Service.ClientState.LocalPlayer?.ClassJob.Value.RowId ?? 0);
+            this.CurrentSaveSlot = new(this.DeepDungeon, contentId,
+                Service.ClientState.LocalPlayer?.ClassJob.Value.RowId ?? 0);
             this.CurrentSaveSlot.AddFloorSet(floorNumber);
         }
 
@@ -752,8 +802,10 @@ public sealed unsafe class DataCommon : IDisposable
                     }
                     else
                         this.CurrentSaveSlot.ResetFloorSet();
+
                     this.CurrentSaveSlot?.ContentIdUpdate(contentId);
                 }
+
                 Task.Delay(2000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
             }
             else
@@ -847,8 +899,11 @@ public sealed unsafe class DataCommon : IDisposable
         {
             var totalProtomanders = (int)(Pomander.Dread + 1);
             var index = itemId - totalProtomanders - 1;
-            pomander = index >= 0 ? (Coffer)DataCommon.SharedPomanders[itemId - totalProtomanders - 1] : (Coffer)itemId - 1;
+            pomander = index >= 0
+                ? (Coffer)DataCommon.SharedPomanders[itemId - totalProtomanders - 1]
+                : (Coffer)itemId - 1;
         }
+
         this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(pomander);
     }
 
@@ -864,9 +919,11 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
-    public void MagiciteObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
+    public void MagiciteObtained(int itemId) =>
+        this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
 
-    public void DemicloneObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.UneiDemiclone);
+    public void DemicloneObtained(int itemId) =>
+        this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.UneiDemiclone);
 
     public void PomanderUsed(int itemId)
     {

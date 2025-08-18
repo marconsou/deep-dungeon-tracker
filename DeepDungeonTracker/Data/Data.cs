@@ -49,10 +49,6 @@ public sealed unsafe class Data : IDisposable
     private Event<string> AetherpoolMessage { get; } = new();
 
     private Event<string> TransferenceInitiatedMessage { get; } = new();
-    
-    private Event<string> PlayerKilledMessage { get; } = new();
-    
-    private Event<string> EnemyKilledMessage { get; } = new();
 
     private Event<string> DutyFailedMessage { get; } = new();
 
@@ -90,8 +86,7 @@ public sealed unsafe class Data : IDisposable
         ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed += this.StoneChangedAction;
         NewFloorEvents.Changed += this.FloorChangeAction;
-        EnemyKilledEvents.Changed += this.EnemyKilledAction;
-        PlayerKilledEvents.Changed += this.PlayerKilledAction;
+        CharacterKilledEvents.Changed += this.CharacterKilledAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -121,8 +116,7 @@ public sealed unsafe class Data : IDisposable
         ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed -= this.StoneChangedAction;
         NewFloorEvents.Changed -= this.FloorChangeAction;
-        EnemyKilledEvents.Changed -= this.EnemyKilledAction;
-        PlayerKilledEvents.Changed -= this.PlayerKilledAction;
+        CharacterKilledEvents.Changed -= this.CharacterKilledAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -146,8 +140,6 @@ public sealed unsafe class Data : IDisposable
             this.CheckForScoreWindowKills();
             this.CheckForPomandersChanged();
             this.CheckForStonesChanged();
-            this.CheckForEnemyKilled();
-            this.CheckForPlayerKilled();
         }
         else
         {
@@ -235,19 +227,6 @@ public sealed unsafe class Data : IDisposable
     private void CheckForPomandersChanged() => this.Common.CheckForPomandersChanged();
 
     private void CheckForStonesChanged() => this.Common.CheckForStonesChanged();
-    
-    private void CheckForEnemyKilled()
-    {
-        if (this.IsCharacterBusy)
-            return;
-
-        this.Common.CheckForEnemyKilled();
-    }
-
-    private void CheckForPlayerKilled()
-    {
-        this.Common.CheckForPlayerKilled();
-    }
     
 
     public void Login() => this.Common.ResetCharacterData();
@@ -416,13 +395,8 @@ public sealed unsafe class Data : IDisposable
         this.Common.StartNextFloor();   
     }
     
-    private void EnemyKilledAction(object? sender, EnemyKilledEventArgs args)
+    private void CharacterKilledAction(object? sender, CharacterKilledEventArgs args)
     {
-        this.Common.EnemyKilled(this.Text, args.Name);
-    }
-    
-    private void PlayerKilledAction(object? sender, PlayerKilledEventArgs args)
-    {
-        this.Common.PlayerKilled();
+        this.Common.CharacterKilledAction(this.Text, args.EntityId);
     }
 }

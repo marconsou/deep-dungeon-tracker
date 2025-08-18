@@ -32,6 +32,8 @@ public sealed unsafe class Plugin : IDalamudPlugin
 
     private static DutyHook _dutyHook;
 
+    private static PacketActorControlHook _packetActorControlHook;
+
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
         pluginInterface?.Create<Service>();
@@ -71,6 +73,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
         Service.DutyState.DutyStarted += this.DutyStarted;
         Service.DutyState.DutyCompleted += this.DutyCompleted;
         _dutyHook = new DutyHook();
+        _packetActorControlHook = new PacketActorControlHook();
     }
 
     public void Dispose()
@@ -94,6 +97,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
         this.Commands.Dispose();
         this.Data.Dispose();
         _dutyHook.Dispose();
+        _packetActorControlHook.Dispose();
     }
 
     private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
