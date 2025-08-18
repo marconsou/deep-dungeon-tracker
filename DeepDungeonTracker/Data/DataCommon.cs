@@ -78,6 +78,10 @@ public sealed unsafe class DataCommon : IDisposable
     private SortedDictionary<byte, byte> SavedPomanderItems { get; set; } = new();
 
     private byte[] SavedStones { get; set; } = new byte[3];
+    
+    private List<uint> EnemyKilledIds { get; set; } = [];
+    
+    private DateTime raisingTime;
 
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
@@ -456,10 +460,59 @@ public sealed unsafe class DataCommon : IDisposable
         {
             this.SavedStones[i] = currentStones[i];
         }
+    }
+    
+    public void CheckForEnemyKilled()
+    {
+        if (!this.IsBossFloor)
+        {
+            foreach (var enemy in Service.ObjectTable)
+            {
+                var character = enemy as ICharacter;
+                if (character == null)
+                    continue;
 
+                if (character.IsDead && character.ObjectKind == ObjectKind.BattleNpc && character.StatusFlags.HasFlag(StatusFlags.Hostile) && !this.EnemyKilledIds.Contains(character.EntityId))
+                {
+                    this.EnemyKilledIds.Add(character.EntityId);
+                    EnemyKilledEvents.Publish(enemy.Name.ToString());
+                }
+            }
+        }
+    }
+    
+    public void CheckForPlayerKilled()
+    {
+        var character = Service.ClientState.LocalPlayer;
+        if (ServiceUtility.IsSolo)
+        {
+            Service.PluginLog.Info("Check if player killed");
+            Service.PluginLog.Info("Character name: {0}", character?.Name.ToString());
+            Service.PluginLog.Info("Character HP: {0}", character?.CurrentHp);
+            Service.PluginLog.Info("Raising time: {0}", raisingTime.AddSeconds(10) < DateTime.Now);
+            if (string.Equals(character?.Name.ToString(), this.CharacterName, StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0 && raisingTime.AddSeconds(10) < DateTime.Now)
+            {
+                Service.PluginLog.Info("player killed solo");
+                raisingTime = new DateTime();
+                PlayerKilledEvents.Publish();
+            }
+
+        }
+        else
+        {
+            foreach (var item in Service.PartyList)
+            {
+                if (string.Equals(character?.Name.ToString(), item.Name.ToString(), StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0 && raisingTime.AddSeconds(10) < DateTime.Now)
+                {
+                    Service.PluginLog.Info("player killed party");
+                    raisingTime = new DateTime();
+                    PlayerKilledEvents.Publish();
+                }
+            }
+        }
     }
 
-    private bool CheckForMagiciteKills(DataText dataText, uint id)
+    private bool CheckForMagiciteKills(DataText dataText)
     {
         if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.IsLastFloor)
             return false;
@@ -485,19 +538,6 @@ public sealed unsafe class DataCommon : IDisposable
             }
             this.WasMagiciteUsed = false;
             return true;
-        }
-        else
-        {
-            if (this.NearbyEnemies.TryGetValue(id, out var enemy))
-            {
-                if (!enemy.IsDead)
-                {
-                    enemy.IsDead = true;
-                    this.NearbyEnemies[id] = enemy;
-                }
-                else
-                    return true;
-            }
         }
         return false;
     }
@@ -632,10 +672,6 @@ public sealed unsafe class DataCommon : IDisposable
 
     public void DutyFailedMessageReceived(DataText dataText, string message)
     {
-        
-        Service.PluginLog.Info($"Try to detect duty fail. Message: {message}");
-        var cleanedMessage = Regex.Replace(message, "“.*?”", "“”");
-        Service.PluginLog.Info($"Try to detect duty fail. Message after regex: {cleanedMessage}");
         var result = dataText?.IsDutyFailed(message) ?? new();
         if (result.Item1)
         {
@@ -643,11 +679,8 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
-    public void CheckForEnemyKilled(DataText dataText, string name, uint id)
+    public void EnemyKilled(DataText dataText, string name)
     {
-        if (this.CheckForMagiciteKills(dataText, id))
-            return;
-
         var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
 
         currentFloor?.EnemyKilled();
@@ -661,24 +694,9 @@ public sealed unsafe class DataCommon : IDisposable
             currentFloor?.DreadBeastKilled();
     }
 
-    public void CheckForPlayerKilled(ICharacter character)
+    public void PlayerKilled()
     {
-        if (ServiceUtility.IsSolo)
-        {
-            if (string.Equals(character?.Name.ToString(), this.CharacterName, StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
-                this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
-        }
-        else
-        {
-            foreach (var item in Service.PartyList)
-            {
-                if (string.Equals(character?.Name.ToString(), item.Name.ToString(), StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
-                {
-                    this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
-                    break;
-                }
-            }
-        }
+        this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
     }
 
     private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));

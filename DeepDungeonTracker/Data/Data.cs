@@ -6,11 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Dalamud.Game;
 using Dalamud.Game.Inventory;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using DeepDungeonTracker.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
+using Lumina.Data;
+using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 
 namespace DeepDungeonTracker;
 
@@ -81,12 +85,13 @@ public sealed unsafe class Data : IDisposable
         this.AetherpoolMessage.Add(this.AetherpoolMessageReceived);
         this.TransferenceInitiatedMessage.Add(this.TransferenceInitiatedMessageReceived);
         this.DutyFailedMessage.Add(this.DutyFailedMessageReceived);
-        this.ActorControl.Add(this.ActorControlAction);
         this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed += this.StoneChangedAction;
         NewFloorEvents.Changed += this.FloorChangeAction;
+        EnemyKilledEvents.Changed += this.EnemyKilledAction;
+        PlayerKilledEvents.Changed += this.PlayerKilledAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -110,12 +115,14 @@ public sealed unsafe class Data : IDisposable
         this.TrapMessage.Remove(this.TrapMessageReceived);
         this.AetherpoolMessage.Remove(this.AetherpoolMessageReceived);
         this.TransferenceInitiatedMessage.Remove(this.TransferenceInitiatedMessageReceived);
-        this.ActorControl.Remove(this.ActorControlAction);
+        this.DutyFailedMessage.Remove(this.DutyFailedMessageReceived);
         this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed -= this.StoneChangedAction;
         NewFloorEvents.Changed -= this.FloorChangeAction;
+        EnemyKilledEvents.Changed -= this.EnemyKilledAction;
+        PlayerKilledEvents.Changed -= this.PlayerKilledAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -139,6 +146,8 @@ public sealed unsafe class Data : IDisposable
             this.CheckForScoreWindowKills();
             this.CheckForPomandersChanged();
             this.CheckForStonesChanged();
+            this.CheckForEnemyKilled();
+            this.CheckForPlayerKilled();
         }
         else
         {
@@ -226,6 +235,20 @@ public sealed unsafe class Data : IDisposable
     private void CheckForPomandersChanged() => this.Common.CheckForPomandersChanged();
 
     private void CheckForStonesChanged() => this.Common.CheckForStonesChanged();
+    
+    private void CheckForEnemyKilled()
+    {
+        if (this.IsCharacterBusy)
+            return;
+
+        this.Common.CheckForEnemyKilled();
+    }
+
+    private void CheckForPlayerKilled()
+    {
+        this.Common.CheckForPlayerKilled();
+    }
+    
 
     public void Login() => this.Common.ResetCharacterData();
 
@@ -261,7 +284,7 @@ public sealed unsafe class Data : IDisposable
         {
             this.EnchantmentMessage.Execute(message);
             this.TrapMessage.Execute(message);
-            //this.AetherpoolMessage.Execute(message);
+            this.AetherpoolMessage.Execute(message);
             this.TransferenceInitiatedMessage.Execute(message);
             this.DutyFailedMessage.Execute(message);
         }
@@ -354,24 +377,6 @@ public sealed unsafe class Data : IDisposable
 
     private void DutyFailedMessageReceived(string message) => this.Common.DutyFailedMessageReceived(this.Text, message);
 
-    private void ActorControlAction((IntPtr, uint) data)
-    {
-        var defeat = 6;
-        if (NetworkData.ExtractNumber(data.Item1, 0, 1) == defeat)
-        {
-            var id = data.Item2;
-            var character = Service.ObjectTable.SearchById(id) as ICharacter;
-            var name = character?.Name.TextValue ?? string.Empty;
-            if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || this.Text.IsMandragora(name).Item1))
-            {
-                if (!this.Common.IsBossFloor)
-                    this.Common.CheckForEnemyKilled(this.Text, name, id);
-            }
-            else if (character?.ObjectKind == ObjectKind.Player)
-                this.Common.CheckForPlayerKilled(character);
-        }
-    }
-
     private void UnknownBronzeCofferItemInfoAction((IntPtr, uint) data) => this.Common.BronzeCofferUpdate(this.Text, NetworkData.ExtractNumber(data.Item1, 8, 2));
 
     private void UnknownBronzeCofferOpenAction((IntPtr, uint) data) => this.Common.BronzeCofferOpened();
@@ -409,5 +414,15 @@ public sealed unsafe class Data : IDisposable
     private void FloorChangeAction(object? sender, NewFloorEventArgs args)
     {
         this.Common.StartNextFloor();   
+    }
+    
+    private void EnemyKilledAction(object? sender, EnemyKilledEventArgs args)
+    {
+        this.Common.EnemyKilled(this.Text, args.Name);
+    }
+    
+    private void PlayerKilledAction(object? sender, PlayerKilledEventArgs args)
+    {
+        this.Common.PlayerKilled();
     }
 }
