@@ -101,14 +101,11 @@ public class SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId 
 
     public void ResetFloorSet()
     {
-        Service.PluginLog.Info("ResetFloorSet called");
-        Service.PluginLog.Info($"FloorSets count: {this.FloorSets.Count}");
         if (this.FloorSets.Count == 0)
             return;
 
         var floorSet = this.CurrentFloorSet();
         var firstFloorNumber = floorSet?.FirstFloor()?.Number ?? 0;
-        Service.PluginLog.Info($"firstFloorNumber: {firstFloorNumber}");
         floorSet?.ClearFloors();
         floorSet?.AddFloor(firstFloorNumber);
     }

@@ -29,7 +29,6 @@ public unsafe class DataText
         this.LoadTraps(language);
         this.LoadTransference(language);
         this.LoadDutyFailed(language);
-        this.LoadAetherpoolUpgrade(language);
         this.Territories = Service.DataManager.GetExcelSheet<TerritoryType>(Service.ClientState.ClientLanguage)!.ToImmutableList();
     }
 
@@ -118,18 +117,6 @@ public unsafe class DataText
             this.AddText(TextIndex.DutyFailedTimeout + i, id, sheet!.GetRow(id)!.Text);
         }
     }
-    
-    private void LoadAetherpoolUpgrade(Language language)
-    {
-        var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(Language.French);
-        var indices = new uint[] { 7250, 7251, 7252, 7253 };
-        
-        for (var i = 0; i < indices.Length; i++)
-        {
-            var id = indices[i];
-            this.AddText(TextIndex.LowAetherpoolIncrease + i, id, sheet!.GetRow(id)!.Text);
-        }
-    }
 
     private (bool, TextIndex?) IsText(TextIndex start, TextIndex end, string? name, uint? index)
     {
@@ -143,17 +130,6 @@ public unsafe class DataText
             }
         }
 
-        return (false, null);
-    }
-    
-    private (bool, TextIndex?) IsTextWithPlaceholderRemoval(TextIndex start, TextIndex end, string name)
-    {
-        for (var i = start; i <= end; i++)
-        {
-            if (string.Equals(TemplateMatcher.RemoveVariables(this.Texts[i].Item2, name), this.Texts[i].Item2, StringComparison.OrdinalIgnoreCase))
-                return (true, i);
-        }
-       
         return (false, null);
     }
 
@@ -173,11 +149,7 @@ public unsafe class DataText
 
     public (bool, TextIndex?) IsTrap(string name) => this.IsText(TextIndex.LandmineTrap, TextIndex.OwletTrap, name, null);
 
-    public (bool, TextIndex?) IsAetherpoolUpgrade(string name) => this.IsTextWithPlaceholderRemoval(TextIndex.LowAetherpoolIncrease, TextIndex.HighAetherpoolIncrease, name);
-
     public (bool, TextIndex?) IsTransferenceInitiated(string name) => this.IsText(TextIndex.TransferenceInitiated, TextIndex.TransferenceInitiated, name, null);
-
-    public (bool, TextIndex?) IsDutyFailed(string name) => this.IsTextWithPlaceholderRemoval(TextIndex.DutyFailedTimeout, TextIndex.DutyFailed, name);
 
     public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 56, 1793, checkForSubRegion, subAreaPlaceNameId: 129);
 
@@ -205,54 +177,5 @@ public unsafe class DataText
             }
         }
         return false;
-    }
-    
-    public static class TemplateMatcher
-    {
-        public static List<string> ExtractVariables(string template, string fullText)
-        {
-            var variables = new List<string>();
-            int t = 0, f = 0;
-
-            while (t < template.Length && f < fullText.Length)
-            {
-                if (template[t] == fullText[f])
-                {
-                    t++;
-                    f++;
-                }
-                else
-                {
-                    int start = f;
-                    while (f < fullText.Length && (t >= template.Length || fullText[f] != template[t]))
-                        f++;
-                    if (f > start)
-                        variables.Add(fullText.Substring(start, f - start));
-                }
-            }
-
-            if (f < fullText.Length)
-                variables.Add(fullText.Substring(f));
-
-            return variables;
-        }
-
-        public static string RemoveVariables(string template, string fullText)
-        {
-            var variables = ExtractVariables(template, fullText);
-            var result = fullText;
-
-            foreach (var v in variables)
-            {
-                if (!string.IsNullOrEmpty(v))
-                {
-                    int index = result.IndexOf(v, StringComparison.Ordinal);
-                    if (index >= 0)
-                        result = result.Remove(index, v.Length);
-                }
-            }
-
-            return result;
-        }
     }
 }

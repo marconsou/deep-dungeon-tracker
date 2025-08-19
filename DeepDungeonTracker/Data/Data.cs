@@ -46,13 +46,7 @@ public sealed unsafe class Data : IDisposable
 
     private Event<string> TrapMessage { get; } = new();
 
-    private Event<string> AetherpoolMessage { get; } = new();
-
     private Event<string> TransferenceInitiatedMessage { get; } = new();
-
-    private Event<string> DutyFailedMessage { get; } = new();
-
-    private Event<(IntPtr, uint)> ActorControl { get; } = new();
 
     private Event<(IntPtr, uint)> UnknownBronzeCofferItemInfo { get; } = new();
 
@@ -78,13 +72,12 @@ public sealed unsafe class Data : IDisposable
         this.InCombat.AddDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Add(this.EnchantmentMessageReceived);
         this.TrapMessage.Add(this.TrapMessageReceived);
-        this.AetherpoolMessage.Add(this.AetherpoolMessageReceived);
         this.TransferenceInitiatedMessage.Add(this.TransferenceInitiatedMessageReceived);
-        this.DutyFailedMessage.Add(this.DutyFailedMessageReceived);
         this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed += this.StoneChangedAction;
+        AetherpoolObtainedEvents.Changed += this.AetherpoolObtainedAction;
         NewFloorEvents.Changed += this.FloorChangeAction;
         CharacterKilledEvents.Changed += this.CharacterKilledAction;
 
@@ -108,13 +101,12 @@ public sealed unsafe class Data : IDisposable
         this.InCombat.RemoveDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Remove(this.EnchantmentMessageReceived);
         this.TrapMessage.Remove(this.TrapMessageReceived);
-        this.AetherpoolMessage.Remove(this.AetherpoolMessageReceived);
         this.TransferenceInitiatedMessage.Remove(this.TransferenceInitiatedMessageReceived);
-        this.DutyFailedMessage.Remove(this.DutyFailedMessageReceived);
         this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
         this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed -= this.StoneChangedAction;
+        AetherpoolObtainedEvents.Changed -= this.AetherpoolObtainedAction;
         NewFloorEvents.Changed -= this.FloorChangeAction;
         CharacterKilledEvents.Changed -= this.CharacterKilledAction;
         this.Common.Dispose();
@@ -138,8 +130,6 @@ public sealed unsafe class Data : IDisposable
             this.CheckForBossStatusTimer();
             this.CheckForNearbyEnemies();
             this.CheckForScoreWindowKills();
-            this.CheckForPomandersChanged();
-            this.CheckForStonesChanged();
         }
         else
         {
@@ -224,11 +214,6 @@ public sealed unsafe class Data : IDisposable
 
     private void CheckForScoreWindowKills() => this.Common.CheckForScoreWindowKills();
 
-    private void CheckForPomandersChanged() => this.Common.CheckForPomandersChanged();
-
-    private void CheckForStonesChanged() => this.Common.CheckForStonesChanged();
-    
-
     public void Login() => this.Common.ResetCharacterData();
 
     public void TerritoryChanged(ushort territoryType) => this.Common.DeepDungeonUpdate(this.Text, territoryType);
@@ -263,20 +248,12 @@ public sealed unsafe class Data : IDisposable
         {
             this.EnchantmentMessage.Execute(message);
             this.TrapMessage.Execute(message);
-            this.AetherpoolMessage.Execute(message);
             this.TransferenceInitiatedMessage.Execute(message);
-            this.DutyFailedMessage.Execute(message);
         }
     }
 
     public void InventoryChanged(IReadOnlyCollection<InventoryEventArgs> events)
     {
-        foreach (var e in events)
-        {
-            Service.PluginLog.Info(
-                $"type: {e.Type}, address: {e.Item.Address}, itemId: {e.Item.ItemId}, quantity: {e.Item.Quantity}, containerType: {e.Item.ContainerType}");
-        }
-
         ImmutableList<uint> regenPotionsItemIds = ImmutableList.Create<uint>(20309, 23163, 38944);
         if (this.InDeepDungeon.IsActivated)
         {
@@ -295,7 +272,6 @@ public sealed unsafe class Data : IDisposable
     {
         if (this.InDeepDungeon.IsActivated)
         {
-            Service.PluginLog.Info($"DeepDungeonTracker: Duty Started. Content ID: {dutyId}");
             this.Common.DutyStarted();
         }
     }
@@ -304,7 +280,6 @@ public sealed unsafe class Data : IDisposable
     {
         if (this.InDeepDungeon.IsActivated)
         {
-            Service.PluginLog.Info("DeepDungeonTracker: Duty completed.");
             this.Common.DutyCompleted();
         }
     }
@@ -320,9 +295,7 @@ public sealed unsafe class Data : IDisposable
             }
 
             var opCodes = configuration?.OpCodes;
-            if (opCode == opCodes!.ActorControl)
-                this.ActorControl.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.UnknownBronzeCofferItemInfo)
+            if (opCode == opCodes!.UnknownBronzeCofferItemInfo)
                 this.UnknownBronzeCofferItemInfo.Execute((dataPtr, targetActorId));
             else if (opCode == opCodes.UnknownBronzeCofferOpen)
                 this.UnknownBronzeCofferOpen.Execute((dataPtr, targetActorId));
@@ -341,11 +314,7 @@ public sealed unsafe class Data : IDisposable
 
     private void TrapMessageReceived(string message) => this.Common.TrapMessageReceived(this.Text, message);
 
-    private void AetherpoolMessageReceived(string message) => this.Common.AetherpoolMessageReceived(this.Text, message);
-
     private void TransferenceInitiatedMessageReceived(string message) => this.Common.TransferenceInitiatedMessageReceived(this.Text, message);
-
-    private void DutyFailedMessageReceived(string message) => this.Common.DutyFailedMessageReceived(this.Text, message);
 
     private void UnknownBronzeCofferItemInfoAction((IntPtr, uint) data) => this.Common.BronzeCofferUpdate(this.Text, NetworkData.ExtractNumber(data.Item1, 8, 2));
 
@@ -353,30 +322,24 @@ public sealed unsafe class Data : IDisposable
 
     private void PomanderChangedAction(object? sender, ItemChangedEventArgs<PomanderChangedType> args)
     {
-        Service.PluginLog.Info("DeepDungeonTracker: Pomander changed: " + args.ItemId);
         if (args.Type == PomanderChangedType.PomanderObtained)
         {
-            Service.PluginLog.Info("DeepDungeonTracker: Pomander obtained: " + args.ItemId);
             this.Common.PomanderObtained(args.ItemId);
         }
         else if (args.Type == PomanderChangedType.PomanderUsed)
         {
-            Service.PluginLog.Info("DeepDungeonTracker: Pomander used: " + args.ItemId);
             this.Common.PomanderUsed(args.ItemId);
         }
     }
 
     private void StoneChangedAction(object? sender, ItemChangedEventArgs<StoneChangedType> args)
     {
-        Service.PluginLog.Info("DeepDungeonTracker: Stone changed: " + args.ItemId);
         if (args.Type == StoneChangedType.StoneObtained)
         {
-            Service.PluginLog.Info("DeepDungeonTracker: Stone obtained: " + args.ItemId);
             this.Common.StoneObtained(args.ItemId);
         }
         else if (args.Type == StoneChangedType.StoneUsed)
         {
-            Service.PluginLog.Info("DeepDungeonTracker: Stone used: " + args.ItemId);
             this.Common.StoneUsed(args.ItemId);
         }
     }
@@ -389,5 +352,10 @@ public sealed unsafe class Data : IDisposable
     private void CharacterKilledAction(object? sender, CharacterKilledEventArgs args)
     {
         this.Common.CharacterKilledAction(this.Text, args.EntityId);
+    }
+    
+    private void AetherpoolObtainedAction(object? sender, AetherpoolObtainedEventArgs args)
+    {
+        this.Common.AetherpoolObtained();
     }
 }

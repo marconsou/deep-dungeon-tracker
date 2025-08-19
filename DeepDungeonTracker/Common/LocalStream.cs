@@ -14,7 +14,6 @@ public static class LocalStream
 
     public static async Task Save<T>(string directory, string fileName, T data)
     {
-        Service.PluginLog.Info("Saving {0} to {1}", fileName, directory);
         Directory.CreateDirectory(directory);
         using FileStream fileStream = File.Create(Path.Combine(directory, fileName));
         await JsonSerializer.SerializeAsync(fileStream, data, data!.GetType(), LocalStream.Options).ConfigureAwait(true);

@@ -15,11 +15,11 @@ namespace DeepDungeonTracker.Event
     }
 
 
-    public class ItemChangedEventArgs<TChangeType>(TChangeType type, byte itemId) : EventArgs
+    public class ItemChangedEventArgs<TChangeType>(TChangeType type, int itemId) : EventArgs
         where TChangeType : Enum
     {
         public TChangeType Type { get; } = type;
-        public byte ItemId { get; } = itemId;
+        public int ItemId { get; } = itemId;
     }
 
     public static class ItemChangedEvents<TChangeType>
@@ -27,7 +27,7 @@ namespace DeepDungeonTracker.Event
     {
         public static event EventHandler<ItemChangedEventArgs<TChangeType>>? Changed;
 
-        public static void Publish(TChangeType type, byte itemId)
+        public static void Publish(TChangeType type, int itemId)
             => OnChanged(new ItemChangedEventArgs<TChangeType>(type, itemId));
 
         private static void OnChanged(ItemChangedEventArgs<TChangeType> e)

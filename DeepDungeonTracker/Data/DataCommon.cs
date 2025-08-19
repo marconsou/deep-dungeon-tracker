@@ -77,11 +77,6 @@ public sealed unsafe class DataCommon : IDisposable
         Pomander.Intuition, Pomander.Raising
     ];
 
-    // (itemId, count)
-    private SortedDictionary<byte, byte> SavedPomanderItems { get; set; } = new();
-
-    private byte[] SavedStones { get; set; } = new byte[3];
-
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
     public void ResetCharacterData()
@@ -106,29 +101,6 @@ public sealed unsafe class DataCommon : IDisposable
         this.CairnOfPassageKillIds = [];
         this.DutyStatus = DutyStatus.None;
         this.CurrentSaveSlot?.ContentIdUpdate(0);
-        
-        this.SavedPomanderItems = new SortedDictionary<byte, byte>();
-        this.SavedStones = new byte[3];
-        
-        var eventFramework = EventFramework.Instance();
-        var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
-        if (deepDungeonInstance == null)
-        {
-            return;
-        }
-        
-        var currentItems = deepDungeonInstance->Items;
-        foreach (var item in currentItems)
-        {
-            this.SavedPomanderItems[item.ItemId] = item.Count;
-        }
-
-        var currentStones = deepDungeonInstance->Magicite;
-        for (int i = 0; i < 3; i++)
-        {
-            this.SavedStones[i] = currentStones[i];
-        }
-        
     }
 
     public void ExitingDeepDungeon()
@@ -418,96 +390,6 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
-    public void CheckForPomandersChanged()
-    {
-        var eventFramework = EventFramework.Instance();
-        var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
-        if (deepDungeonInstance == null)
-        {
-            return;
-        }
-
-        var currentItems = deepDungeonInstance->Items;
-        foreach (var item in currentItems)
-        {
-            var currentCount = item.Count;
-            var savedCount = this.SavedPomanderItems.GetValueOrDefault(item.ItemId, (byte)0);
-            if (currentCount > savedCount)
-            {
-                Service.PluginLog.Info("Pomander obtain: {0} (current: {1}, saved: {2})", item.ItemId, currentCount,
-                    savedCount);
-                ItemChangedEvents<PomanderChangedType>.Publish(PomanderChangedType.PomanderObtained, item.ItemId);
-                this.SavedPomanderItems[item.ItemId] = currentCount;
-            }
-            else if (currentCount < savedCount)
-            {
-                Service.PluginLog.Info("Pomander used: {0} (current: {1}, saved: {2})", item.ItemId, currentCount,
-                    savedCount);
-                ItemChangedEvents<PomanderChangedType>.Publish(PomanderChangedType.PomanderUsed, item.ItemId);
-                this.SavedPomanderItems[item.ItemId] = currentCount;
-            }
-        }
-    }
-
-    public void CheckForStonesChanged()
-    {
-        var eventFramework = EventFramework.Instance();
-        var deepDungeonInstance = eventFramework->GetInstanceContentDeepDungeon();
-        if (deepDungeonInstance == null)
-        {
-            return;
-        }
-
-        var currentStones = deepDungeonInstance->Magicite;
-        if (this.SavedStones[0] == currentStones[0] &&
-            this.SavedStones[1] == currentStones[1] &&
-            this.SavedStones[2] == currentStones[2])
-        {
-            return;
-        }
-
-        int nbSavedStones = (this.SavedStones[0] != 0 ? 1 : 0) + (this.SavedStones[1] != 0 ? 1 : 0) +
-                            (this.SavedStones[2] != 0 ? 1 : 0);
-        int nbCurrentStones = (currentStones[0] != 0 ? 1 : 0) + (currentStones[1] != 0 ? 1 : 0) +
-                              (currentStones[2] != 0 ? 1 : 0);
-
-        // Check for stone obtained
-        if (nbCurrentStones == nbSavedStones + 1)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                if (this.SavedStones[i] == 0 && currentStones[i] != 0)
-                {
-                    Service.PluginLog.Info("Stone obtained: {0} (current: {1}, saved: {2})", i, currentStones[i],
-                        this.SavedStones[i]);
-                    ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneObtained, currentStones[i]);
-                    break;
-                }
-            }
-        }
-
-        // Check for stone used
-        if (nbCurrentStones == nbSavedStones - 1)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                if (this.SavedStones[i] != currentStones[i])
-                {
-                    Service.PluginLog.Info("Stone used: {0} (current: {1}, saved: {2})", i, currentStones[i],
-                        this.SavedStones[i]);
-                    ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneUsed, this.SavedStones[i]);
-                    break;
-                }
-            }
-        }
-
-        // Save magicites
-        for (int i = 0; i < 3; i++)
-        {
-            this.SavedStones[i] = currentStones[i];
-        }
-    }
-
     private bool CheckForMagiciteKills(DataText dataText, uint id)
     {
         if (this.DeepDungeon != DeepDungeon.HeavenOnHigh || this.IsLastFloor)
@@ -585,18 +467,15 @@ public sealed unsafe class DataCommon : IDisposable
         var deepDungeon = this.DeepDungeon;
         if (dataText?.IsPalaceOfTheDeadRegion(territoryType) ?? false)
         {
-            Service.PluginLog.Info("Detected PotD region.");
             this.DeepDungeon = DeepDungeon.PalaceOfTheDead;
         }
         else if (dataText?.IsHeavenOnHighRegion(territoryType) ?? false)
         {
-            Service.PluginLog.Info("Detected HoH region.");
             this.DeepDungeon = DeepDungeon.HeavenOnHigh;
         }
         else if (dataText?.IsEurekaOrthosRegion(territoryType) ?? false)
 
         {
-            Service.PluginLog.Info("Detected EO region.");
             this.DeepDungeon = DeepDungeon.EurekaOrthos;
         }
         else
@@ -663,33 +542,12 @@ public sealed unsafe class DataCommon : IDisposable
             this.CurrentSaveSlot?.CurrentFloor()?.TrapTriggered((Trap)(result.Item2! - TextIndex.LandmineTrap));
     }
 
-    public void AetherpoolMessageReceived(DataText dataText, string message)
-    {
-        var result = dataText?.IsAetherpoolUpgrade(message) ?? new();
-        if (result.Item1)
-        {
-            if (!this.IsLastFloor)
-            {
-                this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Aetherpool);
-            }
-        }
-    }
-
     public void TransferenceInitiatedMessageReceived(DataText dataText, string message)
     {
         var result = dataText?.IsTransferenceInitiated(message) ?? new();
         if (result.Item1)
         {
             this.TransferenceInitiated();
-        }
-    }
-
-    public void DutyFailedMessageReceived(DataText dataText, string message)
-    {
-        var result = dataText?.IsDutyFailed(message) ?? new();
-        if (result.Item1)
-        {
-            this.DutyFailed();
         }
     }
 
@@ -798,7 +656,6 @@ public sealed unsafe class DataCommon : IDisposable
             if (this.IsSoloSaveSlot)
             {
                 var saveSlotSelection = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
-                Service.PluginLog.Info($"{saveSlotSelection?.DeepDungeon} - {saveSlotSelection?.SaveSlotNumber}");
                 if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(saveSlotSelection)))
                 {
                     CreateSaveSlot(floorNumber);
@@ -827,7 +684,6 @@ public sealed unsafe class DataCommon : IDisposable
             }
             else
             {
-                Service.PluginLog.Info("Creating a new group save.");
                 CreateSaveSlot(floorNumber);
             }
         }
@@ -911,6 +767,12 @@ public sealed unsafe class DataCommon : IDisposable
         }
 
         this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(pomander);
+    }
+    
+    public void AetherpoolObtained()
+    {
+        if (!this.IsLastFloor)
+            this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Aetherpool);
     }
 
     public void StoneObtained(int itemId)
