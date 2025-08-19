@@ -48,10 +48,6 @@ public sealed unsafe class Data : IDisposable
 
     private Event<string> TransferenceInitiatedMessage { get; } = new();
 
-    private Event<(IntPtr, uint)> UnknownBronzeCofferItemInfo { get; } = new();
-
-    private Event<(IntPtr, uint)> UnknownBronzeCofferOpen { get; } = new();
-
     private bool IsCharacterBusy => this.BetweenAreas.IsActivated || this.Occupied33.IsActivated || this.Common.IsTransferenceInitiated;
 
     public bool IsInsideDeepDungeon => this.InDeepDungeon.IsActivated;
@@ -73,14 +69,13 @@ public sealed unsafe class Data : IDisposable
         this.EnchantmentMessage.Add(this.EnchantmentMessageReceived);
         this.TrapMessage.Add(this.TrapMessageReceived);
         this.TransferenceInitiatedMessage.Add(this.TransferenceInitiatedMessageReceived);
-        this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
-        this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed += this.StoneChangedAction;
         AetherpoolObtainedEvents.Changed += this.AetherpoolObtainedAction;
         NewFloorEvents.Changed += this.FloorChangeAction;
         CharacterKilledEvents.Changed += this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed += this.RegenPotionConsumedAction;
+        BronzeChestOpenedEvents.Changed += this.BronzeChestOpenedAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -103,14 +98,13 @@ public sealed unsafe class Data : IDisposable
         this.EnchantmentMessage.Remove(this.EnchantmentMessageReceived);
         this.TrapMessage.Remove(this.TrapMessageReceived);
         this.TransferenceInitiatedMessage.Remove(this.TransferenceInitiatedMessageReceived);
-        this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
-        this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
         ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed -= this.StoneChangedAction;
         AetherpoolObtainedEvents.Changed -= this.AetherpoolObtainedAction;
         NewFloorEvents.Changed -= this.FloorChangeAction;
         CharacterKilledEvents.Changed -= this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed -= this.RegenPotionConsumedAction;
+        BronzeChestOpenedEvents.Changed -= this.BronzeChestOpenedAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -270,24 +264,6 @@ public sealed unsafe class Data : IDisposable
         }
     }
 
-    public void NetworkMessage(IntPtr dataPtr, ushort opCode, uint targetActorId, Configuration configuration)
-    {
-        if (this.InDeepDungeon.IsActivated)
-        {
-            if (this.Common.IsSoloSaveSlot)
-            {
-                this.OpCodes.FindUnknownBronzeCofferItemInfoOpCode(dataPtr, opCode, targetActorId, configuration!);
-                this.OpCodes.FindUnknownBronzeCofferOpenOpCode(dataPtr, opCode, targetActorId, configuration!);
-            }
-
-            var opCodes = configuration?.OpCodes;
-            if (opCode == opCodes!.UnknownBronzeCofferItemInfo)
-                this.UnknownBronzeCofferItemInfo.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.UnknownBronzeCofferOpen)
-                this.UnknownBronzeCofferOpen.Execute((dataPtr, targetActorId));
-        }
-    }
-
     private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon();
 
     private void DeepDungeonDeactivating() => this.Common.ExitingDeepDungeon();
@@ -301,10 +277,6 @@ public sealed unsafe class Data : IDisposable
     private void TrapMessageReceived(string message) => this.Common.TrapMessageReceived(this.Text, message);
 
     private void TransferenceInitiatedMessageReceived(string message) => this.Common.TransferenceInitiatedMessageReceived(this.Text, message);
-
-    private void UnknownBronzeCofferItemInfoAction((IntPtr, uint) data) => this.Common.BronzeCofferUpdate(this.Text, NetworkData.ExtractNumber(data.Item1, 8, 2));
-
-    private void UnknownBronzeCofferOpenAction((IntPtr, uint) data) => this.Common.BronzeCofferOpened();
 
     private void PomanderChangedAction(object? sender, ItemChangedEventArgs<PomanderChangedType> args)
     {
@@ -348,5 +320,10 @@ public sealed unsafe class Data : IDisposable
     private void RegenPotionConsumedAction(object? sender, RegenPotionConsumedEventArgs args)
     {
         this.Common.RegenPotionConsumed();
+    }
+    
+    private void BronzeChestOpenedAction(object? sender, BronzeChestOpenedEventArgs args)
+    {
+        this.Common.BronzeChestOpened();
     }
 }

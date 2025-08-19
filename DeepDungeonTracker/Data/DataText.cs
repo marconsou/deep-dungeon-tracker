@@ -28,7 +28,6 @@ public unsafe class DataText
         this.LoadEnchantments(language);
         this.LoadTraps(language);
         this.LoadTransference(language);
-        this.LoadDutyFailed(language);
         this.Territories = Service.DataManager.GetExcelSheet<TerritoryType>(Service.ClientState.ClientLanguage)!.ToImmutableList();
     }
 
@@ -104,18 +103,6 @@ public unsafe class DataText
         var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(language);
         const uint id = 7248;
         this.AddText(TextIndex.TransferenceInitiated, id, sheet!.GetRow(id)!.Text);
-    }
-    
-    private void LoadDutyFailed(Language language)
-    {
-        var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(language);
-        var indices = new uint[] { 1533, 1534 };
-        
-        for (var i = 0; i < indices.Length; i++)
-        {
-            var id = indices[i];
-            this.AddText(TextIndex.DutyFailedTimeout + i, id, sheet!.GetRow(id)!.Text);
-        }
     }
 
     private (bool, TextIndex?) IsText(TextIndex start, TextIndex end, string? name, uint? index)

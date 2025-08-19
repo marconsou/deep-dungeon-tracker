@@ -730,6 +730,8 @@ public sealed unsafe class DataCommon : IDisposable
 
     public void RegenPotionConsumed() => this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
 
+    public void BronzeChestOpened() => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Medicine);
+    
     public void PomanderObtained(int itemId)
     {
         Coffer pomander = default;
@@ -832,19 +834,4 @@ public sealed unsafe class DataCommon : IDisposable
         this.NearbyEnemies = [];
         this.IsTransferenceInitiated = true;
     }
-
-    public void BronzeCofferUpdate(DataText dataText, int itemId)
-    {
-        if (this.IsBronzeCofferOpened)
-        {
-            this.IsBronzeCofferOpened = false;
-            var result = dataText?.IsPotsherd((uint)itemId) ?? new();
-            if (result.Item1)
-                this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Potsherd);
-            else
-                this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Medicine);
-        }
-    }
-
-    public void BronzeCofferOpened() => this.IsBronzeCofferOpened = true;
 }
