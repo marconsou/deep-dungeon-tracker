@@ -254,22 +254,6 @@ public sealed unsafe class Data : IDisposable
         }
     }
 
-    public void InventoryChanged(IReadOnlyCollection<InventoryEventArgs> events)
-    {
-        ImmutableList<uint> regenPotionsItemIds = ImmutableList.Create<uint>(20309, 23163, 38944);
-        if (this.InDeepDungeon.IsActivated)
-        {
-            foreach (var e in events)
-            {
-                if (regenPotionsItemIds.Contains(e.Item.ItemId) && (e.Type is GameInventoryEvent.Changed or GameInventoryEvent.Removed))
-                {
-                    this.Common.RegenPotionConsumed();
-                }
-            }
-        }
-
-    }
-
     public void DutyStarted(ushort dutyId)
     {
         if (this.InDeepDungeon.IsActivated)

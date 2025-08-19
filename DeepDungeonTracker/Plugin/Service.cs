@@ -16,9 +16,6 @@ public class Service
     public static IChatGui ChatGui { get; private set; } = null!;
 
     [PluginService]
-    public static IGameInventory GameInventory { get; private set; } = null!;
-
-    [PluginService]
     public static IDutyState DutyState { get; private set; } = null!;
 
     [PluginService]

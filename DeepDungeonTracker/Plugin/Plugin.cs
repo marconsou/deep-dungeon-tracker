@@ -73,7 +73,6 @@ public sealed unsafe class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged += this.TerritoryChanged;
         Service.Condition.ConditionChange += this.ConditionChange;
         Service.ChatGui.ChatMessage += this.ChatMessage;
-        Service.GameInventory.InventoryChanged += this.InventoryChanged;
         Service.DutyState.DutyStarted += this.DutyStarted;
         Service.DutyState.DutyCompleted += this.DutyCompleted;
         _dutyHook = new DutyHook();
@@ -93,7 +92,6 @@ public sealed unsafe class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged -= this.TerritoryChanged;
         Service.Condition.ConditionChange -= this.ConditionChange;
         Service.ChatGui.ChatMessage -= this.ChatMessage;
-        Service.GameInventory.InventoryChanged -= this.InventoryChanged;
         Service.DutyState.DutyStarted -= this.DutyStarted;
         Service.DutyState.DutyCompleted -= this.DutyCompleted;
 
@@ -174,8 +172,6 @@ public sealed unsafe class Plugin : IDalamudPlugin
     private void ConditionChange(ConditionFlag flag, bool value) => this.Data.ConditionChange(flag, value);
 
     private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) => this.Data.ChatMessage(message.TextValue);
-
-    private void InventoryChanged(IReadOnlyCollection<InventoryEventArgs> events) => this.Data.InventoryChanged(events);
 
     private void DutyStarted(object? sender, ushort e) => this.Data.DutyStarted(e);
 
