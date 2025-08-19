@@ -605,26 +605,6 @@ public sealed unsafe class DataCommon : IDisposable
             this.CheckForPlayerKilled(character);
     }
 
-    public void EnemyKilled(DataText dataText, string name)
-    {
-        var currentFloor = this.CurrentSaveSlot?.CurrentFloor();
-
-        currentFloor?.EnemyKilled();
-        if (dataText?.IsMimic(name).Item1 ?? false)
-            currentFloor?.MimicKilled();
-        else if (dataText?.IsMandragora(name).Item1 ?? false)
-            currentFloor?.MandragoraKilled();
-        else if (dataText?.IsNPC(name).Item1 ?? false)
-            currentFloor?.NPCKilled();
-        else if (dataText?.IsDreadBeast(name).Item1 ?? false)
-            currentFloor?.DreadBeastKilled();
-    }
-
-    public void PlayerKilled()
-    {
-        this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
-    }
-
     private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()
         ?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
 

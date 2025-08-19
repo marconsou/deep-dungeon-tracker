@@ -80,6 +80,7 @@ public sealed unsafe class Data : IDisposable
         AetherpoolObtainedEvents.Changed += this.AetherpoolObtainedAction;
         NewFloorEvents.Changed += this.FloorChangeAction;
         CharacterKilledEvents.Changed += this.CharacterKilledAction;
+        RegenPotionConsumedEvents.Changed += this.RegenPotionConsumedAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -109,6 +110,7 @@ public sealed unsafe class Data : IDisposable
         AetherpoolObtainedEvents.Changed -= this.AetherpoolObtainedAction;
         NewFloorEvents.Changed -= this.FloorChangeAction;
         CharacterKilledEvents.Changed -= this.CharacterKilledAction;
+        RegenPotionConsumedEvents.Changed -= this.RegenPotionConsumedAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -357,5 +359,10 @@ public sealed unsafe class Data : IDisposable
     private void AetherpoolObtainedAction(object? sender, AetherpoolObtainedEventArgs args)
     {
         this.Common.AetherpoolObtained();
+    }
+    
+    private void RegenPotionConsumedAction(object? sender, RegenPotionConsumedEventArgs args)
+    {
+        this.Common.RegenPotionConsumed();
     }
 }
