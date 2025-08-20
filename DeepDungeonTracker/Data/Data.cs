@@ -104,6 +104,7 @@ public sealed unsafe class Data : IDisposable
         NewFloorEvents.Changed -= this.FloorChangeAction;
         CharacterKilledEvents.Changed -= this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed -= this.RegenPotionConsumedAction;
+        TransferenceInitiatedEvents.Changed -= this.TransferenceInitiatedAction;
         BronzeChestOpenedEvents.Changed -= this.BronzeChestOpenedAction;
         DutyFailedEvents.Changed -= this.DutyFailedAction;
         this.Common.Dispose();
