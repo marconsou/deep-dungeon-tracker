@@ -27,7 +27,6 @@ public unsafe class DataText
         this.LoadEnemies(language);
         this.LoadEnchantments(language);
         this.LoadTraps(language);
-        this.LoadTransference(language);
         this.Territories = Service.DataManager.GetExcelSheet<TerritoryType>(Service.ClientState.ClientLanguage)!.ToImmutableList();
     }
 
@@ -98,13 +97,6 @@ public unsafe class DataText
         }
     }
 
-    private void LoadTransference(Language language)
-    {
-        var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(language);
-        const uint id = 7248;
-        this.AddText(TextIndex.TransferenceInitiated, id, sheet!.GetRow(id)!.Text);
-    }
-
     private (bool, TextIndex?) IsText(TextIndex start, TextIndex end, string? name, uint? index)
     {
         if (name != null)
@@ -135,8 +127,6 @@ public unsafe class DataText
     public (bool, TextIndex?) IsEnchantment(string name) => this.IsText(TextIndex.BlindnessEnchantment, TextIndex.DemiclonePenaltyEnchantment, name, null);
 
     public (bool, TextIndex?) IsTrap(string name) => this.IsText(TextIndex.LandmineTrap, TextIndex.OwletTrap, name, null);
-
-    public (bool, TextIndex?) IsTransferenceInitiated(string name) => this.IsText(TextIndex.TransferenceInitiated, TextIndex.TransferenceInitiated, name, null);
 
     public bool IsPalaceOfTheDeadRegion(uint territoryType, bool checkForSubRegion = false) => this.IsDeepDungeonRegion(territoryType, 56, 1793, checkForSubRegion, subAreaPlaceNameId: 129);
 

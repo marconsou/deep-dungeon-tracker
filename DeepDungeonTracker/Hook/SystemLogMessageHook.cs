@@ -19,6 +19,7 @@ namespace DeepDungeonTracker.Hook
         public static readonly uint pomanderUsed = 7254;
         public static readonly uint magiciteUsed = 9209;
         public static readonly uint demicloneUsed = 10288;
+        public static readonly uint transferenceInitiated = 7248;
 
         public SystemLogMessageHook()
         {
@@ -49,7 +50,9 @@ namespace DeepDungeonTracker.Hook
             else if (type == pomanderUsed)
                 ItemChangedEvents<PomanderChangedType>.Publish(PomanderChangedType.PomanderUsed, itemUsedId);
             else if (type == magiciteUsed || type == demicloneUsed)
-                ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneUsed, itemObtainedId);
+                ItemChangedEvents<StoneChangedType>.Publish(StoneChangedType.StoneUsed, itemUsedId);
+            else if (type == transferenceInitiated)
+                TransferenceInitiatedEvents.Publish();
         }
     }
 }

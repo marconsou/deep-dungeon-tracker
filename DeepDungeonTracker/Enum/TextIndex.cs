@@ -96,11 +96,4 @@ public enum TextIndex
     ToadingTrap,
     OdderTrap,
     OwletTrap,
-    LowAetherpoolIncrease,
-    FailedAetherpoolIncrease,
-    MediumAetherpoolIncrease,
-    HighAetherpoolIncrease,
-    TransferenceInitiated,
-    DutyFailedTimeout,
-    DutyFailed,
 }

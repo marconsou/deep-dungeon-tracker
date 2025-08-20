@@ -542,15 +542,6 @@ public sealed unsafe class DataCommon : IDisposable
             this.CurrentSaveSlot?.CurrentFloor()?.TrapTriggered((Trap)(result.Item2! - TextIndex.LandmineTrap));
     }
 
-    public void TransferenceInitiatedMessageReceived(DataText dataText, string message)
-    {
-        var result = dataText?.IsTransferenceInitiated(message) ?? new();
-        if (result.Item1)
-        {
-            this.TransferenceInitiated();
-        }
-    }
-
     public void CheckForEnemyKilled(DataText dataText, string name, uint id)
     {
         if (this.CheckForMagiciteKills(dataText, id))

@@ -68,13 +68,13 @@ public sealed unsafe class Data : IDisposable
         this.InCombat.AddDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Add(this.EnchantmentMessageReceived);
         this.TrapMessage.Add(this.TrapMessageReceived);
-        this.TransferenceInitiatedMessage.Add(this.TransferenceInitiatedMessageReceived);
         ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed += this.StoneChangedAction;
         AetherpoolObtainedEvents.Changed += this.AetherpoolObtainedAction;
         NewFloorEvents.Changed += this.FloorChangeAction;
         CharacterKilledEvents.Changed += this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed += this.RegenPotionConsumedAction;
+        TransferenceInitiatedEvents.Changed += this.TransferenceInitiatedAction;
         BronzeChestOpenedEvents.Changed += this.BronzeChestOpenedAction;
         DutyFailedEvents.Changed += this.DutyFailedAction;
 
@@ -98,7 +98,6 @@ public sealed unsafe class Data : IDisposable
         this.InCombat.RemoveDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Remove(this.EnchantmentMessageReceived);
         this.TrapMessage.Remove(this.TrapMessageReceived);
-        this.TransferenceInitiatedMessage.Remove(this.TransferenceInitiatedMessageReceived);
         ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
         ItemChangedEvents<StoneChangedType>.Changed -= this.StoneChangedAction;
         AetherpoolObtainedEvents.Changed -= this.AetherpoolObtainedAction;
@@ -278,8 +277,6 @@ public sealed unsafe class Data : IDisposable
 
     private void TrapMessageReceived(string message) => this.Common.TrapMessageReceived(this.Text, message);
 
-    private void TransferenceInitiatedMessageReceived(string message) => this.Common.TransferenceInitiatedMessageReceived(this.Text, message);
-
     private void PomanderChangedAction(object? sender, ItemChangedEventArgs<PomanderChangedType> args)
     {
         if (args.Type == PomanderChangedType.PomanderObtained)
@@ -322,6 +319,11 @@ public sealed unsafe class Data : IDisposable
     private void RegenPotionConsumedAction(object? sender, RegenPotionConsumedEventArgs args)
     {
         this.Common.RegenPotionConsumed();
+    }
+    
+    private void TransferenceInitiatedAction(object? sender, TransferenceInitiatedEventArgs args)
+    {
+        this.Common.TransferenceInitiated();
     }
 
     private void BronzeChestOpenedAction(object? sender, BronzeChestOpenedEventArgs args)
