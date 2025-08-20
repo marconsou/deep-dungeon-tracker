@@ -18,7 +18,7 @@ using Lumina.Text.ReadOnly;
 
 namespace DeepDungeonTracker;
 
-public sealed unsafe class Data : IDisposable
+public sealed class Data : IDisposable
 {
     public DataCommon Common { get; } = new();
 

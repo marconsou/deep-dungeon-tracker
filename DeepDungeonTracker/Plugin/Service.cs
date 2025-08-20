@@ -55,9 +55,6 @@ public class Service
     public static ISigScanner SigScanner { get; private set; } = null!;
 
     [PluginService]
-    public static ISeStringEvaluator SeStringEvaluator { get; private set; } = null!;
-
-    [PluginService]
     public static ITargetManager TargetManager { get; private set; } = null!;
 
     [PluginService]

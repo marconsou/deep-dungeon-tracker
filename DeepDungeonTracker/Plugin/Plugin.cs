@@ -18,7 +18,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace DeepDungeonTracker;
 
-public sealed unsafe class Plugin : IDalamudPlugin
+public sealed class Plugin : IDalamudPlugin
 {
     public static string Name => "Deep Dungeon Tracker";
 
