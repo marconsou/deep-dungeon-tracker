@@ -591,7 +591,7 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
-    public void CharacterKilledAction(DataText dataText, uint entityId)
+    public void CharacterKilled(DataText dataText, uint entityId)
     {
         var character = Service.ObjectTable.SearchById(entityId) as ICharacter;
         var name = character?.Name.TextValue ?? string.Empty;

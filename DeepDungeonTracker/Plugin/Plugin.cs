@@ -39,6 +39,8 @@ public sealed unsafe class Plugin : IDalamudPlugin
     private static PacketEffectResultHook _packetEffectResultHook;
     
     private static PacketOpenTreasureHook _packetOpenTreasureHook;
+    
+    private static PacketEventPlayHook _packetEventPlayHook;
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
@@ -82,6 +84,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
         _systemLogMessageHook = new SystemLogMessageHook();
         _packetEffectResultHook = new PacketEffectResultHook();
         _packetOpenTreasureHook = new PacketOpenTreasureHook();
+        _packetEventPlayHook = new PacketEventPlayHook();
     }
 
     public void Dispose()
@@ -108,6 +111,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
         _systemLogMessageHook.Dispose();
         _packetEffectResultHook.Dispose();
         _packetOpenTreasureHook.Dispose();
+        _packetEventPlayHook.Dispose();
     }
 
     private void OnConfigCommand(string command, string args) => this.OpenConfigUi();

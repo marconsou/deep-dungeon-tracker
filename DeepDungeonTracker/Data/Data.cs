@@ -76,6 +76,7 @@ public sealed unsafe class Data : IDisposable
         CharacterKilledEvents.Changed += this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed += this.RegenPotionConsumedAction;
         BronzeChestOpenedEvents.Changed += this.BronzeChestOpenedAction;
+        DutyFailedEvents.Changed += this.DutyFailedAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -105,6 +106,7 @@ public sealed unsafe class Data : IDisposable
         CharacterKilledEvents.Changed -= this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed -= this.RegenPotionConsumedAction;
         BronzeChestOpenedEvents.Changed -= this.BronzeChestOpenedAction;
+        DutyFailedEvents.Changed -= this.DutyFailedAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -309,7 +311,7 @@ public sealed unsafe class Data : IDisposable
     
     private void CharacterKilledAction(object? sender, CharacterKilledEventArgs args)
     {
-        this.Common.CharacterKilledAction(this.Text, args.EntityId);
+        this.Common.CharacterKilled(this.Text, args.EntityId);
     }
     
     private void AetherpoolObtainedAction(object? sender, AetherpoolObtainedEventArgs args)
@@ -325,5 +327,10 @@ public sealed unsafe class Data : IDisposable
     private void BronzeChestOpenedAction(object? sender, BronzeChestOpenedEventArgs args)
     {
         this.Common.BronzeChestOpened();
+    }
+    
+    private void DutyFailedAction(object? sender, DutyFailedEventArgs args)
+    {
+        this.Common.DutyFailed();
     }
 }
