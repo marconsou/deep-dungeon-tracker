@@ -35,11 +35,11 @@ public sealed unsafe class Plugin : IDalamudPlugin
     private static PacketActorControlHook _packetActorControlHook;
 
     private static SystemLogMessageHook _systemLogMessageHook;
-    
+
     private static PacketEffectResultHook _packetEffectResultHook;
-    
+
     private static PacketOpenTreasureHook _packetOpenTreasureHook;
-    
+
     private static PacketEventPlayHook _packetEventPlayHook;
 
     public Plugin(IDalamudPluginInterface pluginInterface)

@@ -204,7 +204,7 @@ public sealed unsafe class DataCommon : IDisposable
         {
             if (this.IsInDeepDungeonRegion)
             {
-                
+
                 this.SaveSlotSelection.ResetSelectionData();
                 if (!this.SaveSlotSelection.GetData().ContainsKey(this.CharacterKey))
                 {
@@ -731,7 +731,7 @@ public sealed unsafe class DataCommon : IDisposable
     public void RegenPotionConsumed() => this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
 
     public void BronzeChestOpened() => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Medicine);
-    
+
     public void PomanderObtained(int itemId)
     {
         Coffer pomander = default;
@@ -750,7 +750,7 @@ public sealed unsafe class DataCommon : IDisposable
 
         this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(pomander);
     }
-    
+
     public void AetherpoolObtained()
     {
         if (!this.IsLastFloor)

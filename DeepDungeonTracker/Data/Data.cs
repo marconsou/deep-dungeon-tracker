@@ -306,29 +306,29 @@ public sealed unsafe class Data : IDisposable
 
     private void FloorChangeAction(object? sender, NewFloorEventArgs args)
     {
-        this.Common.StartNextFloor();   
+        this.Common.StartNextFloor();
     }
-    
+
     private void CharacterKilledAction(object? sender, CharacterKilledEventArgs args)
     {
         this.Common.CharacterKilled(this.Text, args.EntityId);
     }
-    
+
     private void AetherpoolObtainedAction(object? sender, AetherpoolObtainedEventArgs args)
     {
         this.Common.AetherpoolObtained();
     }
-    
+
     private void RegenPotionConsumedAction(object? sender, RegenPotionConsumedEventArgs args)
     {
         this.Common.RegenPotionConsumed();
     }
-    
+
     private void BronzeChestOpenedAction(object? sender, BronzeChestOpenedEventArgs args)
     {
         this.Common.BronzeChestOpened();
     }
-    
+
     private void DutyFailedAction(object? sender, DutyFailedEventArgs args)
     {
         this.Common.DutyFailed();

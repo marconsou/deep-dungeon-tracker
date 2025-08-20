@@ -29,7 +29,7 @@ namespace DeepDungeonTracker.Hook
         {
             var category = *a3;
             var type = *(uint*)(a3 + 4);
-            
+
             if (category == 0x6D)
             {
                 switch (type)

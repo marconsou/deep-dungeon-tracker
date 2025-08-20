@@ -4,7 +4,7 @@ namespace DeepDungeonTracker.Event
 {
     public class CharacterKilledEventArgs(uint entityId) : EventArgs
     {
-        public uint EntityId { get; } = entityId;   
+        public uint EntityId { get; } = entityId;
     }
 
     public static class CharacterKilledEvents

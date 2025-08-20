@@ -10,9 +10,9 @@ namespace DeepDungeonTracker.Hook
         private delegate void ProcessSystemLogMessageDelegate(uint param1, uint type, uint* param3, byte param4);
 
         private readonly Hook<ProcessSystemLogMessageDelegate>? _SystemLogMessageHookDelegate;
-        
+
         public static uint[] pomanderObtained = [7220, 7221];
-        
+
         public static readonly uint[] aetherpoolObtained = [7250, 7251, 7252, 7253];
         public static readonly uint[] magiciteObtained = [9206, 9207];
         public static readonly uint[] demicloneObtained = [10285, 10286];

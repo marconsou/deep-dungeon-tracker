@@ -31,7 +31,7 @@ namespace DeepDungeonTracker.Hook
             var id = *(ushort*)(param2 + 30);
             if (id == 648)
                 RegenPotionConsumedEvents.Publish();
-            
+
         }
     }
 }
