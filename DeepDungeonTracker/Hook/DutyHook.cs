@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace DeepDungeonTracker.Hook
 {
     // Took from DutyState.cs of Dalamud project
-    public unsafe class DutyHook : IDisposable
+    public sealed unsafe class DutyHook : IDisposable
     {
         private delegate byte SetupContentDirectNetworkMessageDelegate(IntPtr a1, IntPtr a2, ushort* a3);
 
