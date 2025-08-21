@@ -79,6 +79,7 @@ public sealed class Plugin : IDalamudPlugin
         Service.ChatGui.ChatMessage += this.ChatMessage;
         Service.DutyState.DutyStarted += this.DutyStarted;
         Service.DutyState.DutyCompleted += this.DutyCompleted;
+        Service.GameInventory.ItemChanged += this.InventoryItemChanged;
         _dutyHook = new DutyHook();
         _packetActorControlHook = new PacketActorControlHook();
         _systemLogMessageHook = new SystemLogMessageHook();
@@ -100,18 +101,19 @@ public sealed class Plugin : IDalamudPlugin
         Service.ChatGui.ChatMessage -= this.ChatMessage;
         Service.DutyState.DutyStarted -= this.DutyStarted;
         Service.DutyState.DutyCompleted -= this.DutyCompleted;
-
-        WindowEx.DisposeWindows(this.WindowSystem.Windows);
-        this.WindowSystem.RemoveAllWindows();
-
-        this.Commands.Dispose();
-        this.Data.Dispose();
+        Service.GameInventory.ItemChanged -= this.InventoryItemChanged;
         _dutyHook.Dispose();
         _packetActorControlHook.Dispose();
         _systemLogMessageHook.Dispose();
         _packetEffectResultHook.Dispose();
         _packetOpenTreasureHook.Dispose();
         _packetEventPlayHook.Dispose();
+
+        WindowEx.DisposeWindows(this.WindowSystem.Windows);
+        this.WindowSystem.RemoveAllWindows();
+
+        this.Commands.Dispose();
+        this.Data.Dispose();
     }
 
     private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
@@ -184,6 +186,8 @@ public sealed class Plugin : IDalamudPlugin
     private void DutyStarted(object? sender, ushort e) => this.Data.DutyStarted(e);
 
     private void DutyCompleted(object? sender, ushort e) => this.Data.DutyCompleted();
+
+    private void InventoryItemChanged(GameInventoryEvent type, InventoryEventArgs? data) => this.Data.InventoryItemChanged(type, data);
 
     private void OpenWindow<T>() where T : Window => this.WindowSystem.Windows.FirstOrDefault(x => x is T)!.IsOpen = true;
 

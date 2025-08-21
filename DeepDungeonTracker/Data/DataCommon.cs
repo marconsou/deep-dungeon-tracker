@@ -721,7 +721,7 @@ public sealed unsafe class DataCommon : IDisposable
 
     public void RegenPotionConsumed() => this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
 
-    public void BronzeChestOpened() => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Medicine);
+    public void BronzeChestOpened(Coffer coffer) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(coffer);
 
     public void PomanderObtained(int itemId)
     {

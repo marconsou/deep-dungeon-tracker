@@ -28,7 +28,7 @@ namespace DeepDungeonTracker.Hook
         private void ProcessPacketOpenTreasureDetour(uint param1, byte* param2)
         {
             _PacketOpenTreasureHookDelegate.Original(param1, param2);
-            BronzeChestOpenedEvents.Publish();
+            BronzeChestManagerEvents.Publish();
         }
     }
 }

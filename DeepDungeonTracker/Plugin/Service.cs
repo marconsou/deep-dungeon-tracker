@@ -43,6 +43,9 @@ public class Service
     public static IGameInteropProvider GameInteropProvider { get; private set; } = null!;
 
     [PluginService]
+    public static IGameInventory GameInventory { get; private set; } = null!;
+
+    [PluginService]
     public static IObjectTable ObjectTable { get; private set; } = null!;
 
     [PluginService]

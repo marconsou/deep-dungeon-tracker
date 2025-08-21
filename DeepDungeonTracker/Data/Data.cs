@@ -266,6 +266,18 @@ public sealed class Data : IDisposable
         }
     }
 
+    public void InventoryItemChanged(GameInventoryEvent type, InventoryEventArgs? data)
+    {
+        if (!this.Common.IsLastFloor && data != null)
+        {
+            var potsherdItemIds = new uint[] { 15422, 23164, 38941 };
+            if (potsherdItemIds.Contains(data.Item.ItemId) && (type is GameInventoryEvent.Added or GameInventoryEvent.Changed))
+            {
+                PotsherdObtainedEvents.Publish();
+            }
+        }
+    }
+
     private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon();
 
     private void DeepDungeonDeactivating() => this.Common.ExitingDeepDungeon();
@@ -321,7 +333,7 @@ public sealed class Data : IDisposable
     {
         this.Common.RegenPotionConsumed();
     }
-    
+
     private void TransferenceInitiatedAction(object? sender, TransferenceInitiatedEventArgs args)
     {
         this.Common.TransferenceInitiated();
@@ -329,7 +341,7 @@ public sealed class Data : IDisposable
 
     private void BronzeChestOpenedAction(object? sender, BronzeChestOpenedEventArgs args)
     {
-        this.Common.BronzeChestOpened();
+        this.Common.BronzeChestOpened(args.Coffer);
     }
 
     private void DutyFailedAction(object? sender, DutyFailedEventArgs args)
