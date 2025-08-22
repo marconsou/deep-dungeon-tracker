@@ -46,8 +46,6 @@ public sealed class Data : IDisposable
 
     private Event<string> TrapMessage { get; } = new();
 
-    private Event<string> TransferenceInitiatedMessage { get; } = new();
-
     private bool IsCharacterBusy => this.BetweenAreas.IsActivated || this.Occupied33.IsActivated || this.Common.IsTransferenceInitiated;
 
     public bool IsInsideDeepDungeon => this.InDeepDungeon.IsActivated;
@@ -246,7 +244,6 @@ public sealed class Data : IDisposable
         {
             this.EnchantmentMessage.Execute(message);
             this.TrapMessage.Execute(message);
-            this.TransferenceInitiatedMessage.Execute(message);
         }
     }
 
