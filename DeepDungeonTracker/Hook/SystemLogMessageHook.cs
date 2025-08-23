@@ -1,7 +1,7 @@
-using System;
-using System.Linq;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
+using System;
+using System.Linq;
 
 namespace DeepDungeonTracker.Hook
 {

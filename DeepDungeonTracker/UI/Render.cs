@@ -1,6 +1,6 @@
-﻿using Dalamud.Interface.ManagedFontAtlas;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.ManagedFontAtlas;
 using Dalamud.Interface.Textures.TextureWraps;
-using Dalamud.Bindings.ImGui;
 using System;
 using System.Globalization;
 using System.Numerics;

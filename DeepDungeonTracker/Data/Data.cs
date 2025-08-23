@@ -1,28 +1,17 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Interface;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Dalamud.Game;
 using Dalamud.Game.Inventory;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using Dalamud.Interface;
 using DeepDungeonTracker.Event;
-using FFXIVClientStructs.FFXIV.Client.Game.Event;
-using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
-using Lumina.Data;
-using Lumina.Excel.Sheets;
-using Lumina.Text.ReadOnly;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace DeepDungeonTracker;
 
 public sealed class Data : IDisposable
 {
     public DataCommon Common { get; } = new();
-
-    private DataOpCodes OpCodes { get; } = new();
 
     public DataUI UI { get; }
 
@@ -58,7 +47,6 @@ public sealed class Data : IDisposable
     public Data(IUiBuilder uiBuilder, Configuration configuration)
     {
         this.UI = new(uiBuilder);
-        this.OpCodes.Load(configuration).ConfigureAwait(true);
 
         this.InDeepDungeon.AddActivating(this.DeepDungeonActivating);
         this.InDeepDungeon.AddDeactivating(this.DeepDungeonDeactivating);

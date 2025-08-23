@@ -119,9 +119,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
             ImGui.TextWrapped("When you see the Score Window on the screen, the detected kills so far will be adjusted based on the number shown on the Score Window. The kills will be added as normal enemies or mimics on floor 1/21 (lower floors) or 31 (higher floors).");
             ImGui.TextWrapped("While opened, wait a bit until the final value of score is calculated, which is around when the exit button becomes available to click (it will not work if you leave too soon).");
         }
-
-        if (ImGui.CollapsingHeader("OpCodes"))
-            ImGui.TextWrapped($"{JsonSerializer.Serialize(this.Configuration.OpCodes, ConfigurationWindow.Options)}");
     }
 
     private void Main()

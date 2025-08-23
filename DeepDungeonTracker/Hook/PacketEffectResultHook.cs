@@ -1,6 +1,6 @@
-using System;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
+using System;
 
 namespace DeepDungeonTracker.Hook
 {

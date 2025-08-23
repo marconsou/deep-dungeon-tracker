@@ -26,8 +26,6 @@ public class Configuration : IPluginConfiguration
 
     public BossStatusTimerTab BossStatusTimer { get; set; } = new();
 
-    public OpCodeValues OpCodes { get; set; } = new();
-
     public class MainTab
     {
         public bool SolidBackground { get; set; }
@@ -165,23 +163,6 @@ public class Configuration : IPluginConfiguration
         public Vector4 EndTimeColor { get; set; } = Color.Red;
 
         public Vector4 TotalTimeColor { get; set; } = Color.Gold;
-    }
-
-    public class OpCodeValues
-    {
-        public ushort ActorControl { get; set; }
-
-        public ushort ActorControlSelf { get; set; }
-
-        public ushort EffectResult { get; set; }
-
-        public ushort EventStart { get; set; }
-
-        public ushort SystemLogMessage { get; set; }
-
-        public ushort UnknownBronzeCofferItemInfo { get; set; }
-
-        public ushort UnknownBronzeCofferOpen { get; set; }
     }
 
     public Configuration() => this.Reset();

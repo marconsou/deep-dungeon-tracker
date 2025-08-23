@@ -1,8 +1,6 @@
-using System;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
-using FFXIVClientStructs.FFXIV.Client.System.String;
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using System;
 namespace DeepDungeonTracker.Hook
 {
     // Took from DutyState.cs of Dalamud project
