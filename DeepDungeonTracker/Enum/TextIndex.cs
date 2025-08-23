@@ -95,5 +95,5 @@ public enum TextIndex
     ImpedingTrap,
     ToadingTrap,
     OdderTrap,
-    OwletTrap
+    OwletTrap,
 }

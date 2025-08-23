@@ -1,6 +1,6 @@
 ﻿using Dalamud.Interface.ManagedFontAtlas;
 using Dalamud.Interface.Textures.TextureWraps;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Globalization;
 using System.Numerics;
@@ -16,7 +16,7 @@ public class Render
         var posScale = 1.0f / innerScale;
         var finalScale = this.Scale * innerScale;
         ImGui.SetCursorPos(new(x * finalScale * posScale, y * finalScale * posScale));
-        ImGui.Image(textureWrap.ImGuiHandle, new(width * finalScale, height * finalScale), new(x1, y1), new(x2, y2), color ?? Color.White);
+        ImGui.Image(textureWrap.Handle, new(width * finalScale, height * finalScale), new(x1, y1), new Vector2(x2, y2), color ?? Color.White);
     }
 
     public Vector2 DrawText(IFontHandle fontHandle, float x, float y, string text, Vector4 color, Alignment align, bool calcTextSize = false)

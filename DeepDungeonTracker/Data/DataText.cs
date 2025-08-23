@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DeepDungeonTracker;
 
@@ -98,11 +99,16 @@ public unsafe class DataText
 
     private (bool, TextIndex?) IsText(TextIndex start, TextIndex end, string? name, uint? index)
     {
-        for (var i = start; i <= end; i++)
+        if (name != null)
         {
-            if ((name != null && string.Equals(name, this.Texts[i].Item2, StringComparison.OrdinalIgnoreCase)) || (index != null && this.Texts[i].Item1 == index))
-                return (true, i);
+            for (var i = start; i <= end; i++)
+            {
+                if (string.Equals(name, this.Texts[i].Item2, StringComparison.OrdinalIgnoreCase) ||
+                    (index != null && this.Texts[i].Item1 == index))
+                    return (true, i);
+            }
         }
+
         return (false, null);
     }
 

@@ -3,7 +3,18 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using Dalamud.Game;
+using Dalamud.Game.Inventory;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using DeepDungeonTracker.Event;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
+using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
+using Lumina.Data;
+using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 
 namespace DeepDungeonTracker;
 
@@ -35,20 +46,6 @@ public sealed class Data : IDisposable
 
     private Event<string> TrapMessage { get; } = new();
 
-    private Event<(IntPtr, uint)> ActorControl { get; } = new();
-
-    private Event<(IntPtr, uint)> ActorControlSelf { get; } = new();
-
-    private Event<(IntPtr, uint)> EffectResult { get; } = new();
-
-    private Event<(IntPtr, uint)> EventStart { get; } = new();
-
-    private Event<(IntPtr, uint)> SystemLogMessage { get; } = new();
-
-    private Event<(IntPtr, uint)> UnknownBronzeCofferItemInfo { get; } = new();
-
-    private Event<(IntPtr, uint)> UnknownBronzeCofferOpen { get; } = new();
-
     private bool IsCharacterBusy => this.BetweenAreas.IsActivated || this.Occupied33.IsActivated || this.Common.IsTransferenceInitiated;
 
     public bool IsInsideDeepDungeon => this.InDeepDungeon.IsActivated;
@@ -69,13 +66,15 @@ public sealed class Data : IDisposable
         this.InCombat.AddDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Add(this.EnchantmentMessageReceived);
         this.TrapMessage.Add(this.TrapMessageReceived);
-        this.ActorControl.Add(this.ActorControlAction);
-        this.ActorControlSelf.Add(this.ActorControlSelfAction);
-        this.EffectResult.Add(this.EffectAction);
-        this.EventStart.Add(this.EventStartAction);
-        this.SystemLogMessage.Add(this.SystemLogMessageAction);
-        this.UnknownBronzeCofferItemInfo.Add(this.UnknownBronzeCofferItemInfoAction);
-        this.UnknownBronzeCofferOpen.Add(this.UnknownBronzeCofferOpenAction);
+        ItemChangedEvents<PomanderChangedType>.Changed += this.PomanderChangedAction;
+        ItemChangedEvents<StoneChangedType>.Changed += this.StoneChangedAction;
+        AetherpoolObtainedEvents.Changed += this.AetherpoolObtainedAction;
+        NewFloorEvents.Changed += this.FloorChangeAction;
+        CharacterKilledEvents.Changed += this.CharacterKilledAction;
+        RegenPotionConsumedEvents.Changed += this.RegenPotionConsumedAction;
+        TransferenceInitiatedEvents.Changed += this.TransferenceInitiatedAction;
+        BronzeChestOpenedEvents.Changed += this.BronzeChestOpenedAction;
+        DutyFailedEvents.Changed += this.DutyFailedAction;
 
         if (Service.ClientState.IsLoggedIn)
         {
@@ -97,13 +96,15 @@ public sealed class Data : IDisposable
         this.InCombat.RemoveDeactivating(this.CombatDeactivating);
         this.EnchantmentMessage.Remove(this.EnchantmentMessageReceived);
         this.TrapMessage.Remove(this.TrapMessageReceived);
-        this.ActorControl.Remove(this.ActorControlAction);
-        this.ActorControlSelf.Remove(this.ActorControlSelfAction);
-        this.EffectResult.Remove(this.EffectAction);
-        this.EventStart.Remove(this.EventStartAction);
-        this.SystemLogMessage.Remove(this.SystemLogMessageAction);
-        this.UnknownBronzeCofferItemInfo.Remove(this.UnknownBronzeCofferItemInfoAction);
-        this.UnknownBronzeCofferOpen.Remove(this.UnknownBronzeCofferOpenAction);
+        ItemChangedEvents<PomanderChangedType>.Changed -= this.PomanderChangedAction;
+        ItemChangedEvents<StoneChangedType>.Changed -= this.StoneChangedAction;
+        AetherpoolObtainedEvents.Changed -= this.AetherpoolObtainedAction;
+        NewFloorEvents.Changed -= this.FloorChangeAction;
+        CharacterKilledEvents.Changed -= this.CharacterKilledAction;
+        RegenPotionConsumedEvents.Changed -= this.RegenPotionConsumedAction;
+        TransferenceInitiatedEvents.Changed -= this.TransferenceInitiatedAction;
+        BronzeChestOpenedEvents.Changed -= this.BronzeChestOpenedAction;
+        DutyFailedEvents.Changed -= this.DutyFailedAction;
         this.Common.Dispose();
         this.UI.Dispose();
     }
@@ -135,10 +136,14 @@ public sealed class Data : IDisposable
                 if (ServiceUtility.IsSolo)
                 {
                     if (!this.InDutyQueue.IsActivated)
+                    {
                         this.Common.CheckForSaveSlotSelection();
+                    }
                 }
                 else
+                {
                     this.Common.ResetSaveSlotSelection();
+                }
             }
         }
     }
@@ -242,31 +247,31 @@ public sealed class Data : IDisposable
         }
     }
 
-    public void NetworkMessage(IntPtr dataPtr, ushort opCode, uint targetActorId, Configuration configuration)
+    public void DutyStarted(ushort dutyId)
     {
         if (this.InDeepDungeon.IsActivated)
         {
-            if (this.Common.IsSoloSaveSlot)
-            {
-                this.OpCodes.FindUnknownBronzeCofferItemInfoOpCode(dataPtr, opCode, targetActorId, configuration!);
-                this.OpCodes.FindUnknownBronzeCofferOpenOpCode(dataPtr, opCode, targetActorId, configuration!);
-            }
+            this.Common.DutyStarted();
+        }
+    }
 
-            var opCodes = configuration?.OpCodes;
-            if (opCode == opCodes!.ActorControl)
-                this.ActorControl.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.ActorControlSelf)
-                this.ActorControlSelf.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.EffectResult)
-                this.EffectResult.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.EventStart)
-                this.EventStart.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.SystemLogMessage)
-                this.SystemLogMessage.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.UnknownBronzeCofferItemInfo)
-                this.UnknownBronzeCofferItemInfo.Execute((dataPtr, targetActorId));
-            else if (opCode == opCodes.UnknownBronzeCofferOpen)
-                this.UnknownBronzeCofferOpen.Execute((dataPtr, targetActorId));
+    public void DutyCompleted()
+    {
+        if (this.InDeepDungeon.IsActivated)
+        {
+            this.Common.DutyCompleted();
+        }
+    }
+
+    public void InventoryItemChanged(GameInventoryEvent type, InventoryEventArgs? data)
+    {
+        if (!this.Common.IsLastFloor && data != null)
+        {
+            var potsherdItemIds = new uint[] { 15422, 23164, 38941 };
+            if (potsherdItemIds.Contains(data.Item.ItemId) && (type is GameInventoryEvent.Added or GameInventoryEvent.Changed))
+            {
+                PotsherdObtainedEvents.Publish();
+            }
         }
     }
 
@@ -282,97 +287,62 @@ public sealed class Data : IDisposable
 
     private void TrapMessageReceived(string message) => this.Common.TrapMessageReceived(this.Text, message);
 
-    private void ActorControlAction((IntPtr, uint) data)
+    private void PomanderChangedAction(object? sender, ItemChangedEventArgs<PomanderChangedType> args)
     {
-        var defeat = 6;
-        if (NetworkData.ExtractNumber(data.Item1, 0, 1) == defeat)
+        if (args.Type == PomanderChangedType.PomanderObtained)
         {
-            var id = data.Item2;
-            var character = Service.ObjectTable.SearchById(id) as ICharacter;
-            var name = character?.Name.TextValue ?? string.Empty;
-            if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || this.Text.IsMandragora(name).Item1))
-            {
-                if (!this.Common.IsBossFloor)
-                    this.Common.CheckForEnemyKilled(this.Text, name, id);
-            }
-            else if (character?.ObjectKind == ObjectKind.Player)
-                this.Common.CheckForPlayerKilled(character);
+            this.Common.PomanderObtained(args.ItemId);
+        }
+        else if (args.Type == PomanderChangedType.PomanderUsed)
+        {
+            this.Common.PomanderUsed(args.ItemId);
         }
     }
 
-    private void ActorControlSelfAction((IntPtr, uint) data)
+    private void StoneChangedAction(object? sender, ItemChangedEventArgs<StoneChangedType> args)
     {
-        var directorUpdate = 109;
-        var dutyCommenced = 1;
-        var dutyRecommence = 6;
-        var deepDungeonIdFirst = 60001;
-        var deepDungeonIdLast = 60000 + (Enum.GetNames(typeof(DeepDungeon)).Length * 10);
-        var dataPtr = data.Item1;
-        if (NetworkData.ExtractNumber(dataPtr, 0, 1) == directorUpdate)
+        if (args.Type == StoneChangedType.StoneObtained)
         {
-            var type = NetworkData.ExtractNumber(dataPtr, 8, 1);
-            if (type == dutyCommenced)
-            {
-                var contentId = NetworkData.ExtractNumber(dataPtr, 4, 2);
-                if (contentId >= deepDungeonIdFirst && contentId <= deepDungeonIdLast)
-                    this.Common.StartFirstFloor(contentId);
-            }
-            else if (type == dutyRecommence)
-                this.Common.StartNextFloor();
+            this.Common.StoneObtained(args.ItemId);
+        }
+        else if (args.Type == StoneChangedType.StoneUsed)
+        {
+            this.Common.StoneUsed(args.ItemId);
         }
     }
 
-    private void EffectAction((IntPtr, uint) data)
+    private void FloorChangeAction(object? sender, NewFloorEventArgs args)
     {
-        var targetActorId = data.Item2;
-        if (targetActorId != Service.ClientState?.LocalPlayer?.EntityId)
-            return;
-
-        var dataPtr = data.Item1;
-        var id = NetworkData.ExtractNumber(dataPtr, 30, 2);
-        if (id == 648)
-            this.Common.RegenPotionConsumed();
+        this.Common.StartNextFloor();
     }
 
-    private void EventStartAction((IntPtr, uint) data) => this.Common.DutyFailed(NetworkData.ExtractNumber(data.Item1, 8, 2), NetworkData.ExtractNumber(data.Item1, 16, 1));
-
-    private void SystemLogMessageAction((IntPtr, uint) data)
+    private void CharacterKilledAction(object? sender, CharacterKilledEventArgs args)
     {
-        var dataPtr = data.Item1;
-        var logId = NetworkData.ExtractNumber(dataPtr, 4, 4);
-        var pomanderObtained = new[] { 7220, 7221 };
-        var aetherpoolObtained = new[] { 7250, 7251, 7252, 7253 };
-        var magiciteObtained = new[] { 9206, 9207 };
-        var demicloneObtained = new[] { 10285, 10286 };
-        var pomanderObtainedId = NetworkData.ExtractNumber(dataPtr, 12, 1);
-        var pomanderUsedId = NetworkData.ExtractNumber(dataPtr, 16, 1);
-        var pomanderUsed = 7254;
-        var magiciteUsed = 9209;
-        var demicloneUsed = 10288;
-        var transferenceInitiated = 7248;
-        var discoverItem = new[] { 7279, 7280 };
-
-        if (pomanderObtained.Contains(logId))
-            this.Common.PomanderObtained(pomanderObtainedId);
-        else if (aetherpoolObtained.Contains(logId))
-            this.Common.AetherpoolObtained();
-        else if (magiciteObtained.Contains(logId))
-            this.Common.MagiciteObtained(pomanderObtainedId);
-        else if (demicloneObtained.Contains(logId))
-            this.Common.DemicloneObtained(pomanderObtainedId);
-        else if (logId == pomanderUsed)
-            this.Common.PomanderUsed(pomanderUsedId);
-        else if (logId == magiciteUsed)
-            this.Common.MagiciteUsed(pomanderUsedId);
-        else if (logId == demicloneUsed)
-            this.Common.DemicloneUsed(pomanderUsedId);
-        else if (logId == transferenceInitiated)
-            this.Common.TransferenceInitiated();
-        else if (discoverItem.Contains(logId))
-            this.Common.DutyCompleted();
+        this.Common.CharacterKilled(this.Text, args.EntityId);
     }
 
-    private void UnknownBronzeCofferItemInfoAction((IntPtr, uint) data) => this.Common.BronzeCofferUpdate(this.Text, NetworkData.ExtractNumber(data.Item1, 8, 2));
+    private void AetherpoolObtainedAction(object? sender, AetherpoolObtainedEventArgs args)
+    {
+        this.Common.AetherpoolObtained();
+    }
 
-    private void UnknownBronzeCofferOpenAction((IntPtr, uint) data) => this.Common.BronzeCofferOpened();
+    private void RegenPotionConsumedAction(object? sender, RegenPotionConsumedEventArgs args)
+    {
+        this.Common.RegenPotionConsumed();
+    }
+
+    private void TransferenceInitiatedAction(object? sender, TransferenceInitiatedEventArgs args)
+    {
+        this.Common.TransferenceInitiated();
+    }
+
+    private void BronzeChestOpenedAction(object? sender, BronzeChestOpenedEventArgs args)
+    {
+        this.Common.BronzeChestOpened(args.Coffer);
+    }
+
+    private void DutyFailedAction(object? sender, DutyFailedEventArgs args)
+    {
+        this.Common.DutyFailed();
+    }
 }

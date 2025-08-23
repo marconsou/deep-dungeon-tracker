@@ -6,7 +6,15 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.Inventory;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using Dalamud.Hooking;
+using DeepDungeonTracker.Hook;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
+using FFXIVClientStructs.FFXIV.Client.System.String;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace DeepDungeonTracker;
 
@@ -21,6 +29,18 @@ public sealed class Plugin : IDalamudPlugin
     private Configuration Configuration { get; }
 
     private Data Data { get; }
+
+    private static DutyHook _dutyHook;
+
+    private static PacketActorControlHook _packetActorControlHook;
+
+    private static SystemLogMessageHook _systemLogMessageHook;
+
+    private static PacketEffectResultHook _packetEffectResultHook;
+
+    private static PacketOpenTreasureHook _packetOpenTreasureHook;
+
+    private static PacketEventPlayHook _packetEventPlayHook;
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
@@ -57,7 +77,15 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged += this.TerritoryChanged;
         Service.Condition.ConditionChange += this.ConditionChange;
         Service.ChatGui.ChatMessage += this.ChatMessage;
-        Service.GameNetwork.NetworkMessage += this.NetworkMessage;
+        Service.DutyState.DutyStarted += this.DutyStarted;
+        Service.DutyState.DutyCompleted += this.DutyCompleted;
+        Service.GameInventory.ItemChanged += this.InventoryItemChanged;
+        _dutyHook = new DutyHook();
+        _packetActorControlHook = new PacketActorControlHook();
+        _systemLogMessageHook = new SystemLogMessageHook();
+        _packetEffectResultHook = new PacketEffectResultHook();
+        _packetOpenTreasureHook = new PacketOpenTreasureHook();
+        _packetEventPlayHook = new PacketEventPlayHook();
     }
 
     public void Dispose()
@@ -71,7 +99,15 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged -= this.TerritoryChanged;
         Service.Condition.ConditionChange -= this.ConditionChange;
         Service.ChatGui.ChatMessage -= this.ChatMessage;
-        Service.GameNetwork.NetworkMessage -= this.NetworkMessage;
+        Service.DutyState.DutyStarted -= this.DutyStarted;
+        Service.DutyState.DutyCompleted -= this.DutyCompleted;
+        Service.GameInventory.ItemChanged -= this.InventoryItemChanged;
+        _dutyHook.Dispose();
+        _packetActorControlHook.Dispose();
+        _systemLogMessageHook.Dispose();
+        _packetEffectResultHook.Dispose();
+        _packetOpenTreasureHook.Dispose();
+        _packetEventPlayHook.Dispose();
 
         WindowEx.DisposeWindows(this.WindowSystem.Windows);
         this.WindowSystem.RemoveAllWindows();
@@ -147,11 +183,11 @@ public sealed class Plugin : IDalamudPlugin
 
     private void ChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) => this.Data.ChatMessage(message.TextValue);
 
-    private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
-    {
-        if (direction == NetworkMessageDirection.ZoneDown)
-            this.Data.NetworkMessage(dataPtr, opCode, targetActorId, this.Configuration);
-    }
+    private void DutyStarted(object? sender, ushort e) => this.Data.DutyStarted(e);
+
+    private void DutyCompleted(object? sender, ushort e) => this.Data.DutyCompleted();
+
+    private void InventoryItemChanged(GameInventoryEvent type, InventoryEventArgs? data) => this.Data.InventoryItemChanged(type, data);
 
     private void OpenWindow<T>() where T : Window => this.WindowSystem.Windows.FirstOrDefault(x => x is T)!.IsOpen = true;
 

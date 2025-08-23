@@ -2,13 +2,14 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using DeepDungeonTracker.Event;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
 
 namespace DeepDungeonTracker;
 
-public sealed class DataCommon : IDisposable
+public sealed unsafe class DataCommon : IDisposable
 {
     private string CharacterName { get; set; } = string.Empty;
 
@@ -62,13 +63,19 @@ public sealed class DataCommon : IDisposable
 
     public bool IsLastFloor => this.CurrentSaveSlot?.CurrentFloor()?.IsLastFloor() ?? false;
 
-    private bool IsEurekaOrthosFloor99 => this.DeepDungeon == DeepDungeon.EurekaOrthos && this.CurrentSaveSlot?.CurrentFloorNumber() == 99;
+    private bool IsEurekaOrthosFloor99 => this.DeepDungeon == DeepDungeon.EurekaOrthos &&
+                                          this.CurrentSaveSlot?.CurrentFloorNumber() == 99;
 
     public bool IsSpecialBossFloor => this.IsEurekaOrthosFloor99;
 
     public bool IsBossFloor => this.IsLastFloor || this.IsSpecialBossFloor;
 
-    private static Pomander[] SharedPomanders => [Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight, Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity, Pomander.Intuition, Pomander.Raising];
+    private static Pomander[] SharedPomanders =>
+    [
+        Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight,
+        Pomander.Alteration, Pomander.Purity, Pomander.Fortune, Pomander.Witching, Pomander.Serenity,
+        Pomander.Intuition, Pomander.Raising
+    ];
 
     public void Dispose() => this.BossStatusTimerManager?.Dispose();
 
@@ -118,7 +125,8 @@ public sealed class DataCommon : IDisposable
     public void EnteringCombat()
     {
         if (this.IsBossFloor)
-            this.BossStatusTimerManager = this.CurrentSaveSlot?.CurrentFloorSet()?.StartBossStatusTimer(this.ExitingCombat);
+            this.BossStatusTimerManager =
+                this.CurrentSaveSlot?.CurrentFloorSet()?.StartBossStatusTimer(this.ExitingCombat);
     }
 
     public void ExitingCombat()
@@ -127,13 +135,17 @@ public sealed class DataCommon : IDisposable
             this.CurrentSaveSlot?.CurrentFloorSet()?.EndBossStatusTimer();
     }
 
-    public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
+    public static string GetSaveSlotFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) =>
+        data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}.json" : string.Empty;
 
-    public static string GetLastSaveFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) => data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}Last.json" : string.Empty;
+    public static string GetLastSaveFileName(string key, SaveSlotSelection.SaveSlotSelectionData? data) =>
+        data != null ? $"{key}-dd{(int)data.DeepDungeon}s{data.SaveSlotNumber}Last.json" : string.Empty;
 
-    public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data) => DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
+    public string GetSaveSlotFileName(SaveSlotSelection.SaveSlotSelectionData? data) =>
+        DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
 
-    public string GetLastSaveFileName(SaveSlotSelection.SaveSlotSelectionData? data) => DataCommon.GetLastSaveFileName(this.CharacterKey, data);
+    public string GetLastSaveFileName(SaveSlotSelection.SaveSlotSelectionData? data) =>
+        DataCommon.GetLastSaveFileName(this.CharacterKey, data);
 
     private void SaveDeepDungeonData()
     {
@@ -161,7 +173,11 @@ public sealed class DataCommon : IDisposable
     {
         var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
         var fileName = DataCommon.GetSaveSlotFileName(this.CharacterKey, data);
-        this.CurrentSaveSlot = ((!ignoreDeepDungeonRegion && (data?.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) && (data?.SaveSlotNumber != 0) ? this.LoadDeepDungeonData(showFloorSetTimeValues, fileName) : new();
+        this.CurrentSaveSlot =
+            ((!ignoreDeepDungeonRegion && (data?.DeepDungeon == this.DeepDungeon)) || ignoreDeepDungeonRegion) &&
+            (data?.SaveSlotNumber != 0)
+                ? this.LoadDeepDungeonData(showFloorSetTimeValues, fileName)
+                : new();
     }
 
     public void CheckForSaveSlotSelection()
@@ -183,16 +199,19 @@ public sealed class DataCommon : IDisposable
         if (string.IsNullOrWhiteSpace(this.ServerName))
             this.ServerName = Service.ClientState.LocalPlayer?.HomeWorld.Value.Name.ToString() ?? string.Empty;
 
-        if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) && string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
+        if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) &&
+            string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
         {
             if (this.IsInDeepDungeonRegion)
             {
+
                 this.SaveSlotSelection.ResetSelectionData();
                 if (!this.SaveSlotSelection.GetData().ContainsKey(this.CharacterKey))
                 {
                     this.SaveSlotSelection.SetSelectionData(this.DeepDungeon, 0);
                     this.SaveSlotSelection.Save(this.CharacterKey);
                 }
+
                 this.LoadDeepDungeonData(false);
             }
         }
@@ -226,7 +245,8 @@ public sealed class DataCommon : IDisposable
                 if (character == null)
                     continue;
 
-                if (character.IsDead && character.ObjectKind == ObjectKind.BattleNpc && character.StatusFlags.HasFlag(StatusFlags.Hostile))
+                if (character.IsDead && character.ObjectKind == ObjectKind.BattleNpc &&
+                    character.StatusFlags.HasFlag(StatusFlags.Hostile))
                 {
                     if (dataText?.IsBoss(character.Name.TextValue).Item1 ?? false)
                     {
@@ -271,7 +291,9 @@ public sealed class DataCommon : IDisposable
             if (character == null)
                 continue;
 
-            if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(character.Name.TextValue).Item1 ?? false)))
+            if (character.IsDead && (character.ObjectKind == ObjectKind.BattleNpc) &&
+                (character.StatusFlags.HasFlag(StatusFlags.Hostile) ||
+                 (dataText?.IsMandragora(character.Name.TextValue).Item1 ?? false)))
             {
                 if (!this.IsCairnOfPassageActivated && this.CairnOfPassageKillIds.Add(character.EntityId))
                 {
@@ -290,7 +312,9 @@ public sealed class DataCommon : IDisposable
         {
             unsafe
             {
-                var enemy = Service.ObjectTable.Where(x => ((FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)x.Address)->GetIsTargetable()).MaxBy(x => (x as ICharacter)?.MaxHp) as IBattleChara;
+                var enemy = Service.ObjectTable
+                    .Where(x => ((FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)x.Address)->GetIsTargetable())
+                    .MaxBy(x => (x as ICharacter)?.MaxHp) as IBattleChara;
                 this.BossStatusTimerManager?.Update(enemy);
             }
         }
@@ -308,7 +332,8 @@ public sealed class DataCommon : IDisposable
                 continue;
 
             var name = character.Name.TextValue;
-            if ((character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(name).Item1 ?? false)))
+            if ((character.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) ||
+                                                                   (dataText?.IsMandragora(name).Item1 ?? false)))
                 this.NearbyEnemies.TryAdd(character.EntityId, new() { Name = name, IsDead = character.IsDead });
         }
     }
@@ -389,6 +414,7 @@ public sealed class DataCommon : IDisposable
                         currentFloor?.MandragoraKilled();
                 }
             }
+
             this.WasMagiciteUsed = false;
             return true;
         }
@@ -405,6 +431,7 @@ public sealed class DataCommon : IDisposable
                     return true;
             }
         }
+
         return false;
     }
 
@@ -420,7 +447,8 @@ public sealed class DataCommon : IDisposable
                 var saveSlotFileName = this.GetSaveSlotFileName(new(this.DeepDungeon, saveSlotNumber));
                 if (LocalStream.Exists(ServiceUtility.ConfigDirectory, saveSlotFileName))
                 {
-                    if (LocalStream.Move(ServiceUtility.ConfigDirectory, ServiceUtility.ConfigDirectory, saveSlotFileName, this.GetLastSaveFileName(new(this.DeepDungeon, saveSlotNumber))))
+                    if (LocalStream.Move(ServiceUtility.ConfigDirectory, ServiceUtility.ConfigDirectory,
+                            saveSlotFileName, this.GetLastSaveFileName(new(this.DeepDungeon, saveSlotNumber))))
                     {
                         var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
                         if (data?.DeepDungeon == this.DeepDungeon && data.SaveSlotNumber == saveSlotNumber)
@@ -438,11 +466,18 @@ public sealed class DataCommon : IDisposable
     {
         var deepDungeon = this.DeepDungeon;
         if (dataText?.IsPalaceOfTheDeadRegion(territoryType) ?? false)
+        {
             this.DeepDungeon = DeepDungeon.PalaceOfTheDead;
+        }
         else if (dataText?.IsHeavenOnHighRegion(territoryType) ?? false)
+        {
             this.DeepDungeon = DeepDungeon.HeavenOnHigh;
+        }
         else if (dataText?.IsEurekaOrthosRegion(territoryType) ?? false)
+
+        {
             this.DeepDungeon = DeepDungeon.EurekaOrthos;
+        }
         else
             this.DeepDungeon = DeepDungeon.None;
 
@@ -488,6 +523,7 @@ public sealed class DataCommon : IDisposable
             else if (floorNumber >= 31 && floorNumber <= 98)
                 return TimeSpan.FromMinutes(10);
         }
+
         return default;
     }
 
@@ -495,7 +531,8 @@ public sealed class DataCommon : IDisposable
     {
         var result = dataText?.IsEnchantment(message) ?? new();
         if (result.Item1)
-            this.CurrentSaveSlot?.CurrentFloor()?.EnchantmentAffected((Enchantment)(result.Item2! - TextIndex.BlindnessEnchantment));
+            this.CurrentSaveSlot?.CurrentFloor()
+                ?.EnchantmentAffected((Enchantment)(result.Item2! - TextIndex.BlindnessEnchantment));
     }
 
     public void TrapMessageReceived(DataText dataText, string message)
@@ -527,14 +564,16 @@ public sealed class DataCommon : IDisposable
     {
         if (ServiceUtility.IsSolo)
         {
-            if (string.Equals(character?.Name.ToString(), this.CharacterName, StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
+            if (string.Equals(character?.Name.ToString(), this.CharacterName, StringComparison.OrdinalIgnoreCase) &&
+                character?.CurrentHp == 0)
                 this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
         }
         else
         {
             foreach (var item in Service.PartyList)
             {
-                if (string.Equals(character?.Name.ToString(), item.Name.ToString(), StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
+                if (string.Equals(character?.Name.ToString(), item.Name.ToString(),
+                        StringComparison.OrdinalIgnoreCase) && character?.CurrentHp == 0)
                 {
                     this.CurrentSaveSlot?.CurrentFloor()?.PlayerKilled();
                     break;
@@ -543,7 +582,22 @@ public sealed class DataCommon : IDisposable
         }
     }
 
-    private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
+    public void CharacterKilled(DataText dataText, uint entityId)
+    {
+        var character = Service.ObjectTable.SearchById(entityId) as ICharacter;
+        var name = character?.Name.TextValue ?? string.Empty;
+        if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) ||
+                                                                dataText.IsMandragora(name).Item1))
+        {
+            if (!this.IsBossFloor)
+                this.CheckForEnemyKilled(dataText, name, entityId);
+        }
+        else if (character?.ObjectKind == ObjectKind.Player)
+            this.CheckForPlayerKilled(character);
+    }
+
+    private void FloorScoreUpdate(int? additional = null) => this.CurrentSaveSlot?.CurrentFloor()
+        ?.ScoreUpdate(this.TotalScore - this.CurrentSaveSlot.Score() + (additional ?? 0));
 
     public void CalculateScore(ScoreCalculationType scoreCalculationType)
     {
@@ -555,7 +609,8 @@ public sealed class DataCommon : IDisposable
     {
         void CreateSaveSlot(int floorNumber)
         {
-            this.CurrentSaveSlot = new(this.DeepDungeon, contentId, Service.ClientState.LocalPlayer?.ClassJob.Value.RowId ?? 0);
+            this.CurrentSaveSlot = new(this.DeepDungeon, contentId,
+                Service.ClientState.LocalPlayer?.ClassJob.Value.RowId ?? 0);
             this.CurrentSaveSlot.AddFloorSet(floorNumber);
         }
 
@@ -573,7 +628,9 @@ public sealed class DataCommon : IDisposable
             {
                 var saveSlotSelection = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
                 if (!LocalStream.Exists(ServiceUtility.ConfigDirectory, this.GetSaveSlotFileName(saveSlotSelection)))
+                {
                     CreateSaveSlot(floorNumber);
+                }
                 else
                 {
                     this.LoadDeepDungeonData(true);
@@ -582,16 +639,24 @@ public sealed class DataCommon : IDisposable
                         if (this.CurrentSaveSlot?.CurrentFloorNumber() + 1 == floorNumber)
                             this.CurrentSaveSlot?.AddFloorSet(floorNumber);
                         else
+                        {
                             CreateSaveSlot(floorNumber);
+                        }
                     }
                     else
+                    {
                         this.CurrentSaveSlot.ResetFloorSet();
+                    }
+
                     this.CurrentSaveSlot?.ContentIdUpdate(contentId);
                 }
+
                 Task.Delay(2000).ContinueWith(x => this.EnableFlyTextScore = true, TaskScheduler.Default);
             }
             else
+            {
                 CreateSaveSlot(floorNumber);
+            }
         }
     }
 
@@ -630,6 +695,11 @@ public sealed class DataCommon : IDisposable
         }
     }
 
+    public void DutyStarted()
+    {
+        this.StartFirstFloor((int)EventFramework.Instance()->GetContentDirector()->ContentId);
+    }
+
     public void DutyCompleted()
     {
         this.DutyStatus = DutyStatus.Complete;
@@ -639,21 +709,19 @@ public sealed class DataCommon : IDisposable
         this.SaveDeepDungeonData();
     }
 
-    public void DutyFailed(int contentId, int dutyFlag)
+    public void DutyFailed()
     {
-        var dutyFailed = 2;
-        if (this.ContentId == contentId && dutyFlag == dutyFailed)
-        {
-            this.DutyStatus = DutyStatus.Failed;
-            this.FloorSetTime.Pause();
-            this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(this.FloorSetTime.CurrentFloorTime);
-            this.FloorScoreUpdate();
-            this.CurrentSaveSlot?.CurrentFloorSet()?.NoTimeBonus();
-            this.SaveDeepDungeonData();
-        }
+        this.DutyStatus = DutyStatus.Failed;
+        this.FloorSetTime.Pause();
+        this.CurrentSaveSlot?.CurrentFloor()?.TimeUpdate(this.FloorSetTime.CurrentFloorTime);
+        this.FloorScoreUpdate();
+        this.CurrentSaveSlot?.CurrentFloorSet()?.NoTimeBonus();
+        this.SaveDeepDungeonData();
     }
 
     public void RegenPotionConsumed() => this.CurrentSaveSlot?.CurrentFloor()?.RegenPotionConsumed();
+
+    public void BronzeChestOpened(Coffer coffer) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(coffer);
 
     public void PomanderObtained(int itemId)
     {
@@ -666,8 +734,11 @@ public sealed class DataCommon : IDisposable
         {
             var totalProtomanders = (int)(Pomander.Dread + 1);
             var index = itemId - totalProtomanders - 1;
-            pomander = index >= 0 ? (Coffer)DataCommon.SharedPomanders[itemId - totalProtomanders - 1] : (Coffer)itemId - 1;
+            pomander = index >= 0
+                ? (Coffer)DataCommon.SharedPomanders[itemId - totalProtomanders - 1]
+                : (Coffer)itemId - 1;
         }
+
         this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(pomander);
     }
 
@@ -677,9 +748,23 @@ public sealed class DataCommon : IDisposable
             this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Aetherpool);
     }
 
-    public void MagiciteObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
+    public void StoneObtained(int itemId)
+    {
+        if (this.DeepDungeon == DeepDungeon.HeavenOnHigh)
+        {
+            MagiciteObtained(itemId);
+        }
+        else if (this.DeepDungeon == DeepDungeon.EurekaOrthos)
+        {
+            DemicloneObtained(itemId);
+        }
+    }
 
-    public void DemicloneObtained(int itemId) => this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.UneiDemiclone);
+    public void MagiciteObtained(int itemId) =>
+        this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.InfernoMagicite);
+
+    public void DemicloneObtained(int itemId) =>
+        this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(itemId - 1 + Coffer.UneiDemiclone);
 
     public void PomanderUsed(int itemId)
     {
@@ -705,6 +790,18 @@ public sealed class DataCommon : IDisposable
         this.CurrentSaveSlot?.CurrentFloor()?.PomanderUsed(pomander);
     }
 
+    public void StoneUsed(int itemId)
+    {
+        if (this.DeepDungeon == DeepDungeon.HeavenOnHigh)
+        {
+            this.MagiciteUsed(itemId);
+        }
+        else if (this.DeepDungeon == DeepDungeon.EurekaOrthos)
+        {
+            this.DemicloneUsed(itemId);
+        }
+    }
+
     public void MagiciteUsed(int itemId)
     {
         this.SpecialPomanderUsed(Coffer.InfernoMagicite, itemId);
@@ -728,19 +825,4 @@ public sealed class DataCommon : IDisposable
         this.NearbyEnemies = [];
         this.IsTransferenceInitiated = true;
     }
-
-    public void BronzeCofferUpdate(DataText dataText, int itemId)
-    {
-        if (this.IsBronzeCofferOpened)
-        {
-            this.IsBronzeCofferOpened = false;
-            var result = dataText?.IsPotsherd((uint)itemId) ?? new();
-            if (result.Item1)
-                this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Potsherd);
-            else
-                this.CurrentSaveSlot?.CurrentFloor()?.CofferOpened(Coffer.Medicine);
-        }
-    }
-
-    public void BronzeCofferOpened() => this.IsBronzeCofferOpened = true;
 }
