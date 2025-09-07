@@ -6,7 +6,7 @@ namespace DeepDungeonTracker.Event
     public static class BronzeChestManagerEvents
     {
         private static DateTime? lastPotsherdObtained;
-        private static readonly TimeSpan timeout = TimeSpan.FromMilliseconds(300);
+        private static readonly TimeSpan timeout = TimeSpan.FromMilliseconds(500);
 
         static BronzeChestManagerEvents()
         {

@@ -15,7 +15,7 @@ namespace DeepDungeonTracker.Hook
             _packetOpenTreasureHookDelegate =
                 Service.GameInteropProvider.HookFromAddress<ProcessPacketOpenTreasureDelegate>(
                     Service.SigScanner.ScanText(
-                        "E8 ?? ?? ?? ?? B0 ?? 48 8B 5C 24 ?? 48 8B 74 24 ?? 48 83 C4 ?? 5F C3 8B 4F ?? E8"),
+                        "E8 ?? ?? ?? ?? B0 ?? 48 8B 5C 24 ?? 48 8B 74 24 ?? 48 83 C4 ?? 5F C3 B8"),
                     ProcessPacketOpenTreasureDetour);
             _packetOpenTreasureHookDelegate.Enable();
         }
