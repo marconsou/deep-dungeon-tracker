@@ -1,3 +1,4 @@
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
 using System;
@@ -34,7 +35,8 @@ namespace DeepDungeonTracker.Hook
                 {
                     // New floor
                     case 0x4000_000E:
-                        NewFloorEvents.Publish();
+                        if (Service.Condition[ConditionFlag.InDeepDungeon])
+                            NewFloorEvents.Publish();
                         break;
                 }
             }

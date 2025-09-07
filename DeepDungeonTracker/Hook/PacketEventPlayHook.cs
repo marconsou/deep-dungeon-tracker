@@ -1,3 +1,4 @@
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
 using System;
@@ -28,11 +29,13 @@ namespace DeepDungeonTracker.Hook
         private void ProcessPacketEventPlayDetour(ulong param1, uint param2, ushort param3, ulong param4, ulong param5, byte param6)
         {
             _packetEventPlayHookDelegate!.Original(param1, param2, param3, param4, param5, param6);
+
+            if (!Service.Condition[ConditionFlag.InDeepDungeon])
+                return;
+
             // Duty failed
             if (param3 == 5)
-            {
                 DutyFailedEvents.Publish();
-            }
         }
     }
 }

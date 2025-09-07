@@ -1,3 +1,4 @@
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
 using System;
@@ -28,10 +29,13 @@ namespace DeepDungeonTracker.Hook
         private void ProcessPacketEffectResultDetour(uint param1, byte* param2, byte param3)
         {
             _packetEffectResultHookDelegate!.Original(param1, param2, param3);
+
+            if (!Service.Condition[ConditionFlag.InDeepDungeon])
+                return;
+
             var id = *(ushort*)(param2 + 30);
             if (id == 648)
                 RegenPotionConsumedEvents.Publish();
-
         }
     }
 }

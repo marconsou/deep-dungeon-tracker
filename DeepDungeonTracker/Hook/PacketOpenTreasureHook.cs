@@ -1,3 +1,4 @@
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
 using System;
@@ -28,6 +29,10 @@ namespace DeepDungeonTracker.Hook
         private void ProcessPacketOpenTreasureDetour(uint param1, byte* param2)
         {
             _packetOpenTreasureHookDelegate!.Original(param1, param2);
+
+            if (!Service.Condition[ConditionFlag.InDeepDungeon])
+                return;
+
             BronzeChestManagerEvents.Publish();
         }
     }

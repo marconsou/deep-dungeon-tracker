@@ -1,3 +1,4 @@
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
 using System;
@@ -27,12 +28,16 @@ namespace DeepDungeonTracker.Hook
             _packetActorControlHookDelegate?.Dispose();
         }
 
-        private void ProcessPacketActorControlDetour(uint entityId, uint type, uint param1, uint param2, uint param3,
-            uint param4, uint param5, uint param6, ulong param7, byte isReplay)
+        private void ProcessPacketActorControlDetour(uint entityId, uint type, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6, ulong param7, byte isReplay)
         {
-            _packetActorControlHookDelegate!.Original(entityId, type, param1, param2, param3, param4, param5, param6,
-                param7, isReplay);
-            if (isReplay != 0) return; // Ignore replays
+            _packetActorControlHookDelegate!.Original(entityId, type, param1, param2, param3, param4, param5, param6, param7, isReplay);
+
+            if (isReplay != 0)
+                return; // Ignore replays
+
+            if (!Service.Condition[ConditionFlag.InDeepDungeon])
+                return;
+
             switch (type)
             {
                 case 0x6: // Death

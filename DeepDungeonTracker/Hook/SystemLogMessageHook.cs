@@ -1,3 +1,4 @@
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using DeepDungeonTracker.Event;
 using System;
@@ -39,6 +40,10 @@ namespace DeepDungeonTracker.Hook
         private void ProcessSystemLogMessageDetour(uint param1, uint type, uint* param3, byte param4)
         {
             _systemLogMessageHookDelegate!.Original(param1, type, param3, param4);
+
+            if (!Service.Condition[ConditionFlag.InDeepDungeon])
+                return;
+
             var itemUsedId = (int)*(param3 + 1);
             var itemObtainedId = (int)*(param3);
             if (pomanderObtained.Contains(type))
