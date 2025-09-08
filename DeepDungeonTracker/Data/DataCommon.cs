@@ -16,7 +16,7 @@ public sealed unsafe class DataCommon : IDisposable
 
     public bool IsTransferenceInitiated { get; private set; }
 
-    private bool IsBronzeCofferOpened { get; set; }
+    public bool IsBronzeCofferOpened { get; set; }
 
     public bool IsSoloSaveSlot { get; private set; }
 
@@ -585,8 +585,7 @@ public sealed unsafe class DataCommon : IDisposable
     {
         var character = Service.ObjectTable.SearchById(entityId) as ICharacter;
         var name = character?.Name.TextValue ?? string.Empty;
-        if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) ||
-                                                                dataText.IsMandragora(name).Item1))
+        if ((character?.ObjectKind == ObjectKind.BattleNpc) && (character.StatusFlags.HasFlag(StatusFlags.Hostile) || (dataText?.IsMandragora(name).Item1 ?? false)))
         {
             if (!this.IsBossFloor)
                 this.CheckForEnemyKilled(dataText, name, entityId);

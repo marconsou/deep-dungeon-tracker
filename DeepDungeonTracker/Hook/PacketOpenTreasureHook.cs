@@ -1,6 +1,5 @@
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
-using DeepDungeonTracker.Event;
 using System;
 
 namespace DeepDungeonTracker.Hook
@@ -11,8 +10,11 @@ namespace DeepDungeonTracker.Hook
 
         private readonly Hook<ProcessPacketOpenTreasureDelegate>? _packetOpenTreasureHookDelegate;
 
-        public PacketOpenTreasureHook()
+        private DataCommon DataCommon { get; set; }
+
+        public PacketOpenTreasureHook(DataCommon dataCommon)
         {
+            this.DataCommon = dataCommon;
             _packetOpenTreasureHookDelegate =
                 Service.GameInteropProvider.HookFromAddress<ProcessPacketOpenTreasureDelegate>(
                     Service.SigScanner.ScanText(
@@ -33,7 +35,7 @@ namespace DeepDungeonTracker.Hook
             if (!Service.Condition[ConditionFlag.InDeepDungeon])
                 return;
 
-            BronzeChestManagerEvents.Publish();
+            this.DataCommon.IsBronzeCofferOpened = true;
         }
     }
 }

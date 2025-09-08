@@ -1,5 +1,4 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.Inventory;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
@@ -8,6 +7,7 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using DeepDungeonTracker.Hook;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DeepDungeonTracker;
@@ -73,12 +73,13 @@ public sealed class Plugin : IDalamudPlugin
         Service.ChatGui.ChatMessage += this.ChatMessage;
         Service.DutyState.DutyStarted += this.DutyStarted;
         Service.DutyState.DutyCompleted += this.DutyCompleted;
-        Service.GameInventory.ItemChanged += this.InventoryItemChanged;
+        Service.GameInventory.InventoryChangedRaw += this.InventoryChangedRaw;
+
         _dutyHook = new DutyHook();
         _packetActorControlHook = new PacketActorControlHook();
         _systemLogMessageHook = new SystemLogMessageHook();
         _packetEffectResultHook = new PacketEffectResultHook();
-        _packetOpenTreasureHook = new PacketOpenTreasureHook();
+        _packetOpenTreasureHook = new PacketOpenTreasureHook(this.Data.Common);
         _packetEventPlayHook = new PacketEventPlayHook();
     }
 
@@ -95,7 +96,8 @@ public sealed class Plugin : IDalamudPlugin
         Service.ChatGui.ChatMessage -= this.ChatMessage;
         Service.DutyState.DutyStarted -= this.DutyStarted;
         Service.DutyState.DutyCompleted -= this.DutyCompleted;
-        Service.GameInventory.ItemChanged -= this.InventoryItemChanged;
+        Service.GameInventory.InventoryChangedRaw -= this.InventoryChangedRaw;
+
         _dutyHook?.Dispose();
         _packetActorControlHook?.Dispose();
         _systemLogMessageHook?.Dispose();
@@ -181,7 +183,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void DutyCompleted(object? sender, ushort e) => this.Data.DutyCompleted();
 
-    private void InventoryItemChanged(GameInventoryEvent type, InventoryEventArgs? data) => this.Data.InventoryItemChanged(type, data);
+    private void InventoryChangedRaw(IReadOnlyCollection<InventoryEventArgs> events) => this.Data.InventoryChangedRaw(events);
 
     private void OpenWindow<T>() where T : Window => this.WindowSystem.Windows.FirstOrDefault(x => x is T)!.IsOpen = true;
 

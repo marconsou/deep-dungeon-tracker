@@ -4,6 +4,7 @@ using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Interface;
 using DeepDungeonTracker.Event;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -61,7 +62,6 @@ public sealed class Data : IDisposable
         CharacterKilledEvents.Changed += this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed += this.RegenPotionConsumedAction;
         TransferenceInitiatedEvents.Changed += this.TransferenceInitiatedAction;
-        BronzeChestOpenedEvents.Changed += this.BronzeChestOpenedAction;
         DutyFailedEvents.Changed += this.DutyFailedAction;
 
         if (Service.ClientState.IsLoggedIn)
@@ -91,7 +91,6 @@ public sealed class Data : IDisposable
         CharacterKilledEvents.Changed -= this.CharacterKilledAction;
         RegenPotionConsumedEvents.Changed -= this.RegenPotionConsumedAction;
         TransferenceInitiatedEvents.Changed -= this.TransferenceInitiatedAction;
-        BronzeChestOpenedEvents.Changed -= this.BronzeChestOpenedAction;
         DutyFailedEvents.Changed -= this.DutyFailedAction;
         this.Common.Dispose();
         this.UI.Dispose();
@@ -251,14 +250,30 @@ public sealed class Data : IDisposable
         }
     }
 
-    public void InventoryItemChanged(GameInventoryEvent type, InventoryEventArgs? data)
+    public void InventoryChangedRaw(IReadOnlyCollection<InventoryEventArgs> inventoryEventArgs)
     {
-        if (!this.Common.IsLastFloor && data != null)
+        if (!this.InDeepDungeon.IsActivated)
+            return;
+
+        if (!this.Common.IsLastFloor)
         {
-            var potsherdItemIds = new uint[] { 15422, 23164, 38941 };
-            if (potsherdItemIds.Contains(data.Item.ItemId) && (type is GameInventoryEvent.Added or GameInventoryEvent.Changed))
+            if (!this.Common.IsBronzeCofferOpened)
+                return;
+
+            this.Common.IsBronzeCofferOpened = false;
+
+            foreach (InventoryEventArgs e in inventoryEventArgs ?? [])
             {
-                PotsherdObtainedEvents.Publish();
+                if (e.Type is GameInventoryEvent.Added or GameInventoryEvent.Changed)
+                {
+                    var itemId = e.Item.ItemId;
+
+                    var potsherdItemIds = new uint[] { 15422, 23164, 38941 };
+                    if (potsherdItemIds.Contains(itemId))
+                        this.Common.BronzeChestOpened(Coffer.Potsherd);
+                    else
+                        this.Common.BronzeChestOpened(Coffer.Medicine);
+                }
             }
         }
     }
@@ -322,11 +337,6 @@ public sealed class Data : IDisposable
     private void TransferenceInitiatedAction(object? sender, TransferenceInitiatedEventArgs args)
     {
         this.Common.TransferenceInitiated();
-    }
-
-    private void BronzeChestOpenedAction(object? sender, BronzeChestOpenedEventArgs args)
-    {
-        this.Common.BronzeChestOpened(args.Coffer);
     }
 
     private void DutyFailedAction(object? sender, DutyFailedEventArgs args)
