@@ -30,11 +30,11 @@ public sealed class Plugin : IDalamudPlugin
 
     private static SystemLogMessageHook? _systemLogMessageHook;
 
-    private static PacketEffectResultHook? _packetEffectResultHook;
+    private static EffectResultPacketHook? _effectResultPacketHook;
 
-    private static PacketOpenTreasureHook? _packetOpenTreasureHook;
+    private static OpenTreasurePacketHook? _openTreasurePacketHook;
 
-    private static PacketEventPlayHook? _packetEventPlayHook;
+    private static EventPlayPacketHook? _eventPlayPacketHook;
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
@@ -78,9 +78,9 @@ public sealed class Plugin : IDalamudPlugin
         _dutyHook = new DutyHook();
         _packetActorControlHook = new PacketActorControlHook();
         _systemLogMessageHook = new SystemLogMessageHook();
-        _packetEffectResultHook = new PacketEffectResultHook();
-        _packetOpenTreasureHook = new PacketOpenTreasureHook(this.Data.Common);
-        _packetEventPlayHook = new PacketEventPlayHook();
+        _effectResultPacketHook = new EffectResultPacketHook();
+        _openTreasurePacketHook = new OpenTreasurePacketHook(this.Data.Common);
+        _eventPlayPacketHook = new EventPlayPacketHook();
     }
 
     public void Dispose()
@@ -101,9 +101,9 @@ public sealed class Plugin : IDalamudPlugin
         _dutyHook?.Dispose();
         _packetActorControlHook?.Dispose();
         _systemLogMessageHook?.Dispose();
-        _packetEffectResultHook?.Dispose();
-        _packetOpenTreasureHook?.Dispose();
-        _packetEventPlayHook?.Dispose();
+        _effectResultPacketHook?.Dispose();
+        _openTreasurePacketHook?.Dispose();
+        _eventPlayPacketHook?.Dispose();
 
         WindowEx.DisposeWindows(this.WindowSystem.Windows);
         this.WindowSystem.RemoveAllWindows();
