@@ -278,7 +278,11 @@ public sealed class Data : IDisposable
         }
     }
 
-    private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon();
+    private void DeepDungeonActivating()
+    {
+        this.Text.LoadEnchantments(DataText.GetLanguage());
+        this.Common.EnteringDeepDungeon();
+    }
 
     private void DeepDungeonDeactivating() => this.Common.ExitingDeepDungeon();
 

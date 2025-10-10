@@ -24,12 +24,11 @@ public unsafe class DataText
         var language = DataText.GetLanguage();
         this.LoadItems(language);
         this.LoadEnemies(language);
-        this.LoadEnchantments(language);
         this.LoadTraps(language);
         this.Territories = Service.DataManager.GetExcelSheet<TerritoryType>(Service.ClientState.ClientLanguage)!.ToImmutableList();
     }
 
-    private static Language GetLanguage()
+    public static Language GetLanguage()
     {
         return Service.ClientState.ClientLanguage switch
         {
@@ -72,7 +71,7 @@ public unsafe class DataText
         }
     }
 
-    private void LoadEnchantments(Language language)
+    public void LoadEnchantments(Language language)
     {
         var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(language);
         var indices = new uint[] { 7230, 7231, 7232, 7233, 7234, 7235, 7236, 7237, 7238, 7239, 7240, 9211, 9212, 10302 };
@@ -80,7 +79,7 @@ public unsafe class DataText
         for (var i = 0; i < indices.Length; i++)
         {
             var id = indices[i];
-            this.AddText(TextIndex.BlindnessEnchantment + i, id, sheet!.GetRow(id)!.Text);
+            this.AddText(TextIndex.BlindnessEnchantment + i, id, Service.SeStringEvaluator.EvaluateFromLogMessage(id));
         }
     }
 
