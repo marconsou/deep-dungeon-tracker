@@ -54,6 +54,9 @@ public class Service
     public static IPluginLog PluginLog { get; private set; } = null!;
 
     [PluginService]
+    public static ISeStringEvaluator  SeStringEvaluator { get; private set; } = null!;
+    
+    [PluginService]
     public static ISigScanner SigScanner { get; private set; } = null!;
 
     [PluginService]

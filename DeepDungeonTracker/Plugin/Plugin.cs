@@ -44,7 +44,7 @@ public sealed class Plugin : IDalamudPlugin
         this.Configuration.Initialize(Service.PluginInterface);
 
         this.Data = new(pluginInterface?.UiBuilder!, this.Configuration);
-        this.Commands = new(Plugin.Name, this.OnConfigCommand, this.OnMainCommandd, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
+        this.Commands = new(Plugin.Name, this.OnConfigCommand, this.OnMainCommand, this.OnTrackerCommand, this.OnTimeCommand, this.OnScoreCommand, this.OnLoadCommand);
 
         this.WindowSystem = new(Plugin.Name.Replace(" ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
 #pragma warning disable CA2000
@@ -114,7 +114,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
 
-    private void OnMainCommandd(string command, string args) => this.MainWindowToggleVisibility();
+    private void OnMainCommand(string command, string args) => this.MainWindowToggleVisibility();
 
     private void OnTrackerCommand(string command, string args)
     {

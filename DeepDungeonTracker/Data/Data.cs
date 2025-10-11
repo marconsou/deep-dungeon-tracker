@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Dalamud.Utility;
 
 namespace DeepDungeonTracker;
 
@@ -98,6 +99,8 @@ public sealed class Data : IDisposable
 
     public void Update(Configuration configuration)
     {
+        this.Text.LoadEnchantmentsOnce();
+        
         this.UI.Update();
         this.Statistics.Update(configuration ?? new());
         this.CharacterUpdate();

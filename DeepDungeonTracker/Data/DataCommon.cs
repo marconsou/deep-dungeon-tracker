@@ -148,6 +148,9 @@ public sealed unsafe class DataCommon : IDisposable
 
     private void SaveDeepDungeonData()
     {
+        if (!this.CheckForValidContent(this.ContentId))
+            return;
+            
         if (this.IsSoloSaveSlot)
         {
             var data = this.SaveSlotSelection.GetSelectionData(this.CharacterKey);
@@ -605,6 +608,12 @@ public sealed unsafe class DataCommon : IDisposable
 
     public void StartFirstFloor(int contentId)
     {
+        if (!this.CheckForValidContent(contentId))
+        {
+            this.CurrentSaveSlot = new SaveSlot();
+            return;
+        }
+
         void CreateSaveSlot(int floorNumber)
         {
             this.CurrentSaveSlot = new(this.DeepDungeon, contentId,
@@ -693,10 +702,9 @@ public sealed unsafe class DataCommon : IDisposable
         }
     }
 
-    public void DutyStarted()
-    {
-        this.StartFirstFloor((int)EventFramework.Instance()->GetContentDirector()->ContentId);
-    }
+    public bool CheckForValidContent(int contentId) => contentId is >= 60001 and <= 60040;
+
+    public void DutyStarted() => this.StartFirstFloor((int)EventFramework.Instance()->GetContentDirector()->ContentId);
 
     public void DutyCompleted()
     {

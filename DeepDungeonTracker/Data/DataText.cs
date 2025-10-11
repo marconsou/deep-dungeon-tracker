@@ -13,6 +13,8 @@ namespace DeepDungeonTracker;
 
 public unsafe class DataText
 {
+    private bool DelayedLoadingEnchantments { get; set; }
+
     private Dictionary<TextIndex, (uint, string)> Texts { get; } = [];
 
     private IImmutableList<TerritoryType> Territories { get; }
@@ -24,7 +26,6 @@ public unsafe class DataText
         var language = DataText.GetLanguage();
         this.LoadItems(language);
         this.LoadEnemies(language);
-        this.LoadEnchantments(language);
         this.LoadTraps(language);
         this.Territories = Service.DataManager.GetExcelSheet<TerritoryType>(Service.ClientState.ClientLanguage)!.ToImmutableList();
     }
@@ -72,15 +73,14 @@ public unsafe class DataText
         }
     }
 
-    private void LoadEnchantments(Language language)
+    private void LoadEnchantments()
     {
-        var sheet = Service.DataManager.GameData.Excel.GetSheet<LogMessage>(language);
         var indices = new uint[] { 7230, 7231, 7232, 7233, 7234, 7235, 7236, 7237, 7238, 7239, 7240, 9211, 9212, 10302 };
 
         for (var i = 0; i < indices.Length; i++)
         {
             var id = indices[i];
-            this.AddText(TextIndex.BlindnessEnchantment + i, id, sheet!.GetRow(id)!.Text);
+            this.AddText(TextIndex.BlindnessEnchantment + i, id, Service.SeStringEvaluator.EvaluateFromLogMessage(id,language: Service.ClientState.ClientLanguage));
         }
     }
 
@@ -109,6 +109,16 @@ public unsafe class DataText
         }
 
         return (false, null);
+    }
+
+    public void LoadEnchantmentsOnce()
+    {
+        //Needed for Dalamud not fail at start
+        if (this.DelayedLoadingEnchantments)
+            return;
+        
+        this.DelayedLoadingEnchantments = true;
+        this.LoadEnchantments();
     }
 
     public (bool, TextIndex?) IsPotsherd(uint index) => this.IsText(TextIndex.GelmorranPotsherd, TextIndex.OrthosAetherpoolFragment, null, index);
