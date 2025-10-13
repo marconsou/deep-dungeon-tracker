@@ -99,8 +99,6 @@ public sealed class Data : IDisposable
 
     public void Update(Configuration configuration)
     {
-        this.Text.LoadEnchantmentsOnce();
-        
         this.UI.Update();
         this.Statistics.Update(configuration ?? new());
         this.CharacterUpdate();
@@ -281,7 +279,7 @@ public sealed class Data : IDisposable
         }
     }
 
-    private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon();
+    private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon(this.Text);
 
     private void DeepDungeonDeactivating() => this.Common.ExitingDeepDungeon();
 

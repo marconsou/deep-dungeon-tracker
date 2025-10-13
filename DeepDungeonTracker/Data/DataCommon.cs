@@ -86,7 +86,7 @@ public sealed unsafe class DataCommon : IDisposable
         this.FloorEffect = new();
     }
 
-    public void EnteringDeepDungeon()
+    public void EnteringDeepDungeon(DataText dataText)
     {
         this.IsTransferenceInitiated = false;
         this.IsBronzeCofferOpened = false;
@@ -100,6 +100,7 @@ public sealed unsafe class DataCommon : IDisposable
         this.CairnOfPassageKillIds = [];
         this.DutyStatus = DutyStatus.None;
         this.CurrentSaveSlot?.ContentIdUpdate(0);
+        dataText?.LoadEnchantments();
     }
 
     public void ExitingDeepDungeon()

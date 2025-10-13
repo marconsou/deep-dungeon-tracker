@@ -13,8 +13,6 @@ namespace DeepDungeonTracker;
 
 public unsafe class DataText
 {
-    private bool DelayedLoadingEnchantments { get; set; }
-
     private Dictionary<TextIndex, (uint, string)> Texts { get; } = [];
 
     private IImmutableList<TerritoryType> Territories { get; }
@@ -73,7 +71,7 @@ public unsafe class DataText
         }
     }
 
-    private void LoadEnchantments()
+    public void LoadEnchantments()
     {
         var indices = new uint[] { 7230, 7231, 7232, 7233, 7234, 7235, 7236, 7237, 7238, 7239, 7240, 9211, 9212, 10302 };
 
@@ -109,16 +107,6 @@ public unsafe class DataText
         }
 
         return (false, null);
-    }
-
-    public void LoadEnchantmentsOnce()
-    {
-        //Needed for Dalamud not fail at start
-        if (this.DelayedLoadingEnchantments)
-            return;
-        
-        this.DelayedLoadingEnchantments = true;
-        this.LoadEnchantments();
     }
 
     public (bool, TextIndex?) IsPotsherd(uint index) => this.IsText(TextIndex.GelmorranPotsherd, TextIndex.OrthosAetherpoolFragment, null, index);
