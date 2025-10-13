@@ -40,7 +40,7 @@ public unsafe class DataText
         };
     }
 
-    private void AddText(TextIndex key, uint id, ReadOnlySeString seString) => this.Texts.Add(key, (id, seString.ToDalamudString().ToString()));
+    private void AddText(TextIndex key, uint id, ReadOnlySeString seString) => this.Texts[key] = (id, seString.ToDalamudString().ToString());
 
     private void LoadItems(Language language)
     {

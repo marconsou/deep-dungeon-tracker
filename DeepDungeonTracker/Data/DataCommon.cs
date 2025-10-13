@@ -86,7 +86,7 @@ public sealed unsafe class DataCommon : IDisposable
         this.FloorEffect = new();
     }
 
-    public void EnteringDeepDungeon(DataText dataText)
+    public void EnteringDeepDungeon()
     {
         this.IsTransferenceInitiated = false;
         this.IsBronzeCofferOpened = false;
@@ -100,7 +100,6 @@ public sealed unsafe class DataCommon : IDisposable
         this.CairnOfPassageKillIds = [];
         this.DutyStatus = DutyStatus.None;
         this.CurrentSaveSlot?.ContentIdUpdate(0);
-        dataText?.LoadEnchantments();
     }
 
     public void ExitingDeepDungeon()
@@ -607,13 +606,15 @@ public sealed unsafe class DataCommon : IDisposable
         this.Score?.TotalScoreCalculation(ServiceUtility.IsSolo, scoreCalculationType);
     }
 
-    public void StartFirstFloor(int contentId)
+    public void StartFirstFloor(int contentId, DataText dataText)
     {
         if (!this.CheckForValidContent(contentId))
         {
             this.CurrentSaveSlot = new SaveSlot();
             return;
         }
+        
+        dataText?.LoadEnchantments();
 
         void CreateSaveSlot(int floorNumber)
         {
@@ -705,7 +706,7 @@ public sealed unsafe class DataCommon : IDisposable
 
     public bool CheckForValidContent(int contentId) => contentId is >= 60001 and <= 60040;
 
-    public void DutyStarted() => this.StartFirstFloor((int)EventFramework.Instance()->GetContentDirector()->ContentId);
+    public void DutyStarted(DataText dataText) => this.StartFirstFloor((int)EventFramework.Instance()->GetContentDirector()->ContentId, dataText);
 
     public void DutyCompleted()
     {

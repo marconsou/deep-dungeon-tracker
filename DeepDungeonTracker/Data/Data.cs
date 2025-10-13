@@ -239,7 +239,7 @@ public sealed class Data : IDisposable
     {
         if (this.InDeepDungeon.IsActivated)
         {
-            this.Common.DutyStarted();
+            this.Common.DutyStarted(this.Text);
         }
     }
 
@@ -279,7 +279,7 @@ public sealed class Data : IDisposable
         }
     }
 
-    private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon(this.Text);
+    private void DeepDungeonActivating() => this.Common.EnteringDeepDungeon();
 
     private void DeepDungeonDeactivating() => this.Common.ExitingDeepDungeon();
 
