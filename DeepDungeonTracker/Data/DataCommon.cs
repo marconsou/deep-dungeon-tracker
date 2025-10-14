@@ -31,6 +31,8 @@ public sealed unsafe class DataCommon : IDisposable
     private bool WasMagiciteUsed { get; set; }
 
     private bool WasScoreWindowShown { get; set; }
+    
+    private bool IsEnchantmentsLoaded { get; set; }
 
     private HashSet<uint> CairnOfPassageKillIds { get; set; } = [];
 
@@ -68,7 +70,7 @@ public sealed unsafe class DataCommon : IDisposable
     public bool IsSpecialBossFloor => this.IsEurekaOrthosFloor99;
 
     public bool IsBossFloor => this.IsLastFloor || this.IsSpecialBossFloor;
-
+    
     private static Pomander[] SharedPomanders =>
     [
         Pomander.Safety, Pomander.Sight, Pomander.Strength, Pomander.Steel, Pomander.Affluence, Pomander.Flight,
@@ -96,6 +98,7 @@ public sealed unsafe class DataCommon : IDisposable
         this.IsBossDead = false;
         this.WasMagiciteUsed = false;
         this.WasScoreWindowShown = false;
+        this.IsEnchantmentsLoaded = false;
         this.NearbyEnemies = [];
         this.CairnOfPassageKillIds = [];
         this.DutyStatus = DutyStatus.None;
@@ -531,6 +534,9 @@ public sealed unsafe class DataCommon : IDisposable
 
     public void EnchantmentMessageReceived(DataText dataText, string message)
     {
+        if (!this.IsEnchantmentsLoaded)
+            return;
+        
         var result = dataText?.IsEnchantment(message) ?? new();
         if (result.Item1)
             this.CurrentSaveSlot?.CurrentFloor()
@@ -615,6 +621,7 @@ public sealed unsafe class DataCommon : IDisposable
         }
         
         dataText?.LoadEnchantments();
+        this.IsEnchantmentsLoaded = true;
 
         void CreateSaveSlot(int floorNumber)
         {
