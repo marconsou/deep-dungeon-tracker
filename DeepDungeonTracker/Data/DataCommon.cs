@@ -198,11 +198,11 @@ public sealed unsafe class DataCommon : IDisposable
     {
         var characterName = this.CharacterName;
         if (string.IsNullOrWhiteSpace(this.CharacterName))
-            this.CharacterName = Service.ClientState.LocalPlayer?.Name.ToString() ?? string.Empty;
+            this.CharacterName = Service.ObjectTable.LocalPlayer?.Name.ToString() ?? string.Empty;
 
         var serverName = this.ServerName;
         if (string.IsNullOrWhiteSpace(this.ServerName))
-            this.ServerName = Service.ClientState.LocalPlayer?.HomeWorld.Value.Name.ToString() ?? string.Empty;
+            this.ServerName = Service.ObjectTable.LocalPlayer?.HomeWorld.Value.Name.ToString() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(characterName) && !string.IsNullOrWhiteSpace(this.CharacterName) &&
             string.IsNullOrWhiteSpace(serverName) && !string.IsNullOrWhiteSpace(this.ServerName))
@@ -626,7 +626,7 @@ public sealed unsafe class DataCommon : IDisposable
         void CreateSaveSlot(int floorNumber)
         {
             this.CurrentSaveSlot = new(this.DeepDungeon, contentId,
-                Service.ClientState.LocalPlayer?.ClassJob.Value.RowId ?? 0);
+                Service.ObjectTable.LocalPlayer?.ClassJob.Value.RowId ?? 0);
             this.CurrentSaveSlot.AddFloorSet(floorNumber);
         }
 

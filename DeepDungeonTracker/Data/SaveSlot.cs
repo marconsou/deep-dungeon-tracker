@@ -116,7 +116,7 @@ public class SaveSlot(DeepDungeon deepDungeon = DeepDungeon.None, int contentId 
 
     public int CurrentFloorNumber() => this.CurrentFloor()?.Number ?? 0;
 
-    public void CurrentLevelUpdate() => this.CurrentLevel = Service.ClientState.LocalPlayer?.Level ?? 0;
+    public void CurrentLevelUpdate() => this.CurrentLevel = Service.ObjectTable.LocalPlayer?.Level ?? 0;
 
     public void AetherpoolUpdate(int arm, int armor)
     {

@@ -169,7 +169,7 @@ public sealed class BossStatusTimerManager : IDisposable
 
     public void Update(IBattleChara? enemy)
     {
-        var player = Service.ClientState.LocalPlayer;
+        var player = Service.ObjectTable.LocalPlayer;
         if (player == null)
             return;
 
