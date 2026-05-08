@@ -66,7 +66,6 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         ImGui.Separator();
         this.Button(this.Configuration.Reset, "Reset all settings to default", true);
         ImGui.SameLine();
-        this.Button(this.OpenKofiLink, "Ko-fi", false);
     }
 
     private void General()
@@ -269,6 +268,4 @@ public sealed class ConfigurationWindow : WindowEx, IDisposable
         ImGui.SameLine();
         this.ColorEdit4(config.TotalTimeColor, x => config.TotalTimeColor = x, "Total Time");
     }
-
-    private void OpenKofiLink() => Process.Start(new ProcessStartInfo { FileName = "https://ko-fi.com/marconsou", UseShellExecute = true });
 }
